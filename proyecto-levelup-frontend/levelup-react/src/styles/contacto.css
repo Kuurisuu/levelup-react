@@ -1,0 +1,525 @@
+/* contenedor principal de la pagina de contacto */
+.contacto-main {
+  min-height: calc(100vh - 200px); /* altura minima descontando header/footer */
+  background-color: #000000; 
+}
+
+/* seccion hero */
+
+/* seccion hero con gradiente y efectos visuales */
+.hero-contacto {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  padding: 3rem 0;
+  text-align: center;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden; /* oculta contenido que exceda el tamaño del contenedor */
+}
+
+/* overlay con gradiente de colores gaming */
+.hero-contacto::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(30, 144, 255, 0.1) 0%, rgba(57, 255, 20, 0.1) 100%);
+  z-index: 1;
+}
+
+/* contenido del hero posicionado sobre el overlay */
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* titulo principal de la pagina */
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif; /* fuente gaming para títulos */
+  color: #FFFFFF;
+}
+
+/* subtitulo descriptivo */
+.hero-content p {
+  font-size: 1.1rem;
+  opacity: 0.9; 
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif; /* fuente legible para texto */
+  color: #D3D3D3;
+}
+
+/* contenedores y layout */
+
+/* contenedor general para centrar contenido */
+.container {
+  max-width: 1200px;
+  margin: 0 auto; /* centra el contenedor horizontalmente */
+  padding: 0 2rem;
+}
+
+/* seccion principal de contacto */
+.contacto-section {
+  padding: 4rem 0; /* espacio superior e inferior */
+  background-color: #000000;
+}
+
+/* grid de dos columnas: informacion y formulario */
+.cuadricula-contacto {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* dos columnas iguales */
+  gap: 4rem; /* espacio entre columnas */
+  align-items: start; /* alinear al inicio verticalmente */
+}
+
+/* informacion de contacto */
+
+/* contenedor principal de informacion de contacto */
+.info-contacto {
+  background-color: #000000;
+  padding: 2rem;
+  border-radius: 15px;
+  border: 2px solid #1E90FF; /* borde azul gaming */
+  text-align: center;
+  transition: all 0.3s ease; /* transiciones suaves */
+}
+
+/* efectos hover para la tarjeta de informacion */
+.info-contacto:hover {
+  transform: translateY(-5px); /* elevacion al hacer hover */
+  box-shadow: 0 10px 30px rgba(30, 144, 255, 0.3); /* sombra azul */
+  border-color: #39FF14; /* cambio a verde neon */
+}
+
+/* titulo principal de la seccion de informacion */
+.info-contacto h3 {
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* elementos individuales de informacion (telefono, mail, etc.) */
+.info-item {
+  display: flex;
+  align-items: flex-start;/*alinear al inicio verticalmente*/
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* iconos de cada elemento de informacion */
+.info-item i {
+  font-size: 1.5rem;
+  color: #1E90FF; 
+  margin-top: 0.2rem;
+  min-width: 24px;
+  transition: color 0.3s ease;
+}
+
+/* cambio de color de iconos al hacer hover */
+.info-item:hover i {
+  color: #39FF14; /* verde neón al hacer hover */
+}
+
+/* títulos de cada elemento de información */
+.info-item h3 {
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* texto descriptivo de cada elemento */
+.info-item p {
+  color: #D3D3D3;
+  line-height: 1.5;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+
+/* contenedor de enlaces a redes sociales */
+.enlaces-sociales {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+/* titulo de la seccion de redes sociales */
+.enlaces-sociales h3 {
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* contenedor flex para los iconos de redes sociales */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* botones circulares para redes sociales */
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background-color: #1E90FF; /* fondo azul gaming */
+  color: #FFFFFF;
+  border-radius: 50%; /* forma circular */
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid #1E90FF;
+}
+
+/* efectos hover para botones de redes sociales */
+.social-btn:hover {
+  background-color: #39FF14; /* cambio a verde neón */
+  border-color: #39FF14;
+  color: #000000; /* texto negro para contraste */
+  transform: translateY(-2px); /* elevación sutil */
+}
+
+
+/* contenedor principal del formulario */
+.contenedor-formulario-contacto {
+  background-color: #000000;
+  padding: 2.5rem;
+  border-radius: 15px;
+  border: 2px solid #1E90FF; 
+  transition: border-color 0.3s ease;
+}
+
+/* cambio de color del borde al hacer hover */
+.contenedor-formulario-contacto:hover {
+  border-color: #39FF14; /* verde neon al hacer hover */
+}
+
+/* titulo del formulario */
+.contenedor-formulario-contacto h2 {
+  color: #FFFFFF;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* grupos de campos del formulario */
+.formulario-contacto .form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* etiquetas de los campos del formulario */
+.formulario-contacto label {
+  display: block;
+  color: #FFFFFF;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* estilos para todos los campos de entrada */
+.formulario-contacto input,
+.formulario-contacto textarea,
+.formulario-contacto select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #1E90FF; /* borde azul gaming */
+  border-radius: 8px;
+  background-color: #000000; /* fondo negro */
+  color: #FFFFFF; /* texto blanco */
+  font-size: 1rem;
+  transition: all 0.3s ease; /* transiciones suaves */
+  resize: vertical; /* solo redimensión vertical para textarea */
+  font-family: 'Roboto', sans-serif;
+}
+
+/* opciones del select con tema oscuro */
+.formulario-contacto select option {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* placeholders con color gris claro */
+.formulario-contacto input::placeholder,
+.formulario-contacto textarea::placeholder {
+  color: #D3D3D3;
+  opacity: 0.7;
+}
+
+/* estados de foco con efectos gaming */
+.formulario-contacto input:focus,
+.formulario-contacto textarea:focus,
+.formulario-contacto select:focus {
+  outline: none;
+  border-color: #39FF14; /* borde verde neon al enfocar */
+  box-shadow: 0 0 0 2px rgba(57, 255, 20, 0.2); /* sombra verde sutil */
+}
+
+/* elementos de validacion */
+
+/* contador de caracteres para textarea */
+.contador-caracteres {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #D3D3D3;
+  margin-top: 0.3rem; /*margen superior*/
+  font-family: 'Roboto', sans-serif;
+}
+
+/* mensajes de error de validacion */
+.mensaje-error {
+  color: #dc3545; /* rojo para errores */
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  min-height: 1.2rem;
+  display: block; /*ocupar toda la linea*/
+}
+
+/* ocultar mensajes de error cuando estan vacios */
+.mensaje-error:empty {
+  display: none;
+}
+
+/* estados de validacion de campos */
+.formulario-contacto input.error,
+.formulario-contacto textarea.error {
+  border-color: #dc3545; /* borde rojo para errores */
+  background-color: rgba(220, 53, 69, 0.1); /* fondo rojo sutil */
+}
+
+.formulario-contacto input.valid,
+.formulario-contacto textarea.valid {
+  border-color: #28a745; /* borde verde para campos validos */
+  background-color: rgba(40, 167, 69, 0.1); /* fondo verde sutil */
+}
+
+/* boton principal de envio del formulario */
+.btn-enviar {
+  width: 100%;
+  background: linear-gradient(135deg, #1E90FF 0%, #39FF14 100%); /* gradiente gaming */
+  color: #FFFFFF;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px; /* bordes redondeados */
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* espacio entre icono y texto */
+  margin-top: 1rem;
+  font-family: 'Roboto', sans-serif;
+  border: 2px solid transparent;
+}
+
+/* efectos hover del boton de envio */
+.btn-enviar:hover {
+  transform: translateY(-2px); /* elevacion al hacer hover */
+  box-shadow: 0 8px 25px rgba(30, 144, 255, 0.4); /* sombra azul */
+  background: linear-gradient(135deg, #39FF14 0%, #1E90FF 100%); /* gradiente invertido */
+  color: #000000; /* texto negro para contraste */
+}
+
+/* estado activo del boton */
+.btn-enviar:active {
+  transform: translateY(0); /* volver a posicion original al hacer clic */
+}
+
+/* success message */
+.mensaje-exito {
+  background: linear-gradient(135deg, #39FF14 0%, #1E90FF 100%);
+  color: #000000;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 1rem;
+  display: none;
+  animation: slideIn 0.5s ease; /*animacion de slideIn lo que hace es que el mensaje se mueve de arriba hacia abajo*/
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  border: 2px solid #39FF14;
+}
+
+.mensaje-exito i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.mensaje-exito h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.mensaje-exito p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* responsive design */
+@media (max-width: 968px) {
+  .cuadricula-contacto {
+    grid-template-columns: 1fr;/*grid-template-columns: 1fr significa que hay un padding de 1fr en los lados*/
+    gap: 2rem;/*gap: 2rem significa que hay un padding de 2rem en los lados*/
+  }
+  
+  .info-contacto {
+    order: 2;/*order: 2 significa que el orden es 2*/
+  }
+  
+  .contenedor-formulario-contacto {
+    order: 1;/*order: 1 significa que el orden es 1*/
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .contacto-info,
+  .contenedor-formulario-contacto {
+    padding: 1.5rem;
+  }
+
+  .info-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .info-item i {
+    align-self: center;
+  }
+
+  .social-icons {
+    gap: 0.5rem;
+  }
+
+  .social-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-contacto,
+  .contacto-section {
+    padding: 2rem 0;
+  }
+
+  .contacto-info h2,
+  .contenedor-formulario-contacto h2 {
+    font-size: 1.5rem;
+  }
+
+  .btn-enviar {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* mantener tema oscuro incluso si el usuario prefiere tema claro */
+@media (prefers-color-scheme: light) {
+  /* mantener tema oscuro gaming sin cambios */
+}
+
+/* respeto por usuarios que prefieren menos animaciones */
+@media (prefers-reduced-motion: reduce) {
+  /* deshabilitar todas las animaciones y transiciones */
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;/*transition-duration: 0.01ms !important; significa que dura 0.01ms*/
+  }
+}
+
+/* adaptaciones para usuarios que prefieren alto contraste */
+@media (prefers-contrast: high) {
+  /* bordes mas gruesos para mejor visibilidad */
+  .formulario-contacto input,
+  .formulario-contacto textarea,
+  .formulario-contacto select {
+    border-width: 3px;
+  }
+  
+  /* borde blanco para el boton en modo alto contraste */
+  .btn-enviar {
+    border: 3px solid #FFFFFF;
+  }
+}
+
+/* outline visible para navegacion por teclado */
+.formulario-contacto input:focus,
+.formulario-contacto textarea:focus,
+.formulario-contacto select:focus {
+  outline: 2px solid #39FF14; /* outline verde neon */
+  outline-offset: 2px; /* separacion del elemento */
+}
+
+/* clase para ocultar elementos visualmente pero mantenerlos para lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;/*overflow: hidden significa que es transparente */ 
+  clip: rect(0, 0, 0, 0);/*clip: rect(0, 0, 0, 0); significa que es transparente y rect significa que es un rectangulo*/
+  white-space: nowrap;/*white-space: nowrap significa que no hay espacio en blanco*/
+  border: 0;
+}
+
+/* estado de carga del boton de envio */
+.btn-enviar.loading {
+  opacity: 0.7; /* opacidad reducida */
+  cursor: not-allowed; /* cursor de prohibido */
+  pointer-events: none; /* deshabilitar interacciones */
+}
+
+/* spinner de carga en el boton de envio */
+.btn-enviar.loading::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor; /* solo el borde superior visible */
+  border-radius: 50%; /* forma circular */
+  animation: spin 1s linear infinite; /* rotación continua */
+  margin-left: 0.5rem;
+}
+
+/* animacion de rotacion para el spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); } /*0% significa que es el inicio y 100% significa que es el final*/
+  100% { transform: rotate(360deg); } /*360deg significa que es un circulo*/
+}
+
+/* mostrar mensaje de exito cuando tiene la clase 'show' */
+.mensaje-exito.show {
+  display: block;
+}
+
+/* animacion de deslizamiento para mensajes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px); /* desde arriba */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* posicion final */
+  }
+}

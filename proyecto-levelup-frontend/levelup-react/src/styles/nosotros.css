@@ -1,0 +1,344 @@
+/* Estilos para la página Nosotros */
+
+.nosotros-main {
+   min-height: calc(100vh - 200px);/*altura minima de la pagina de 100vh menos 200px osea 800px*/
+   background-color: #000000;
+ }
+ 
+ /* Contenedor principal del hero con gradiente gaming */
+ .hero-nosotros {
+   background: linear-gradient(135deg, #1c4ef3 0%, #51e616 100%);/*gradiente gaming TODO HAY QUE CAMBIAR LOS COLORES POR CONSTANTE COMO EL BLACK */
+   padding: 6rem 0 4rem;/*ESTA posicionado en 6rem arriba y 4rem abajo osea 10rem total  */
+   text-align: center;/*centrado horizontal*/
+   position: relative;/*posicionamiento relativo*/
+   overflow: hidden;/*oculta el contenido que excede el tamaño del contenedor*/
+ }
+ 
+ /* Patron de fondo sutil para textura gaming */
+ .hero-nosotros::before {
+   content: '';/*agrega contenido antes del elemento*/
+   position: absolute;/*posicionamiento absoluto*/
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: url('../img/otros/gaming-pattern.png') repeat;/*patron de fondo sutil para textura GAY mer*/
+   opacity: 0.1; /* Muy sutil para no interferir con el texto */
+   z-index: 1; /* Por encima del patron de fondo osea uno */
+ }
+ 
+ /* Contenedor del contenido con z-index superior */
+ .hero-nosotros .container {
+   position: relative;/*posicionamiento relativo*/
+   z-index: 2; /* Por encima del patron de fondo osea dos */
+ }
+ 
+ /* Titulo principal con efectos gaming */
+ .hero-nosotros h1 {
+   font-size: 3rem;/*tamaño del texto*/
+   color: #FFFFFF;/*color del texto*/
+   margin-bottom: 1rem;/*margen inferior*/
+   font-family: 'Orbitron', sans-serif; /* Fuente gaming CAMBIAR NO ME ACEURDO CUAL  ERA*/
+   text-shadow: 0 0 20px rgba(30, 144, 255, 0.5); /* Resplandor azul */
+ }
+ 
+ /* Parrafo descriptivo del hero */
+ .hero-nosotros p {
+   font-size: 1.2rem;/*tamaño del texto*/
+   color: #D3D3D3; /* Gris claro para contraste */
+   max-width: 600px;/*maximo ancho*/
+   margin: 0 auto;/*centrado horizontal es auto maximo*/
+   line-height: 1.6;/*altura de linea*/
+   font-family: 'Roboto', sans-serif;/*fuente*/
+ }
+ 
+ /* Container general */
+ .container {
+   max-width: 1200px;/*maximo ancho*/
+   margin: 0 auto;/*centrado horizontal es auto maximo*/
+   padding: 0 2rem;/*padding horizontal 0 significa que no hay padding y 2rem significa que hay padding de 2rem en los lados*/
+ }
+ 
+ /* Historia de la Empresa */
+ .historia-empresa {
+   padding: 4rem 0;/*padding vertical 4rem significa que hay padding de 4rem en los lados*/
+   background-color: #000000;
+ }
+ 
+ .historia-empresa h2 {
+   text-align: center;
+   font-size: 2.5rem;
+   margin-bottom: 3rem;/*margen inferior*/
+   color: #FFFFFF;
+   font-family: 'Orbitron', sans-serif;
+ }
+ 
+ .historia-grid {
+   display: grid;/*display grid significa que se va a mostrar en una cuadricula*/
+   grid-template-columns: 2fr 1fr;/*grid-template-columns significa que se va a mostrar en dos columnas 2fr significa que ocupa el 20% de la pantalla y 1fr significa que ocupa el 10% de la pantalla*/
+   gap: 3rem;/*gap significa que hay un gap de 3rem entre las columnas*/
+   align-items: center;
+ }
+ 
+ .historia-text h3 {
+   color: #1E90FF;
+   font-size: 1.5rem;
+   margin-bottom: 1rem;/*margen inferior*/
+   margin-top: 2rem;/*margen superior*/
+   font-family: 'Orbitron', sans-serif;
+ }
+ 
+ /*primer h3 no tiene margen superior*/
+ .historia-text h3:first-child {
+   margin-top: 0;
+ }
+ 
+ .historia-text p {
+   color: #D3D3D3;
+   line-height: 1.6;/*altura de linea*/
+   font-size: 1.1rem;/*tamaño del texto de 1.1rem osea 11px*/
+   font-family: 'Roboto', sans-serif;
+ }
+ 
+ .historia-imagen img {
+   width: 100%;/*ancho 100%*/
+   border-radius: 10px;/*redondeo de las esquinas*/
+   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);/*0 10px 30px significa que hay un padding de 10px en los lados y 30px en la parte inferior rgba(0, 0, 0, 0.3) significa que es transparente 0.3 significa que es transparente*/
+ }
+ 
+ /* Descripcion del Proyecto */
+ .proyecto-descripcion {
+   padding: 4rem 0;/*padding vertical 4rem significa que hay padding de 4rem en los lados*/
+   background-color: #000000;
+   border-top: 2px solid #1E90FF;/*borde superior azul gaming*/
+   border-bottom: 2px solid #39FF14;/*borde inferior verde gaming CAMBIAR*/
+ }
+ 
+ .proyecto-descripcion h2 {
+   text-align: center;
+   font-size: 2.5rem;
+   margin-bottom: 2rem;/*margen inferior Debajo del h2*/
+   color: #FFFFFF;
+   font-family: 'Orbitron', sans-serif;
+ }
+ 
+ /* Descripcion del Proyecto en el contenedor p*/
+ .proyecto-content > p {
+   text-align: center;
+   font-size: 1.2rem;
+   color: #D3D3D3;
+   max-width: 800px;/*maximo ancho*/
+   margin: 0 auto 3rem;/* 0 auto significa que hay un padding de 0 en los lados y auto significa que hay un padding de auto en los lados 3rem significa que hay un padding de 3rem en los lados*/
+   line-height: 1.6;/*altura de linea*/
+   font-family: 'Roboto', sans-serif;
+ }
+ 
+ .proyecto-features {
+   display: grid;/*display grid significa que se va a mostrar en una cuadricula*/
+   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));/*grid-template-columns significa que se va a mostrar en dos columnas 2fr significa que ocupa el 20% de la pantalla y 1fr significa que ocupa el 10% de la pantalla*/
+   gap: 2rem;/*gap significa que hay un gap de 2rem entre las columnas*/
+   margin-top: 3rem;/*margen superior arriba del proyecto-features*/
+ }
+ 
+ .feature {
+   text-align: center;
+   padding: 2rem;/*padding vertical 2rem significa que hay padding de 2rem en los lados*/
+   background-color: #000000;
+   border-radius: 10px;/*redondeo de las esquinas*/
+   border: 2px solid #1E90FF;/*borde superior azul gamingCAMBIAAAAA*/
+   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;/*transicion de transformacion de 0.3s ease osea que dura 0.3s , box-shadow 0.3s osea que dura 0.3s, border-color 0.3s osea que dura 0.3s*/
+ }
+ 
+ .feature:hover {
+   transform: translateY(-3px); /*transformacion de 3px en el eje Y */
+   box-shadow: 0 10px 25px rgba(30, 144, 255, 0.3);/*box-shadow 0 10px 25px rgba(30, 144, 255, 0.3) significa que hay un padding de 10px en los lados y 25px en la parte inferior rgba(30, 144, 255, 0.3) significa que es transparente 0.3 significa que es transparente*/
+   border-color: #39FF14;
+ }
+ 
+ .feature i {
+   font-size: 3rem;
+   color: #1E90FF;
+   margin-bottom: 1rem;/*margen inferior*/
+   transition: color 0.3s ease;/*transicion de color de 0.3s ease osea que en la transicion de 0.3s el color va a cambiar a*/
+ }
+ 
+ .feature:hover i {
+   color: #39FF14;
+ }
+ 
+ .feature h4 {
+   color: #FFFFFF;
+   margin-bottom: 1rem;/*margen inferior*/
+   font-size: 1.3rem;/*tamaño del texto de 1.3rem osea 13px*/
+   font-family: 'Orbitron', sans-serif;
+ }
+ 
+ .feature p {
+   color: #D3D3D3;
+   line-height: 1.5;/*altura de linea osa 1.5 osea que hay un padding de 1.5 en los lados*/
+   font-family: 'Roboto', sans-serif;
+ }
+ 
+ /* Equipo de Desarrolladores */
+ .equipo-desarrolladores {
+   padding: 4rem 0; /*padding vertical 4rem significa que hay padding de 4rem en los lados*/
+   background-color: #000000;
+ }
+ 
+ .equipo-desarrolladores h2 {
+   text-align: center;
+   font-size: 2.5rem;/*tamaño del texto de 2.5rem osea 25px de altura*/
+   margin-bottom: 1rem;/*margen inferior*/
+   color: #FFFFFF;
+   font-family: 'Orbitron', sans-serif;
+ }
+ 
+ .equipo-intro {
+   text-align: center;
+   font-size: 1.2rem;/*tamaño del texto de 1.2rem osea 12px de altura*/
+   color: #D3D3D3;
+   margin-bottom: 3rem;/*margen inferior*/
+   font-family: 'Roboto', sans-serif;
+ }
+ 
+ .desarrolladores-grid {
+   display: grid;/*display grid significa que se va a mostrar en una cuadricula*/
+   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));/*grid-template-columns significa que se va a mostrar en dos columnas 2fr significa que ocupa el 20% de la pantalla y 1fr significa que ocupa el 10% de la pantalla*/
+   gap: 3rem;/*gap significa que hay un espacio de 3rem entre las columnas*/
+   margin-top: 3rem;/*margen superior arriba del proyecto-features*/
+ }
+ 
+ .miembro-equipo {
+   background-color: #000000;
+   border-radius: 15px;/*redondeo de las esquinas*/
+   padding: 2rem;/*padding vertical 2rem significa que hay padding de 2rem en los lados*/
+   text-align: center;
+   border: 2px solid #1E90FF;/*borde superior azul gaming CAMBIAR*/
+   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;/*transicion de transformacion de 0.3s ease osea que dura 0.3s , box-shadow 0.3s osea que dura 0.3s, border-color 0.3s osea que dura 0.3s*/
+ }
+ 
+ .miembro-equipo:hover {
+   transform: translateY(-5px);/*transformacion de 5px en el eje Y */
+   box-shadow: 0 15px 35px rgba(30, 144, 255, 0.4);/*box-shadow 0 15px 35px rgba(30, 144, 255, 0.4) significa que hay un padding de 15px en los lados y 35px en la parte inferior rgba(30, 144, 255, 0.4) significa que es transparente 0.4 significa que es transparente*/
+   border-color: #39FF14;
+ }
+ 
+ .dev-photo {
+   margin-bottom: 1.5rem;/*margen inferior*/
+ }
+ 
+ .dev-photo img {
+   width: 120px;/*ancho*/
+   height: 120px;/*altura*/
+   border-radius: 50%;/*redondeo de las esquinas de laa  mitad*/
+   object-fit: cover;/*object-fit cover significa que se va a mostrar en una cuadricula*/
+   border: 4px solid #1E90FF;/*borde superior azul gaming CAMBIAR*/
+   transition: border-color 0.3s ease; /*transicion de transformacion ease osea que dura 0.3s */
+ }
+ 
+ .miembro-equipo:hover .dev-photo img {
+   border-color: #39FF14;
+ }
+ 
+ .dev-info h3 {
+   color: #FFFFFF;
+   font-size: 1.4rem;
+   margin-bottom: 0.5rem;
+   font-family: 'Orbitron', sans-serif;
+ }
+ 
+ .dev-role {
+   color: #1E90FF;
+   font-weight: bold;
+   font-size: 1.1rem;
+   margin-bottom: 1rem;
+   font-family: 'Roboto', sans-serif;
+ }
+ 
+ .dev-description {
+   color: #D3D3D3;
+   line-height: 1.5;
+   margin-bottom: 1.5rem;
+   font-family: 'Roboto', sans-serif;
+ }
+ 
+ .dev-skills {
+   display: flex;/*display flex significa que se va a mostrar en una fila de manera horizontal automatica*/
+   flex-wrap: wrap;/*flex-wrap wrap significa que se va a mostrar en una fila*/
+   justify-content: center;/*justify-content center significa que se va a mostrar en una fila*/
+   gap: 0.5rem;
+ }
+ 
+ .skill {
+   background-color: #000000;
+   color: #FFFFFF;
+   padding: 0.3rem 0.8rem;
+   border-radius: 15px;
+   font-size: 0.9rem;
+   border: 1px solid #1E90FF;
+   font-family: 'Roboto', sans-serif;
+   transition: all 0.3s ease;
+ }
+ 
+ /*hover osea cuando se pasa el mouse por encima*/
+ .skill:hover {
+   border-color: #39FF14;
+   color: #39FF14;
+ }
+ 
+ /* Responsive Design */
+ @media (max-width: 768px) {/*media query significa que se va a mostrar en una fila*/
+   .hero-content h1 {
+     font-size: 2rem;
+   }
+ 
+   .hero-content p {
+     font-size: 1rem;
+   }
+ 
+   .historia-grid {
+     grid-template-columns: 1fr;
+     gap: 2rem;
+   }
+ 
+   .historia-imagen {
+     order: -1;
+   }
+ 
+   .proyecto-features {
+     grid-template-columns: 1fr;
+   }
+ 
+   .desarrolladores-grid {
+     grid-template-columns: 1fr;
+     gap: 2rem;
+   }
+ 
+   .container {
+     padding: 0 1rem;/*padding horizontal 1rem significa que hay padding de 1rem en los lados*/
+   }
+ 
+   .hero-nosotros,
+   .historia-empresa,
+   .proyecto-descripcion,
+   .equipo-desarrolladores {
+     padding: 2rem 0;
+   }
+ }
+ 
+ @media (max-width: 480px) {
+   .desarrollador {
+     padding: 1.5rem;
+   }
+ 
+   .dev-photo img {
+     width: 100px;
+     height: 100px;
+   }
+ 
+   .dev-skills {
+     flex-direction: column;
+     align-items: center;
+   }
+ }
+     

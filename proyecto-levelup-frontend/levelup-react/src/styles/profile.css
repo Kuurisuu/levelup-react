@@ -1,0 +1,64 @@
+.main-profile {
+   width: 80%;
+   margin: 0 auto;
+ }
+ 
+ .profile-card {
+   margin: 1rem 0;
+   border: 1px solid var(--clr-main-light);
+   border-radius: 1rem;
+   padding: 1rem;
+   background: linear-gradient(
+         to top,
+         rgb(var(--clr-main2)),
+         rgb(var(--clr-black2))
+       ) padding-box;
+ }
+ 
+ .profile-card h3 {
+   margin-bottom: 0.6rem;
+   color: var(--clr-white);
+ }
+ 
+ .perfil-form {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+   gap: 0.8rem;
+ }
+ 
+ .perfil-form label {
+   display: block;
+   margin-bottom: 0.3rem;
+   color: var(--clr-gray);
+ }
+ 
+ .perfil-form input,
+ .perfil-form select {
+   width: 100%;
+   padding: 0.6rem 0.8rem;
+   border: 1px solid var(--clr-main-light);
+   background: var(--clr-black);
+   color: var(--clr-white);
+   border-radius: 0.4rem;
+ }
+ 
+ .perfil-badges {
+   display: flex;
+   gap: 8px;
+   flex-wrap: wrap;
+   margin-top: 0.8rem;
+ }
+ 
+ .perfil-actions {
+   margin-top: 0.8rem;
+   display: flex;
+   gap: 0.6rem;
+   align-items: center;
+ }
+ 
+ .perfil-actions #pf-msg {
+   color: var(--clr-gray);
+ }
+ 
+ 
+ 

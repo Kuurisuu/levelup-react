@@ -1,0 +1,545 @@
+.hero-blogs {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  padding: 6rem 0 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Patron de fondo gaming sutil */
+.hero-blogs::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("../img/otros/gaming-pattern.png") repeat; /* lo que hace es repetir el patron gaming  de la url*/
+  opacity: 0.1; /* Muy sutil para no interferir */
+  z-index: 1;
+}
+
+/* Contenedor del contenido hero */
+.hero-blogs .container {
+  position: relative;
+  z-index: 2; /* Por encima del patron */
+}
+
+/* Titulo principal del hero */
+.hero-blogs h1 {
+  font-size: 3rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  font-family: "Orbitron", sans-serif;
+  text-shadow: 0 0 20px rgba(30, 144, 255, 0.5);
+}
+
+/* Parrafo descriptivo del hero */
+.hero-blogs p {
+  font-size: 1.2rem;
+  color: #d3d3d3; /* Gris claro */
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Container general */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.cuadricula-blogs {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Contenedor principal de blogs */
+.blogs-container {
+  padding: 5rem 0;
+  background-color: #000000;
+}
+
+/* Grid responsivo para tarjetas de blog */
+.blogs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* responsivo g*/
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Tarjeta Blog */
+.tarjeta-blog {
+  background-color: #000000;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid #1e90ff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.tarjeta-blog:hover {
+  transform: translateY(-5px); /* elevacion al hacer hover*/
+  box-shadow: 0 15px 35px rgba(30, 144, 255, 0.4);
+  border-color: #39ff14;
+}
+
+.tarjeta-blog .imagen-blog {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.tarjeta-blog .imagen-blog img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tarjeta-blog:hover .imagen-blog img {
+  transform: scale(1.05);
+}
+
+.tarjeta-blog .categoria-blog {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #1e90ff;
+  color: #ffffff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border: 1px solid #39ff14;
+  font-family: "Roboto", sans-serif;
+  transition: all 0.3s ease;
+}
+
+.tarjeta-blog:hover .categoria-blog {
+  background-color: #39ff14;
+  color: #000000;
+}
+
+.tarjeta-blog .contenido-blog {
+  padding: 1.5rem;
+}
+
+.tarjeta-blog .meta-blog {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #d3d3d3;
+  font-family: "Roboto", sans-serif;
+}
+
+.tarjeta-blog .meta-blog span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tarjeta-blog .titulo-blog {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  font-weight: bold;
+  font-family: "Orbitron", sans-serif;
+}
+
+.tarjeta-blog .descripcion-blog {
+  color: #d3d3d3;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* limita el numero de lineas */
+  line-clamp: 4; /* line clamp hace que se muestren solo 4 lineas */
+  -webkit-box-orient: vertical;
+  overflow: hidden; /* oculta el contenido que exceda el numero de lineas */
+  font-family: "Roboto", sans-serif;
+}
+
+.tarjeta-blog .btn-leer-mas {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #1e90ff;
+  color: #ffffff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 2px solid #1e90ff;
+  font-family: "Roboto", sans-serif;
+}
+
+.tarjeta-blog .btn-leer-mas:hover {
+  background-color: #39ff14;
+  color: #000000;
+  border-color: #39ff14;
+  transform: translateX(5px);
+}
+
+/* Contenedor principal del detalle */
+.blog-detail-main {
+  min-height: calc(100vh - 200px);
+  background-color: #000000;
+}
+
+/* Navegacion breadcrumb */
+.breadcrumb {
+  background-color: #1e90ff;
+  padding: 1rem 0;
+}
+
+.breadcrumb .container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d3d3d3; /* Gris claro */
+}
+
+.breadcrumb a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #39ff14; /* Verde neon al hover */
+}
+
+.breadcrumb i {
+  font-size: 0.8rem;
+}
+
+/* Seccion principal del detalle */
+.blog-detail {
+  padding: 3rem 0;
+}
+
+/* Header del articulo */
+.blog-header {
+  margin-bottom: 3rem;
+}
+
+/* Metadatos del header */
+.blog-header .meta-blog {
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+/* Categoria en el header */
+.blog-header .categoria-blog {
+  position: static;
+  margin-right: 1rem;
+}
+
+/* Titulo principal del articulo */
+.blog-header h1 {
+  color: #ffffff; /* Blanco gaming */
+  font-size: 2.5rem;
+  line-height: 1.3;
+  margin-bottom: 2rem;
+  font-family: "Orbitron", sans-serif;
+}
+
+/* Imagen destacada del articulo */
+.blog-featured-image {
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border: 2px solid #1e90ff; /* Borde azul gaming */
+}
+
+.blog-featured-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.blog-featured-image:hover img {
+  transform: scale(1.02); /* Zoom sutil al hover */
+}
+
+/* Contenedor del contenido del articulo */
+.blog-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Introduccion del articulo */
+.contenido-blog .introduccion {
+  font-size: 1.2rem;
+  color: #d3d3d3; /* Gris claro */
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  font-style: italic;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Subtitulos del h2 */
+.contenido-blog h2 {
+  color: #ffffff;
+  font-size: 1.8rem;
+  margin: 2.5rem 0 1rem;
+  border-left: 4px solid #1e90ff;
+  padding-left: 1rem;
+  font-family: "Orbitron", sans-serif;
+}
+
+/* Subtitulos del h3 */
+.contenido-blog h3 {
+  color: #39ff14;
+  font-size: 1.4rem;
+  margin: 2rem 0 1rem;
+  font-family: "Orbitron", sans-serif;
+}
+
+/* Parrafos del contenido */
+.contenido-blog p {
+  color: #d3d3d3;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Listas del contenido */
+.contenido-blog ul {
+  color: #d3d3d3;
+  margin: 1rem 0 1.5rem 2rem;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Items de lista */
+.contenido-blog li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Seccion de conclusión destacada */
+.conclusion-blog {
+  background-color: #1e90ff;
+  padding: 2rem;
+  border-radius: 15px;
+  margin: 3rem 0;
+  border: 2px solid #39ff14; /* Borde verde neón */
+  transition: all 0.3s ease;
+}
+
+.conclusion-blog:hover {
+  box-shadow: 0 10px 30px rgba(30, 144, 255, 0.3);
+}
+
+.conclusion-blog h3 {
+  color: #ffffff;
+  margin-top: 0;
+  font-family: "Orbitron", sans-serif;
+}
+
+.conclusion-blog p {
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Contenedor de acciones */
+.acciones-blog {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #39ff14;
+}
+
+/* Boton volver */
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #1e90ff;
+  color: #ffffff;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold; /* Texto en negrita */
+  transition: all 0.3s ease;
+  border: 2px solid #1e90ff;
+  font-family: "Roboto", sans-serif;
+}
+
+.btn-volver:hover {
+  background-color: #39ff14;
+  color: #000000;
+  border-color: #39ff14;
+  transform: translateX(-5px);
+}
+
+/* Seccion compartir */
+.compartir-blog {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.compartir-blog h4 {
+  color: #ffffff;
+  font-family: "Orbitron", sans-serif;
+  margin: 0;
+}
+
+.compartir-blog h4 span {
+  color: #d3d3d3;
+  font-weight: bold;
+}
+
+/* Botones de compartir */
+.boton-compartir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #1e90ff;
+  color: #ffffff;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid #1e90ff;
+}
+
+.boton-compartir:hover {
+  background-color: #39ff14;
+  color: #000000;
+  border-color: #39ff14;
+  transform: translateY(-2px); /* Elevacion al hacer hover */
+}
+
+/* estilos de loading */
+.tarjeta-blog.loading {
+  border-color: #333;
+  animation: pulse 1.5s infinite;
+}
+
+.loading-placeholder {
+  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  height: 100%;
+}
+
+.loading-text {
+  height: 1rem;
+  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.loading-text.short {
+  width: 60%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Adaptaciones para tablets y moviles */
+@media (max-width: 768px) {
+  /* Hero mas compacto */
+  .hero-blogs h1 {
+    font-size: 2rem;
+  }
+
+  /* Grid de blogs en una columna */
+  .blogs-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Tarjetas con margen en moviles */
+  .tarjeta-blog {
+    margin: 0 1rem;
+  }
+
+  /* tulo del header mqs pequeño */
+  .blog-header h1 {
+    font-size: 2rem;
+  }
+
+  /* Imagen destacada mqs pequeña */
+  .blog-featured-image img {
+    height: 250px;
+  }
+
+  /* Acciones en columna en moviles */
+  .acciones-blog {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  /* Compartir centrado en moviles */
+  .compartir-blog {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  /* Container con menos padding */
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+/* Adaptaciones para moviles pequeños */
+@media (max-width: 480px) {
+  /* Contenido con padding mínimo */
+  .blog-content {
+    padding: 0 1rem;
+  }
+
+  /* Meta en columna para moviles pequeños */
+  .meta-blog {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Titulo ma pequeño */
+  .titulo-blog {
+    font-size: 1.1rem;
+  }
+
+  /* Header aun mas pequeño */
+  .blog-header h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Secciones mas compactas */
+  .hero-blogs,
+  .blogs-container,
+  .blog-detail {
+    padding: 2rem 0;
+  }
+}

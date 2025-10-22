@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Level Up - Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./css/login.css" />
+  </head>
+  <body>
+    <div class="wrapper"> <!--función que llama a  varias funciones-->
+      <header class="main-header">
+        <div class="main-header-left">
+          <div class="logo">
+            <a href="index.html">
+              <img
+                class="logo-imagen"
+                src="./img/otros/logo.png"
+                alt="Logo Level Up"
+              />
+            </a>
+          </div>
+        </div>
+        <div class="main-header-middle">
+          <div class="container-busqueda">
+            <form action="" method="get">
+              <input
+                class="input-busqueda"
+                type="search"
+                name="q"
+                placeholder="Buscar productos..."
+              />
+              <button class="boton-busqueda" type="submit">
+                <i class="bi bi-search"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="main-header-right">
+          <nav>
+            <ul class="menu">
+              <li class="tiene-submenu">
+                <button id="categoria" class="boton-submenu boton-categoria">
+                  Categorias
+                  <i class="bi bi-caret-down-fill"></i>
+                </button>
+                <ul class="despliegue-submenu">
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Juegos de Mesa<i class="bi bi-caret-right-fill"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Accesorios<i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Consolas<i class="bi bi-caret-right-fill"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Computadores Gamers <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Sillas Gamers <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Sillas Gamers <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Sillas Gamers <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                </ul>
+              </li>
+              <li class="tiene-submenu">
+                <button id="social" class="boton-submenu boton-social">
+                  Comunidad
+                  <i class="bi bi-caret-down-fill"></i>
+                </button>
+                <ul class="despliegue-submenu">
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Eventos <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Noticias <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#" class="despliegue-submenu-boton"
+                      >Guias <i class="bi bi-caret-right-fill"></i
+                    ></a>
+                  </li>
+                </ul>
+              </li>
+              <li class="tiene-submenu">
+                <button id="identificate" class="boton-submenu boton-identificate">
+                  <i class="bi bi-person-fill"></i>
+                  <div class="detalles-identificate">
+                    <span>Ingresar</span>
+                    <span>Tu cuenta</span>
+                  </div>
+                  <i class="bi bi-caret-down-fill"></i>
+                </button>
+                <ul class="despliegue-submenu">
+                  <li><a href="login.html" class="despliegue-submenu-boton">Iniciar Sesión</a></li>
+                  <li><a href="register.html" class="despliegue-submenu-boton">Registrarse</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="carrito.html" class="boton-carrito-header">
+                  <i class="bi bi-cart-fill"></i>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+      <main><!-- Aca comienza el login realmente -->
+        <div class="login-container">
+          <h2>Iniciar Sesión</h2>
+          <form action="#" method="post">
+            <div class="form-group">
+              <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+            </div>
+            <div class="password-wrapper">
+              <input type="password" id="password" name="password" placeholder="Contraseña" required>
+
+              <a href="#" role="button" id="togglePassword" aria-label="Mostrar/Ocultar contraseña">
+                <i class="bi bi-eye-slash" id="togglePassword"></i>
+              </a>
+            </div>
+            <button type="submit" class="btn-login">Ingresar</button>
+          </form>
+          <p>¿No tienes una cuenta? <a href="register.html">Regístrate</a></p>
+        </div>
+      </main> <!-- termino del formulario del login -->
+      <footer>
+        <div class="footer-container">
+          <div class="footer-col">
+            <div class="logo">
+              <img
+                class="logo-imagen"
+                src="./img/otros/logo.png"
+                alt="Logo Level Up"
+              />
+            </div>
+            <p class="texto-footer">&copy; 2025 A.C.A Company</p>
+          </div>
+          <div class="footer-col">
+            <h3>Enlaces</h3>
+            <p class="texto-footer"><a href="index.html">Inicio</a></p>
+          </div>
+          <div class="footer-col">
+            <h3>Contacto</h3>
+            <p class="texto-footer">Telefono: +56 9 1234 5678</p>
+          </div>
+          <div class="footer-col">
+            <h3>Nuestra Empresa</h3>
+            <p class="texto-footer"><a href="#">Quienes somos</a></p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="./js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelectorAll(".tiene-submenu > .boton-categoria")
+          .forEach((boton) => {
+            boton.addEventListener("click", () => {
+              const li = boton.parentElement;
+              document
+                .querySelectorAll(".tiene-submenu.open")
+                .forEach((item) => {
+                  if (item !== li) {
+                    item.classList.remove("open");
+                  }
+                });
+              li.classList.toggle("open");
+            });
+          });
+        // Cerrar submenús al hacer clic en 'Todos los productos'
+        const todosBtn = document.getElementById("todos");
+        if (todosBtn) {
+          todosBtn.addEventListener("click", () => {
+            document.querySelectorAll(".tiene-submenu.open").forEach((item) => {
+              item.classList.remove("open");
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
