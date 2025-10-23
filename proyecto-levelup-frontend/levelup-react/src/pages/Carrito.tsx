@@ -67,13 +67,16 @@ function isDuocEmail(email: string): boolean {
 }
 
 function formatCLP(num: number): string {
+  // Redondear a la decena más cercana (múltiplos de 10) para que sea mas legible
+  const roundedNum = Math.round(num / 10) * 10;
   return (
-    num?.toLocaleString("es-CL", {
+    roundedNum?.toLocaleString("es-CL", { //formatear el numero en CLP
       style: "currency",
       currency: "CLP",
       maximumFractionDigits: 0,
+      minimumFractionDigits: 0, //no decimales
     }) || "$0"
-  );
+  );  
 }
 
 const Carrito: React.FC = (): React.JSX.Element => {
@@ -106,9 +109,9 @@ const Carrito: React.FC = (): React.JSX.Element => {
           catalogoBase.find((p: Producto) => p.id === producto.id) ||
           ({} as Producto);
         const catNombre =
-          categorias.find((c) => c.id === base.categoriaId)?.nombre || "";
+          categorias.find((c) => c.id === base.categoria.id)?.nombre || ""; // loq ue hacemos aqui es buscar la categoria por el id de la categoria
         const subNombre =
-          subcategorias.find((s) => s.id === base.subcategoriaId)?.nombre || "";
+          subcategorias.find((s) => s.id === base.subcategoria?.id)?.nombre || "";
         return (
           (base.descripcion && String(base.descripcion).trim()) ||
           `${catNombre}${subNombre ? " • " + subNombre : ""}`

@@ -18,6 +18,7 @@ import {
   Producto,
   Review,
 } from "../data/catalogo";
+import { calcularRatingPromedio } from "../utils/ratingUtils";// nuevo import 
 
 type ReviewType = {
   rating: number;
@@ -67,14 +68,8 @@ function calcularPrecioConDescuento(precio: number, descuento?: number): number 
   return descuento ? precio * (1 - descuento / 100.0) : null;
 }
 
-function calcularRatingPromedio(producto: Producto): number {
-  if (!producto.reviews || producto.reviews.length === 0) {
-    return producto.rating;
-  }
-  const sumaRatings = producto.reviews.reduce((sum, review) => sum + review.rating, 0);
-  return sumaRatings / producto.reviews.length;
-}
-
+// La función calcularRatingPromedio ahora se importa desde utils/ratingUtils
+//para asi mantener la logica de rating en un solo lugar
 const ProductoDetalle: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -135,7 +130,7 @@ const ProductoDetalle: React.FC = () => {
       notaRatingRef.current.textContent = `Nota: ${rating.toFixed(1)}`;
     if (notaRatingComentariosRef.current)
       notaRatingComentariosRef.current.textContent = `${rating.toFixed(1)}`;
-  }, [producto]);
+  }, [producto, reviews]); // Agregado reviews para actualizar cuando cambian las reseñas
 
   useEffect(() => {
     if (!producto) return;
@@ -251,7 +246,81 @@ const ProductoDetalle: React.FC = () => {
     setReviewText("");
     setReviewMsg("Reseña enviada.");
     setTimeout(() => setReviewMsg(""), 1500);
-    setReviews(readReviews(producto.id));
+    
+    // Actualizar las reseñas y recalcular el rating
+    const nuevasReviews = readReviews(producto.id);
+    setReviews(nuevasReviews);
+    
+    // Actualizar el producto con las nuevas reseñas para recalcular el rating
+    setProducto(prevProducto => {
+      if (!prevProducto) return null;//si no hay producto, retornar null
+      return {
+        ...prevProducto, //copiar el producto anterior
+        reviews: nuevasReviews.map(review => ({ // map es para crear un nuevo array con los valores de la reseña
+          id: review.ts.toString(), //convertir el tiempo a string
+          productoId: producto.id, //id del producto
+          usuarioNombre: review.author, //nombre del usuario
+          rating: review.rating, //rating de la reseña
+          comentario: review.text, //comentario de la reseña
+          fecha: new Date(review.ts).toISOString() //fecha de la reseña
+        })) //retornar el nuevo array
+      };
+    });
+  }
+
+  // Función para eliminar comentario
+  function handleDeleteReview(reviewTimestamp: number) { //el tiempo q se creo la reseña
+    const session = getUserSession(); //obtener la session del usuario para verificar si es el creador de la reseña
+    if (!session) {
+      alert("Debes iniciar sesión para eliminar comentarios.");
+      return;
+    }
+    
+    if (!producto) return; //si no hay producto, retornar null
+    
+    const list = readReviews(producto.id); //obtener las reseñas del producto por id
+    const reviewIndex = list.findIndex(review => review.ts === reviewTimestamp); //encontrar el indice de la reseña
+    
+    if (reviewIndex === -1) return; //si no se encuentra la reseña, retornar null el -1 es porque no se encontro la reseña ya que es el indice de la reseña que no existe
+    
+    const review = list[reviewIndex]; //obtener la reseña por el indice
+    
+    // Verificar que el usuario solo puede eliminar sus propios comentarios
+    if (review.author !== session.displayName && review.author !== session.email) {
+      alert("Solo puedes eliminar tus propios comentarios.");
+      return;
+    }
+    
+    // Confirmar eliminación
+    if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) {
+      return;
+    }
+    
+    // Eliminar el comentario
+    list.splice(reviewIndex, 1); //desde el indice de la reseña, eliminar 1 reseña
+    writeReviews(producto.id, list); //escribir las reseñas actualizadas
+    
+    // Actualizar las reseñas y recalcular el rating
+    const nuevasReviews = readReviews(producto.id); //obtener las reseñas actualizadas
+    setReviews(nuevasReviews); //actualizar las reseñas
+    
+    // Actualizar el producto con las nuevas reseñas para recalcular el rating
+    setProducto(prevProducto => {
+      if (!prevProducto) return null; //si no hay producto, retornar null
+      return {
+        ...prevProducto, //copiar el producto anterior
+        reviews: nuevasReviews.map(review => ({
+          id: review.ts.toString(),
+          productoId: producto.id,
+          usuarioNombre: review.author,
+          rating: review.rating,
+          comentario: review.text,
+          fecha: new Date(review.ts).toISOString()
+        }))
+      };
+    });
+    
+    alert("Comentario eliminado correctamente.");
   }
 
   // Carrito actions
@@ -312,6 +381,9 @@ const ProductoDetalle: React.FC = () => {
         </li>
       );
     }
+    
+    const session = getUserSession(); //aca pq si 
+    
     return reviews
       .slice()
       .reverse()
@@ -322,6 +394,13 @@ const ProductoDetalle: React.FC = () => {
             className={`bi ${i < r.rating ? "bi-star-fill" : "bi-star"}`}
           ></i>
         ));
+        
+        // Verificar si el usuario puede eliminar este comentario
+        const canDelete = session && ( //si hay session y el nombre del usuario es el mismo que el creador de la reseña o el email del usuario es el mismo que el creador de la reseña
+          r.author === session.displayName || 
+          r.author === session.email
+        );
+        
         return (
           <li className="producto-detalle-comentario" key={r.ts + idx}>
             <div className="comentario-encabezado">
@@ -331,6 +410,15 @@ const ProductoDetalle: React.FC = () => {
               <h4 className="producto-detalle-comentario-titulo">
                 {r.title || ""}
               </h4>
+              {canDelete && ( //si el usuario puede eliminar el comentario, mostrar el boton de eliminar
+                <button 
+                  className="delete-comment-btn"
+                  onClick={() => handleDeleteReview(r.ts)} //eliminar la reseña
+                  title="Eliminar comentario"
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
+              )}
             </div>
             <div className="comentario-cuerpo">
               <h4 className="producto-detalle-comentario-autor">

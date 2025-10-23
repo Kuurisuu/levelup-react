@@ -22,7 +22,7 @@ export default function Carrusel(): React.JSX.Element {
     {
       url: "/img/carrusel/carruselnoticias.png",
       nombre: "¡Lee desde noticias a guias del mundo gaming!",
-      descripcion: "Con Gaming Hub estaras atento a todo",
+      descripcion: "Con nuestros blogs estarás atento a todo", //cambie q diga blogs na mas para andar en onda 
     },
   ];
 

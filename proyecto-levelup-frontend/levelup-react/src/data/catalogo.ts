@@ -260,7 +260,7 @@ const productosLegacy = [
     categoriaId: "CO",
     subcategoriaId: "HA",
     imagen: "./img/consolas/4.png",
-    imagenes: ["./img/consolas/4.png"],
+    imagenes: ["./img/consolas/4.png", "./img/consolas/1.png", "./img/consolas/2.png", "./img/consolas/3.png"], //eSTE a nivel de UI serian las imagenes a la izquierda de la imagen principal  
     precio: 549990,
     disponible: true,
     rating: 1.7,
@@ -278,7 +278,7 @@ const productosLegacy = [
     categoriaId: "CO",
     subcategoriaId: "HA",
     imagen: "./img/consolas/2.png",
-    imagenes: ["./img/consolas/2.png"],
+    imagenes: ["./img/consolas/1.png", "./img/consolas/3.png"],
     precio: 179990,
     disponible: true,
     rating: 5,

@@ -322,7 +322,7 @@ const AdminProductos = () => {
                     <option value="Mousepad">Mousepad</option>
                     <option value="Poleras Personalizadas">Poleras Personalizadas</option>
                     <option value="Polerones Gamers Personalizados">Polerones Gamers Personalizados</option>
-                    <option value="Servicio Técnico">Servicio Técnico</option>
+                    <option value="Contacto Soporte">🎧 Soporte</option>
                   </select>
                   <small className="error" id="e-categoria">{errors.categoria}</small>
                 </div>

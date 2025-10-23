@@ -4,23 +4,14 @@ import { useFiltros } from "../logic/useFiltros";
 import Filtros from "../components/Filtros";
 import ListaProductos from "../components/ProductoList";
 import type { Producto, Review } from "../data/catalogo";
+import { calcularRatingPromedio } from "../utils/ratingUtils"; //nuevo import
 
 // Funciones auxiliares para manejar los nuevos campos
 const calcularPrecioConDescuento = (precio: number, descuento?: number): number | null => {
   return descuento ? precio * (1 - descuento / 100.0) : null;
 };
 
-const calcularRatingPromedio = (producto: Producto): number => {
-  if (!producto.reviews || producto.reviews.length === 0) {
-    return producto.rating;
-  }
-  const sumaRatings = producto.reviews.reduce((sum, review) => sum + review.rating, 0);
-  return sumaRatings / producto.reviews.length;
-};
-
-const obtenerProductosDestacados = (productos: Producto[]): Producto[] => {
-  return productos.filter(producto => producto.destacado === true);
-};
+// La función calcularRatingPromedio ahora se importa desde utils/ratingUtils
 
 export default function Producto(): React.JSX.Element {
   const location = useLocation();
@@ -45,8 +36,7 @@ export default function Producto(): React.JSX.Element {
     }
   }, [location.search]);
 
-  const [asideAbierto, setAsideAbierto] = useState<boolean>(false);
-  const [mostrarDestacados, setMostrarDestacados] = useState<boolean>(false);
+  const [asideAbierto, setAsideAbierto] = useState<boolean>(false); //estado para abrir y cerrar el aside
   const toggleAside = (): void => setAsideAbierto(!asideAbierto);
 
   // Diccionario para mostrar nombres legibles
@@ -72,15 +62,13 @@ export default function Producto(): React.JSX.Element {
     PR: "Poleras Personalizadas",
   };
 
-  // Determinar qué productos mostrar
-  const productosAMostrar = mostrarDestacados ? obtenerProductosDestacados(productosFiltrados) : productosFiltrados;
+  // Mostrar todos los productos filtrados
+  const productosAMostrar = productosFiltrados;
   
   let titulo = "Todos los productos";
   const tieneBusqueda = filtros.texto && filtros.texto.trim() !== "";
   
-  if (mostrarDestacados) {
-    titulo = "Productos Destacados";
-  } else if (tieneBusqueda) {
+  if (tieneBusqueda) {
     if (productosFiltrados.length === 0) {
       titulo = `No se encontraron resultados para "${filtros.texto}"`;
     } else {
@@ -121,14 +109,7 @@ export default function Producto(): React.JSX.Element {
             onClick={toggleAside}
           >
             <i className="bi bi-funnel"></i> Filtros
-          </button>
-          
-          <button
-            className={`boton-menu ${mostrarDestacados ? 'activo' : ''}`}
-            onClick={() => setMostrarDestacados(!mostrarDestacados)}
-          >
-            <i className="bi bi-star"></i> {mostrarDestacados ? 'Todos' : 'Destacados'}
-          </button>
+          </button> 
         </div>
 
         <ListaProductos productos={productosAMostrar} titulo={titulo} />

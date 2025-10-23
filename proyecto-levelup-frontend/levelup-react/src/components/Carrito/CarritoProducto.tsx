@@ -19,12 +19,12 @@ const CarritoProducto: React.FC<CarritoProductoProps> = ({
   <div className="carrito-producto">
     <img
       className="carrito-producto-imagen"
-      src={producto.imagen}
-      alt={producto.titulo}
+      src={producto.imagenUrl} //antes era imagen
+      alt={producto.nombre} //antes era titulo 
     />
     <div className="carrito-producto-titulo">
       <small>Titulo</small>
-      <h3>{producto.titulo}</h3>
+      <h3>{producto.nombre}</h3> //antes era titulo 
     </div>
     <div className="carrito-producto-descripcion">
       <small>Descripción</small>

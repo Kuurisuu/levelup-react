@@ -141,6 +141,21 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* enlace de WhatsApp con estilo gaming */
+.whatsapp-link {
+  color: #25D366; /* color verde de WhatsApp */
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.whatsapp-link:hover {
+  color: #39FF14; /* verde neon al hacer hover */
+  border-bottom: 1px solid #39FF14;
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+}
+
 
 /* contenedor de enlaces a redes sociales */
 .enlaces-sociales {
@@ -235,8 +250,14 @@
   color: #FFFFFF; /* texto blanco */
   font-size: 1rem;
   transition: all 0.3s ease; /* transiciones suaves */
-  resize: vertical; /* solo redimensión vertical para textarea */
   font-family: 'Roboto', sans-serif;
+}
+
+/* estilos específicos para textarea con redimensionamiento limitado */
+.formulario-contacto textarea {
+  resize: vertical; /* permitir redimensionamiento vertical */
+  max-height: 200px; /* altura máxima de 200px */
+  min-height: 120px; /* altura mínima de 120px */
 }
 
 /* opciones del select con tema oscuro */

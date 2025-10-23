@@ -73,32 +73,37 @@
    font-family: 'Orbitron', sans-serif;
  }
  
- .historia-grid {
-   display: grid;/*display grid significa que se va a mostrar en una cuadricula*/
-   grid-template-columns: 2fr 1fr;/*grid-template-columns significa que se va a mostrar en dos columnas 2fr significa que ocupa el 20% de la pantalla y 1fr significa que ocupa el 10% de la pantalla*/
-   gap: 3rem;/*gap significa que hay un gap de 3rem entre las columnas*/
-   align-items: center;
- }
+.historia-grid {
+  display: grid;/*display grid significa que se va a mostrar en una cuadricula*/
+  grid-template-columns: 1fr;/*grid-template-columns significa que se va a mostrar en una sola columna*/
+  gap: 3rem;/*gap significa que hay un gap de 3rem entre las columnas*/
+  align-items: center;
+  text-align: center;/*centrado horizontal*/
+  max-width: 800px;/*maximo ancho*/
+  margin: 0 auto;/*centrado horizontal*/
+}
  
- .historia-text h3 {
-   color: #1E90FF;
-   font-size: 1.5rem;
-   margin-bottom: 1rem;/*margen inferior*/
-   margin-top: 2rem;/*margen superior*/
-   font-family: 'Orbitron', sans-serif;
- }
+.historia-text h3 {
+  color: #1E90FF;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;/*margen inferior*/
+  margin-top: 2rem;/*margen superior*/
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;/*centrado horizontal*/
+}
  
  /*primer h3 no tiene margen superior*/
  .historia-text h3:first-child {
    margin-top: 0;
  }
  
- .historia-text p {
-   color: #D3D3D3;
-   line-height: 1.6;/*altura de linea*/
-   font-size: 1.1rem;/*tamaño del texto de 1.1rem osea 11px*/
-   font-family: 'Roboto', sans-serif;
- }
+.historia-text p {
+  color: #D3D3D3;
+  line-height: 1.6;/*altura de linea*/
+  font-size: 1.1rem;/*tamaño del texto de 1.1rem osea 11px*/
+  font-family: 'Roboto', sans-serif;
+  text-align: center;/*centrado horizontal*/
+}
  
  .historia-imagen img {
    width: 100%;/*ancho 100%*/
@@ -223,9 +228,12 @@
    border-color: #39FF14;
  }
  
- .dev-photo {
-   margin-bottom: 1.5rem;/*margen inferior*/
- }
+.dev-photo {
+  margin-bottom: 1.5rem;/*margen inferior*/
+  display: flex;/*display flex para centrar*/
+  justify-content: center;/*centrado horizontal*/
+  align-items: center;/*centrado vertical*/
+}
  
  .dev-photo img {
    width: 120px;/*ancho*/

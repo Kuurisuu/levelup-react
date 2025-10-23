@@ -226,7 +226,7 @@ export default function Header(): React.JSX.Element {
                 </button>
                 <ul className="despliegue-submenu">
                   <li>
-                    <Link to="/gaming-hub">Gaming Hub</Link>
+                    <Link to="/gaming-hub">Blogs</Link> //cambie el nombre na mas
                   </li>
                   <li>
                     <Link to="/eventos">Eventos</Link>
@@ -246,9 +246,13 @@ export default function Header(): React.JSX.Element {
                     <Link to="/contacto">Contáctanos</Link>
                   </li>
                   <li>
-                    <a href="https://api.whatsapp.com/send?...">
-                      Servicio Técnico
-                    </a>
+                    <a 
+                      href="https://wa.me/56912345678?text=¡Hola!%20Necesito%20soporte%20técnico%20para%20un%20producto%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20la%20solución%20del%20problema?"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      🔧 Contacto Soporte
+                    </a> // el wazaaaaAAaAaA!!!1
                   </li>
                 </ul>
               </li>
@@ -306,7 +310,7 @@ export default function Header(): React.JSX.Element {
             <Link to="/producto">Productos</Link>
           </li>
           <li>
-            <Link to="/gaming-hub">Gaming Hub</Link>
+            <Link to="/gaming-hub">Blogs</Link>
           </li>
           <li>
             <Link to="/eventos">Eventos</Link>
@@ -318,7 +322,13 @@ export default function Header(): React.JSX.Element {
             <Link to="/contacto">Contáctanos</Link>
           </li>
           <li>
-            <a href="https://api.whatsapp.com/send?...">Servicio Técnico</a>
+            <a 
+              href="https://wa.me/56912345678?text=¡Hola!%20Necesito%20soporte%20técnico%20para%20un%20producto%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20la%20solución%20del%20problema?"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🎧 Soporte
+            </a>
           </li>
         </ul>
       </aside>

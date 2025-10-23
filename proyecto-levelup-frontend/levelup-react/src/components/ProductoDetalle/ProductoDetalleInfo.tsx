@@ -1,6 +1,8 @@
 import React from "react";
 import { Producto } from "../../data/catalogo";
 import { ProductoEnCarrito } from "../../logic/storage";
+import { obtenerEstadisticasRating } from "../../utils/ratingUtils"; //LO IMPORTAMOS PARA OBTENER LAS ESTADISTICAS DEL RATING
+import { formatPriceCLP } from "../../utils/priceUtils"; //LO IMPORTAMOS PARA FORMATEAR EL PRECIO EN CLP
 
 interface ProductoDetalleInfoProps {
   producto: Producto;
@@ -50,35 +52,38 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
     <div className="producto-detalle-estrellas-container estrellas-small">
       <div className="producto-detalle-estrellas">{stars}</div>
       <p className="producto-detalle-estrellas-valor" ref={notaRatingRef}></p>
+      {(() => {
+        const estadisticasRating = obtenerEstadisticasRating(producto);
+        return estadisticasRating.usuariosUnicos > 0 && ( //si el numero de usuarios unicos es mayor a 0, se muestra el numero de usuarios unicos
+          <span className="producto-detalle-usuarios-count">
+            {estadisticasRating.usuariosUnicos} reseña{estadisticasRating.usuariosUnicos !== 1 ? 's' : ''} //si el numero de usuarios unicos es diferente a 1, se muestra la palabra "s" en plural osea de reseña a reseñas 
+          </span>
+        );
+      })()}
     </div>
     <div className="producto-detalle-precio-container">
       {tieneDescuento && precioConDescuento ? (
         <>
-          <span className="producto-detalle-precio precio-descuento">
-            ${precioConDescuento.toLocaleString("es-CL")} CLP
-          </span>
-          <span className="producto-detalle-precio-original">
-            ${producto.precio.toLocaleString("es-CL")} CLP
-          </span>
-          <span className="producto-detalle-descuento-badge">
-            -{producto.descuento}%
-          </span>
+          <div className="precio-actual-detalle"> //se actualizaron los nombres para andar en onda 
+            {formatPriceCLP(precioConDescuento)}
+          </div>
+          <div className="precio-anterior-detalle">
+            {formatPriceCLP(producto.precio)}
+          </div>
+          <div className="descuento-porcentaje">
+            -{Math.round(((producto.precio - precioConDescuento) / producto.precio) * 100)}% //aca el calculo es para sacar el porcentaje de descuento
+          </div>
         </>
       ) : (
-        <span className="producto-detalle-precio">
-          ${producto.precio.toLocaleString("es-CL")} CLP
-        </span>
+        <div className="precio-actual-detalle">
+          {formatPriceCLP(producto.precio)}
+        </div>
       )}
     </div>
     <div className="producto-detalle-descripcion">{producto.descripcion}</div>
     
     {/* Información adicional del producto */}
-    <div className="producto-detalle-info-adicional">
-      {esDestacado && (
-        <span className="producto-destacado-badge">
-          <i className="bi bi-star-fill"></i> Destacado
-        </span>
-      )}
+    <div className="producto-detalle-info-adicional"> // se borro el stock disponible porque no se usaba y se agrego el stock disponible diferente 
       <span className="producto-stock-info">
         <i className="bi bi-box"></i> Stock: {stockDisponible} unidades
       </span>

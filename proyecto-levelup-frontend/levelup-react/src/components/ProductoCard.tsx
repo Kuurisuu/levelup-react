@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { categorias, subcategorias, Producto } from "../data/catalogo";
 import { agregarAlCarrito } from "../logic/carrito";
+import { calcularRatingPromedio, obtenerEstadisticasRating } from "../utils/ratingUtils";  //LO IMPORTAMOS PARA CALCULAR EL RATING
+import { formatPriceCLP } from "../utils/priceUtils";//LO IMPORTAMOS PARA FORMATEAR EL PRECIO EN CLP
 
 interface ProductoCardProps {
   producto: Producto;
@@ -13,10 +15,20 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
   const categoria = producto.categoria;
   const subcategoria = producto.subcategoria;
 
-  const rating = Math.max(0, Math.min(5, producto.ratingPromedio || 0));
-  const stars = Array.from({ length: 5 }, (_, i) => (
-    <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`} />
+  // Calcular rating usando la nueva función
+  const estadisticasRating = obtenerEstadisticasRating(producto);
+  const rating = Math.max(0, Math.min(5, estadisticasRating.promedio)); //lo que hace es que el rating sea entre 0 y 5
+  const usuariosUnicos = estadisticasRating.usuariosUnicos; //setea el numero de usuarios unicos
+  
+  const stars = Array.from({ length: 5 }, (_, i) => ( //crea un array de 5 estrellas
+    <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`} /> //si el rating es mayor a la estrella, se pone la estrella llena
   ));
+
+  // Calcular descuento si existe, si existe, se calcula el descuento
+  const tieneDescuento = producto.precioConDescuento && producto.precioConDescuento < producto.precio; //si el precio con descuento es mayor al precio, se calcula el descuento
+  const porcentajeDescuento = tieneDescuento 
+    ? Math.round(((producto.precio - producto.precioConDescuento!) / producto.precio) * 100) //si el precio con descuento es mayor al precio, se calcula el descuento
+    : 0; //si no existe, se setea a 0
 
   return (
     <div
@@ -30,11 +42,23 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
     >
       <div className="producto producto-card" data-id={producto.id}>
         <div className="producto-imagen-container">
-          {producto.destacado && (
-            <div className="producto-destacado-badge">
-              <i className="bi bi-star-fill"></i> Destacado
+          {/* Badge de descuento en la esquina superior izquierda */}
+          {tieneDescuento && (
+            <div className="producto-descuento-badge">
+              {porcentajeDescuento}% OFF
             </div>
           )}
+          
+          {/* Badge de disponibilidad en la esquina superior derecha */}
+          <div className={`producto-disponible-badge ${producto.disponible ? "disponible" : "no-disponible"}`}>
+            {producto.disponible ? "Disponible" : "No Disponible"}
+          </div>
+
+          {/* Código del producto en la esquina inferior izquierda */}
+          <div className="producto-codigo-badge">
+            {producto.id}
+          </div>
+
           <img
             className="producto-imagen"
             src={
@@ -46,50 +70,87 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
             alt={producto.nombre}
           />
         </div>
+        
         <div className="producto-detalles">
-          <span
-            className={`producto-disponible ${
-              producto.disponible ? "active" : ""
-            }`}
-          >
-            {producto.disponible ? "Disponible" : "No Disponible"}
-          </span>
-          <h3 className="producto-titulo">{producto.nombre}</h3>
-          <div
-            className="producto-rating"
-            style={{ color: "#f1c40f", fontSize: "0.9rem" }}
-          >
-            {stars}
+          {/* Información principal */}
+          <div className="producto-info-principal">
+            {/* Marca/Fabricante */}
+            <div className="producto-marca">
+              {producto.fabricante || "Sony"}
+            </div>
+            
+            {/* Título del producto */}
+            <h3 className="producto-titulo">{producto.nombre}</h3>
+            
+            {/* Categoría */}
+            <p className="producto-categoria">
+              {categoria.nombre} • {subcategoria?.nombre || ""}
+            </p>
+            
+            {/* Descripción con scroll */}
+            <div className="producto-descripcion-container">
+              <p className="producto-descripcion">
+                {producto.descripcion}
+              </p>
+            </div>
           </div>
-          <p className="producto-categoria">
-            {categoria.nombre} • {subcategoria?.nombre || ""}
-          </p>
-          <p className="producto-precio">
-            {producto.precioConDescuento ? (
-              <>
-                <span className="precio-descuento">
-                  ${producto.precioConDescuento.toLocaleString("es-CL")} CLP
-                </span>
-                <span className="precio-original">
-                  ${producto.precio.toLocaleString("es-CL")} CLP
-                </span>
-              </>
-            ) : (
-              `$${producto.precio.toLocaleString("es-CL")} CLP`
-            )}
-          </p>
-          <button
-            className={`producto-agregar ${
-              producto.disponible ? "active" : ""
-            }`}
-            disabled={agotado}
-            onClick={(e) => {
-              e.stopPropagation();
-              agregarAlCarrito({ ...producto });
-            }}
-          >
-            {producto.disponible ? "AGREGAR" : "Agotado"}
-          </button>
+
+          {/* Información secundaria */}
+          <div className="producto-info-secundaria">
+            {/* Rating con estrellas y promedio */}
+            <div className="producto-rating-container">
+              <div className="producto-rating" style={{ color: "#f1c40f", fontSize: "0.9rem" }}>
+                {stars}
+              </div>
+              <span className="producto-rating-promedio">
+                {rating.toFixed(1)}
+              </span>
+             {usuariosUnicos > 0 && (
+               <span className="producto-reviews-count">
+                 ({usuariosUnicos} reseña{usuariosUnicos !== 1 ? 's' : ''})
+               </span>
+             )}
+            </div>
+            
+            {/* Precios en una línea */}
+            <div className="producto-precio-container">
+              {tieneDescuento ? (
+                <div className="precio-linea">
+                  <span className="precio-actual">
+                    {formatPriceCLP(producto.precioConDescuento!)}
+                  </span>
+                  <span className="precio-anterior">
+                    {formatPriceCLP(producto.precio)}
+                  </span>
+                </div>
+              ) : (
+                <div className="precio-actual">
+                  {formatPriceCLP(producto.precio)}
+                </div>
+              )}
+            </div>
+            
+            {/* Stock */}
+            <div className="producto-stock">
+              <span className="stock-label">Stock:</span>
+              <span className={`stock-value ${producto.stock > 10 ? 'alto' : producto.stock > 0 ? 'bajo' : 'agotado'}`}>
+                {producto.stock > 10 ? 'Disponible' : producto.stock > 0 ? `Solo ${producto.stock} unidades` : 'Agotado'}
+              </span>
+            </div>
+            
+            {/* Botón de agregar con icono de carrito */}
+            <button
+              className={`producto-agregar ${producto.disponible ? "active" : ""}`}
+              disabled={agotado}
+              onClick={(e) => {
+                e.stopPropagation();
+                agregarAlCarrito({ ...producto });
+              }}
+            >
+              <i className="bi bi-cart-plus"></i>
+              {producto.disponible ? "AGREGAR" : "Agotado"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
