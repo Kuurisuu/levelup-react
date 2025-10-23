@@ -939,6 +939,24 @@ section {
   text-transform: uppercase;
   cursor: pointer;
 }
+/*Estilos para el checkout*/
+.carrito-acciones-checkout {
+  border: 0;
+  background: linear-gradient(
+    to top,
+    rgba(var(--clr-blue)),
+    rgba(var(--clr-green))
+  );
+  box-shadow: 0 0px 10px rgba(var(--clr-blue), 0.35);
+  transition: transform 0.2s ease;
+  padding: 1rem;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  color: #161616;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
 .carrito-acciones-comprar {
   border: 0;

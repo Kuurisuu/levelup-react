@@ -2,7 +2,7 @@ import React from "react";
 
 interface CarritoAccionesProps {
   onVaciar: () => void;
-  onComprar: () => void;
+  onCheckout: () => void;
   total: string;
   aplicaDuoc: boolean;
   onVolver: () => void;
@@ -10,7 +10,7 @@ interface CarritoAccionesProps {
 
 const CarritoAcciones = ({
   onVaciar,
-  onComprar,
+  onCheckout,
   total,
   aplicaDuoc,
   onVolver,
@@ -45,9 +45,9 @@ const CarritoAcciones = ({
       <button
         id="carrito-acciones-comprar"
         className="carrito-acciones-comprar"
-        onClick={onComprar}
+        onClick={onCheckout}//llama a la funcion onCheckout del componente CarritoAcciones
       >
-        COMPRAR AHORA
+        PROCEDER AL PAGO
       </button>
     </div>
   </div>

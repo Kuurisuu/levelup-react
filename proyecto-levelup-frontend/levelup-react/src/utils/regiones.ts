@@ -4,8 +4,13 @@ export interface Region {
   comunas: string[];
 }
 
-export const REGIONES: Region[] = [ // lista base con regiones y algunas comunas para partir
-  { nombre: 'Región Metropolitana', comunas: ['Santiago', 'Providencia', 'Ñuñoa', 'Maipú'] },
-  { nombre: 'Valparaíso', comunas: ['Valparaíso', 'Viña del Mar', 'Quilpué'] },
-  { nombre: 'Biobío', comunas: ['Concepción', 'Talcahuano', 'San Pedro de la Paz'] }
-]; //con esto lo q se logra esq cuando se carge la region tenga sus propias comunas y asi
+// regiones pero mas amplias
+export const REGIONES: Region[] = [
+  { nombre: 'Región Metropolitana', comunas: ['Santiago', 'Las Condes', 'Providencia', 'Ñuñoa', 'Maipú', 'La Florida', 'Puente Alto'] },
+  { nombre: 'Valparaíso', comunas: ['Valparaíso', 'Viña del Mar', 'Concón', 'Quilpué', 'Villa Alemana', 'San Antonio'] },
+  { nombre: 'Biobío', comunas: ['Concepción', 'Talcahuano', 'Chillán', 'Los Ángeles', 'Coronel'] },
+  { nombre: 'Coquimbo', comunas: ['La Serena', 'Coquimbo', 'Ovalle', 'Illapel'] },
+  { nombre: 'Antofagasta', comunas: ['Antofagasta', 'Calama', 'Tocopilla', 'Mejillones'] },
+  { nombre: 'Tarapacá', comunas: ['Iquique', 'Alto Hospicio', 'Pozo Almonte'] },
+  { nombre: 'Arica y Parinacota', comunas: ['Arica', 'Putre', 'Camarones'] }
+];

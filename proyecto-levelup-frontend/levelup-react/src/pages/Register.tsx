@@ -164,6 +164,18 @@ const Register: React.FC = (): React.JSX.Element => {
       }));
     }
   };
+// ESTA FUNCION ES PARA FORZAR EL COLOR DEL TEXTO CUANDO SE Pega el texto en el input
+  // manejar pegado de texto
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>): void => {
+    // Aplicar clase para forzar el color correcto del texto pegado
+    const target = e.target as HTMLInputElement;
+    target.classList.add('text-pasted');
+    
+    // Remover la clase después de un breve momento para permitir que el CSS normal tome efecto
+    setTimeout(() => {
+      target.classList.remove('text-pasted');
+    }, 100);
+  };
 
   // validar formulario
   const validateForm = (): boolean => {
@@ -337,6 +349,7 @@ const Register: React.FC = (): React.JSX.Element => {
                 placeholder="Nombre"
                 value={formData.nombre}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
                 className={errors.nombre ? 'error' : ''}
               />
               {errors.nombre && <div className="error-message">{errors.nombre}</div>}
@@ -351,6 +364,7 @@ const Register: React.FC = (): React.JSX.Element => {
                 placeholder="Apellidos"
                 value={formData.apellidos}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
                 className={errors.apellidos ? 'error' : ''}
               />
               {errors.apellidos && <div className="error-message">{errors.apellidos}</div>}
@@ -365,6 +379,7 @@ const Register: React.FC = (): React.JSX.Element => {
                 placeholder="Correo Electrónico"
                 value={formData.email}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
                 className={errors.email ? 'error' : ''}
               />
               {errors.email && <div className="error-message">{errors.email}</div>}
@@ -379,6 +394,7 @@ const Register: React.FC = (): React.JSX.Element => {
                 placeholder="Contraseña (entre 4 y 10 caracteres)"
                 value={formData.password}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
                 className={errors.password ? 'error' : ''}
                 minLength={4}
                 maxLength={10}
@@ -399,6 +415,7 @@ const Register: React.FC = (): React.JSX.Element => {
                 placeholder="Confirmar Contraseña"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
                 className={errors.confirmPassword ? 'error' : ''}
                 minLength={4}
                 maxLength={10}
@@ -419,6 +436,7 @@ const Register: React.FC = (): React.JSX.Element => {
                 placeholder="Teléfono (opcional)"
                 value={formData.telefono}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
                 className={errors.telefono ? 'error' : ''}
               />
               {errors.telefono && <div className="error-message">{errors.telefono}</div>}
