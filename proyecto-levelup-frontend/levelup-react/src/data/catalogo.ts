@@ -12,6 +12,15 @@ export interface Subcategoria {
   categoriaId: string;
 }
 
+export interface Review {
+  id: string;
+  productoId: string;
+  usuarioNombre: string;
+  rating: number;
+  comentario: string;
+  fecha: string;
+}
+
 export interface Producto {
   id: string;
   titulo: string;
@@ -23,6 +32,14 @@ export interface Producto {
   disponible: boolean;
   rating: number;
   descripcion: string;
+  // Nuevos campos del modelo de datos
+  destacado?: boolean;
+  stock?: number;
+  fabricante?: string;
+  distribuidor?: string;
+  descuento?: number;
+  reviews?: Review[];
+  productosRelacionados?: Producto[];
 }
 
 const categorias: Categoria[] = [
@@ -136,6 +153,29 @@ const productosArray: Producto[] = [
     rating: 5,
     descripcion:
       "La consola de última generación de Sony, que ofrece gráficos impresionantes y tiempos de carga ultrarrápidos para una experiencia de juego inmersiva.",
+    destacado: true,
+    stock: 15,
+    fabricante: "Sony Interactive Entertainment",
+    distribuidor: "Sony Chile",
+    descuento: 10,
+    reviews: [
+      {
+        id: "R001",
+        productoId: "CO001",
+        usuarioNombre: "Carlos Gamer",
+        rating: 5,
+        comentario: "Excelente consola, gráficos increíbles y muy rápida",
+        fecha: "2024-01-15"
+      },
+      {
+        id: "R002",
+        productoId: "CO001",
+        usuarioNombre: "María Gaming",
+        rating: 4,
+        comentario: "Muy buena consola, solo el precio es un poco alto",
+        fecha: "2024-01-20"
+      }
+    ]
   },
   {
     id: "CO002",
@@ -197,6 +237,21 @@ const productosArray: Producto[] = [
     rating: 4,
     descripcion:
       "Auriculares de alto rendimiento con gran calidad de sonido y micrófono ajustable, ideales para juegos, streaming y comunicación online.",
+    destacado: true,
+    stock: 25,
+    fabricante: "Logitech",
+    distribuidor: "Logitech Chile",
+    descuento: 15,
+    reviews: [
+      {
+        id: "R003",
+        productoId: "PE001",
+        usuarioNombre: "Ana Streamer",
+        rating: 5,
+        comentario: "Excelente calidad de sonido, perfecto para streaming",
+        fecha: "2024-01-10"
+      }
+    ]
   },
   {
     id: "PE002",

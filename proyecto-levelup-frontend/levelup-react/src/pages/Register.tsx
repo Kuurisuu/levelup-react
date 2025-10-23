@@ -13,6 +13,8 @@ interface RegisterFormData {
   region: string;
   comuna: string;
   direccion: string;
+  codigoReferido: string;
+  avatar: string;
   terminos: boolean;
 }
 
@@ -27,6 +29,8 @@ interface RegisterErrors {
   region?: string;
   comuna?: string;
   direccion?: string;
+  codigoReferido?: string;
+  avatar?: string;
   terminos?: string;
   general?: string;
 }
@@ -48,7 +52,10 @@ interface User {
   direccion?: string;
   referralCode: string;
   points?: number;
+  redeemedCodes?: string[];
+  referredBy?: string;
   role?: string;
+  avatar?: string;
 }
 
 interface UserSession {
@@ -73,6 +80,8 @@ const Register: React.FC = (): React.JSX.Element => {
     region: '',
     comuna: '',
     direccion: '',
+    codigoReferido: '',
+    avatar: '',
     terminos: false
   });
 
@@ -136,6 +145,14 @@ const Register: React.FC = (): React.JSX.Element => {
   const emailExists = (email: string): boolean => {
     const users = readUsers();
     return users.some(user => user.email.toLowerCase() === email.toLowerCase());
+  };
+
+  const validateReferralCode = (codigo: string): string | null => {
+    if (!codigo.trim()) return null; // Código opcional
+    
+    const users = readUsers();
+    const user = users.find(u => u.referralCode === codigo.toUpperCase());
+    return user ? user.id : null;
   };
 
   // manejar cambios en los inputs
@@ -230,6 +247,16 @@ const Register: React.FC = (): React.JSX.Element => {
       newErrors.comuna = 'Selecciona una comuna';
     }
 
+    // validar código de referido (opcional)
+    if (formData.codigoReferido && !validateReferralCode(formData.codigoReferido)) {
+      newErrors.codigoReferido = 'Código de referido no válido';
+    }
+
+    // validar avatar (opcional)
+    if (formData.avatar && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(formData.avatar)) {
+      newErrors.avatar = 'URL de avatar no válida';
+    }
+
     // validar términos y condiciones
     if (!formData.terminos) {
       newErrors.terminos = 'Debes aceptar los términos y condiciones';
@@ -261,6 +288,8 @@ const Register: React.FC = (): React.JSX.Element => {
       
       // Crear nuevo usuario
       const userId = generateUserId();
+      const referredBy = formData.codigoReferido ? validateReferralCode(formData.codigoReferido) : null;
+      
       const newUser: User = {
         id: userId,
         nombre: formData.nombre.trim(),
@@ -274,7 +303,10 @@ const Register: React.FC = (): React.JSX.Element => {
         direccion: formData.direccion || undefined,
         referralCode: generateReferralCode(formData.nombre),
         points: 0,
-        role: 'cliente'
+        redeemedCodes: [],
+        referredBy: referredBy || undefined,
+        role: 'cliente',
+        avatar: formData.avatar || undefined
       };
 
       // Guardar usuario
@@ -301,6 +333,8 @@ const Register: React.FC = (): React.JSX.Element => {
         region: '',
         comuna: '',
         direccion: '',
+        codigoReferido: '',
+        avatar: '',
         terminos: false
       });
       
@@ -484,6 +518,34 @@ const Register: React.FC = (): React.JSX.Element => {
                 value={formData.direccion}
                 onChange={handleInputChange}
               />
+            </div>
+
+            {/* campo de entrada para el código de referido (opcional) */}
+            <div className="form-group">
+              <input
+                type="text"
+                id="codigoReferido"
+                name="codigoReferido"
+                placeholder="Código de referido (opcional)"
+                value={formData.codigoReferido}
+                onChange={handleInputChange}
+                className={errors.codigoReferido ? 'error' : ''}
+              />
+              {errors.codigoReferido && <div className="error-message">{errors.codigoReferido}</div>}
+            </div>
+
+            {/* campo de entrada para el avatar (opcional) */}
+            <div className="form-group">
+              <input
+                type="url"
+                id="avatar"
+                name="avatar"
+                placeholder="URL del avatar (opcional)"
+                value={formData.avatar}
+                onChange={handleInputChange}
+                className={errors.avatar ? 'error' : ''}
+              />
+              {errors.avatar && <div className="error-message">{errors.avatar}</div>}
             </div>
 
             {/* checkbox para aceptar terminos y condiciones */}
