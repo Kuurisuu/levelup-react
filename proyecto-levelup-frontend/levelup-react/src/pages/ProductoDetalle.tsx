@@ -31,7 +31,7 @@ function getFallbackProductId(): string | number | null {
     const raw = localStorage.getItem("lvup_historial");
     const hist: any[] = raw ? JSON.parse(raw) : [];
     if (hist.length > 0) return hist[hist.length - 1].id;
-  } catch (_) {}
+  } catch {}
   return (productosArray[0] && productosArray[0].id) || null;
 }
 
@@ -43,7 +43,7 @@ function readReviews(id: string | number): ReviewType[] {
   try {
     const item = localStorage.getItem(storageKeyForReviews(id));
     return item ? JSON.parse(item) : [];
-  } catch (_) {
+  } catch {
     return [];
   }
 }
@@ -56,7 +56,7 @@ function getUserSession() {
   try {
     const raw = localStorage.getItem("lvup_user_session");
     return raw ? JSON.parse(raw) : null;
-  } catch (_) {
+  } catch {
     return null;
   }
 }
@@ -157,8 +157,11 @@ const ProductoDetalle: React.FC = () => {
   // Compartir
   function handleShare(kind: string) {
     if (!producto) return;
-    const pageUrl =
-      window.location.origin + window.location.pathname + `/${producto.id}`;
+    // Build a canonical product URL: avoid duplicating the id if it's already present
+    const path = window.location.pathname.endsWith(String(producto.id))
+      ? window.location.pathname
+      : window.location.pathname.replace(/\/$/, "") + `/${producto.id}`;
+    const pageUrl = window.location.origin + path;
     const title = producto.titulo || "Producto LevelUp";
     const text = `Mira este producto: ${title}`;
 
@@ -358,7 +361,6 @@ const ProductoDetalle: React.FC = () => {
               itemEnCarrito={itemEnCarrito}
               contadorRef={contadorRef as React.RefObject<HTMLSpanElement>}
               disponible={disponible}
-              mainImg={mainImg}
               handleShare={handleShare}
             />
           </div>

@@ -1,4 +1,8 @@
+import { Link } from "react-router-dom";
+
 export default function Footer(): React.JSX.Element {
+  const base = import.meta.env.BASE_URL || "/";
+
   return (
     <footer>
       <div className="footer-container">
@@ -27,16 +31,16 @@ export default function Footer(): React.JSX.Element {
           <h3>Enlaces</h3>
           <ul className="footer-links">
             <li>
-              <a href="index.html">Inicio</a>
+              <Link to="/">Inicio</Link>
             </li>
             <li>
-              <a href="carrito.html">Carrito</a>
+              <Link to="/carrito">Carrito</Link>
             </li>
             <li>
-              <a href="login.html">Ingresar</a>
+              <Link to="/login">Ingresar</Link>
             </li>
             <li>
-              <a href="register.html">Registrarse</a>
+              <Link to="/register">Registrarse</Link>
             </li>
           </ul>
         </div>
@@ -51,20 +55,23 @@ export default function Footer(): React.JSX.Element {
               </a>
             </li>
             <li>
-              <a href="./docs/Política_de_Devoluciones_y_Garantía.txt" download>
+              <a
+                href={base + "docs/Política_de_Devoluciones_y_Garantía.txt"}
+                download
+              >
                 Política de devoluciones
               </a>
             </li>
             <li>
               <a
-                href="./docs/Términos_y_Condiciones–Level-Up_Gamer.txt"
+                href={base + "docs/Términos_y_Condiciones–Level-Up_Gamer.txt"}
                 download
               >
                 Términos y condiciones
               </a>
             </li>
             <li>
-              <a href="./docs/Politica_de_privacidad.docx" download>
+              <a href={base + "docs/Politica_de_privacidad.docx"} download>
                 Política de privacidad
               </a>
             </li>

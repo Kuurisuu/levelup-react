@@ -69,7 +69,8 @@ export default function Header(): React.JSX.Element {
       try {
         localStorage.removeItem("lvup_user_session");
       } catch {}
-      window.location.href = "index.html";
+
+      window.location.href = "/";
     }
 
     // ====== Setup Auth UI ======
@@ -116,9 +117,10 @@ export default function Header(): React.JSX.Element {
       if (menu && role === "vendedor") {
         if (!document.querySelector(".vendedor-productos-link")) {
           const li = document.createElement("li");
+          // When injecting raw HTML, use `class` (not React's `className`).
           li.innerHTML = `
             <a href="./admin/productos.html"
-               className="boton-submenu vendedor-productos-link">
+               class="boton-submenu vendedor-productos-link">
                Gestionar Productos
             </a>`;
           menu.appendChild(li);
@@ -128,10 +130,18 @@ export default function Header(): React.JSX.Element {
 
     // ====== Menu Lateral ======
     (function setupMenuLateral(): void {
-      const toggleBtn = document.querySelector(".menu-toggle") as HTMLButtonElement | null;
-      const menuLateral = document.querySelector("#menu-lateral") as HTMLElement | null;
-      const cerrarBtn = document.querySelector(".menu-lateral-cerrar") as HTMLButtonElement | null;
-      const overlay = document.querySelector("#overlay-menu") as HTMLElement | null;
+      const toggleBtn = document.querySelector(
+        ".menu-toggle"
+      ) as HTMLButtonElement | null;
+      const menuLateral = document.querySelector(
+        "#menu-lateral"
+      ) as HTMLElement | null;
+      const cerrarBtn = document.querySelector(
+        ".menu-lateral-cerrar"
+      ) as HTMLButtonElement | null;
+      const overlay = document.querySelector(
+        "#overlay-menu"
+      ) as HTMLElement | null;
 
       if (!toggleBtn || !menuLateral || !cerrarBtn || !overlay) return;
 

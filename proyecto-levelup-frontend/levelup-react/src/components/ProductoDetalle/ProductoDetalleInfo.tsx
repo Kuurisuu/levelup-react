@@ -14,7 +14,6 @@ interface ProductoDetalleInfoProps {
   itemEnCarrito?: ProductoEnCarrito;
   contadorRef: React.RefObject<HTMLSpanElement>;
   disponible: boolean;
-  mainImg: string;
   handleShare: (platform: string) => void;
 }
 
@@ -30,7 +29,6 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
   itemEnCarrito,
   contadorRef,
   disponible,
-  mainImg,
   handleShare,
 }): React.JSX.Element => (
   <div className="producto-detalle-info">

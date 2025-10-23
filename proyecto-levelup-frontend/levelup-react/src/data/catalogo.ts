@@ -359,7 +359,7 @@ const productosArray: Producto[] = [
 // Exponer catálogo base en localStorage para que producto_detalle lo pueda leer
 try {
   localStorage.setItem("catalogo-base", JSON.stringify(productosArray));
-} catch (_) {}
+} catch {}
 
 export { productosArray, categorias, subcategorias };
 
