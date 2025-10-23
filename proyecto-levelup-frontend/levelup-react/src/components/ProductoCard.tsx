@@ -10,12 +10,10 @@ interface ProductoCardProps {
 export default function ProductoCard({ producto, onClick }: ProductoCardProps): React.JSX.Element {
   const [agotado] = useState(!producto.disponible);
 
-  const categoria = categorias.find((c) => c.id === producto.categoriaId);
-  const subcategoria = subcategorias.find(
-    (s) => s.id === producto.subcategoriaId
-  );
+  const categoria = producto.categoria;
+  const subcategoria = producto.subcategoria;
 
-  const rating = Math.max(0, Math.min(5, producto.rating || 0));
+  const rating = Math.max(0, Math.min(5, producto.ratingPromedio || 0));
   const stars = Array.from({ length: 5 }, (_, i) => (
     <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`} />
   ));
@@ -32,15 +30,20 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
     >
       <div className="producto producto-card" data-id={producto.id}>
         <div className="producto-imagen-container">
+          {producto.destacado && (
+            <div className="producto-destacado-badge">
+              <i className="bi bi-star-fill"></i> Destacado
+            </div>
+          )}
           <img
             className="producto-imagen"
             src={
-              producto.imagen && producto.imagen.startsWith("./")
+              producto.imagenUrl && producto.imagenUrl.startsWith("./")
                 ? import.meta.env.BASE_URL +
-                  producto.imagen.replace(/^\.\//, "")
-                : producto.imagen
+                  producto.imagenUrl.replace(/^\.\//, "")
+                : producto.imagenUrl
             }
-            alt={producto.titulo}
+            alt={producto.nombre}
           />
         </div>
         <div className="producto-detalles">
@@ -51,7 +54,7 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
           >
             {producto.disponible ? "Disponible" : "No Disponible"}
           </span>
-          <h3 className="producto-titulo">{producto.titulo}</h3>
+          <h3 className="producto-titulo">{producto.nombre}</h3>
           <div
             className="producto-rating"
             style={{ color: "#f1c40f", fontSize: "0.9rem" }}
@@ -59,10 +62,21 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
             {stars}
           </div>
           <p className="producto-categoria">
-            {categoria?.nombre || ""} • {subcategoria?.nombre || ""}
+            {categoria.nombre} • {subcategoria?.nombre || ""}
           </p>
           <p className="producto-precio">
-            ${producto.precio.toLocaleString("es-CL")} CLP
+            {producto.precioConDescuento ? (
+              <>
+                <span className="precio-descuento">
+                  ${producto.precioConDescuento.toLocaleString("es-CL")} CLP
+                </span>
+                <span className="precio-original">
+                  ${producto.precio.toLocaleString("es-CL")} CLP
+                </span>
+              </>
+            ) : (
+              `$${producto.precio.toLocaleString("es-CL")} CLP`
+            )}
           </p>
           <button
             className={`producto-agregar ${

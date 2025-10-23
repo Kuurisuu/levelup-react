@@ -16,6 +16,11 @@ interface ProductoDetalleInfoProps {
   disponible: boolean;
   mainImg: string;
   handleShare: (platform: string) => void;
+  // Nuevos campos del modelo de datos
+  precioConDescuento?: number | null;
+  tieneDescuento: boolean;
+  stockDisponible: number;
+  esDestacado: boolean;
 }
 
 const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
@@ -32,10 +37,14 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
   disponible,
   mainImg,
   handleShare,
+  precioConDescuento,
+  tieneDescuento,
+  stockDisponible,
+  esDestacado,
 }): React.JSX.Element => (
   <div className="producto-detalle-info">
     <header>
-      <h2 className="producto-detalle-titulo">{producto.titulo}</h2>
+      <h2 className="producto-detalle-titulo">{producto.nombre}</h2>
       <small className="producto-detalle-codigo">Código: {producto.id}</small>
     </header>
     <div className="producto-detalle-estrellas-container estrellas-small">
@@ -43,28 +52,53 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
       <p className="producto-detalle-estrellas-valor" ref={notaRatingRef}></p>
     </div>
     <div className="producto-detalle-precio-container">
-      <span className="producto-detalle-precio">
-        ${producto.precio.toLocaleString("es-CL")} CLP
-      </span>
-      <span className="producto-detalle-descuento disabled"></span>
+      {tieneDescuento && precioConDescuento ? (
+        <>
+          <span className="producto-detalle-precio precio-descuento">
+            ${precioConDescuento.toLocaleString("es-CL")} CLP
+          </span>
+          <span className="producto-detalle-precio-original">
+            ${producto.precio.toLocaleString("es-CL")} CLP
+          </span>
+          <span className="producto-detalle-descuento-badge">
+            -{producto.descuento}%
+          </span>
+        </>
+      ) : (
+        <span className="producto-detalle-precio">
+          ${producto.precio.toLocaleString("es-CL")} CLP
+        </span>
+      )}
     </div>
     <div className="producto-detalle-descripcion">{producto.descripcion}</div>
+    
+    {/* Información adicional del producto */}
+    <div className="producto-detalle-info-adicional">
+      {esDestacado && (
+        <span className="producto-destacado-badge">
+          <i className="bi bi-star-fill"></i> Destacado
+        </span>
+      )}
+      <span className="producto-stock-info">
+        <i className="bi bi-box"></i> Stock: {stockDisponible} unidades
+      </span>
+    </div>
     <div className="producto-origen">
       <h4>Origen del producto</h4>
       <p>
         <strong>Fabricante:</strong>
         <span id="origen-fabricante">
-          {cat.includes("Consola")
+          {producto.fabricante || (cat.includes("Consola")
             ? "Sony / Microsoft / Nintendo"
             : cat.includes("Perifer")
             ? "Logitech / HyperX / Razer"
-            : "LevelUp Partners"}
+            : "LevelUp Partners")}
         </span>
       </p>
       <p>
         <strong>Distribuidor:</strong>
         <span id="origen-distribuidor">
-          {sub ? `${sub} LATAM Distribución` : "Distribuidor autorizado LATAM"}
+          {producto.distribuidor || (sub ? `${sub} LATAM Distribución` : "Distribuidor autorizado LATAM")}
         </span>
       </p>
     </div>

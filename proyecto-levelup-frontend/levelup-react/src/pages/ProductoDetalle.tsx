@@ -16,6 +16,7 @@ import {
   subcategorias,
   productosArray,
   Producto,
+  Review,
 } from "../data/catalogo";
 
 type ReviewType = {
@@ -61,6 +62,19 @@ function getUserSession() {
   }
 }
 
+// Funciones auxiliares para los nuevos campos
+function calcularPrecioConDescuento(precio: number, descuento?: number): number | null {
+  return descuento ? precio * (1 - descuento / 100.0) : null;
+}
+
+function calcularRatingPromedio(producto: Producto): number {
+  if (!producto.reviews || producto.reviews.length === 0) {
+    return producto.rating;
+  }
+  const sumaRatings = producto.reviews.reduce((sum, review) => sum + review.rating, 0);
+  return sumaRatings / producto.reviews.length;
+}
+
 const ProductoDetalle: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -103,20 +117,20 @@ const ProductoDetalle: React.FC = () => {
     // Galería
     if (prod) {
       let galeria: string[] = [];
-      if (prod.imagen) galeria.push(prod.imagen);
-      if (Array.isArray(prod.imagenes)) {
+      if (prod.imagenUrl) galeria.push(prod.imagenUrl);
+      if (Array.isArray(prod.imagenesUrls)) {
         galeria = galeria.concat(
-          prod.imagenes.filter((img: string) => img !== prod.imagen)
+          prod.imagenesUrls.filter((img: string) => img !== prod.imagenUrl)
         );
       }
-      setMainImg(galeria.length > 0 ? galeria[0] : prod.imagen || "");
+      setMainImg(galeria.length > 0 ? galeria[0] : prod.imagenUrl || "");
       setGaleriaImgs(galeria);
     }
   }, [paramId]);
 
   useEffect(() => {
     if (!producto) return;
-    const rating = Math.max(0, Math.min(5, producto.rating || 0));
+    const rating = Math.max(0, Math.min(5, calcularRatingPromedio(producto)));
     if (notaRatingRef.current)
       notaRatingRef.current.textContent = `Nota: ${rating.toFixed(1)}`;
     if (notaRatingComentariosRef.current)
@@ -145,21 +159,25 @@ const ProductoDetalle: React.FC = () => {
   }
 
   // Derived values
-  const cat =
-    categorias.find((c) => c.id === producto.categoriaId)?.nombre || "Genérico";
-  const sub =
-    subcategorias.find((s) => s.id === producto.subcategoriaId)?.nombre || "";
-  const rating = Math.max(0, Math.min(5, producto.rating || 0));
+  const cat = producto.categoria.nombre;
+  const sub = producto.subcategoria?.nombre || "";
+  const rating = Math.max(0, Math.min(5, calcularRatingPromedio(producto)));
   const stars = Array.from({ length: 5 }, (_, i) => (
     <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`}></i>
   ));
+  
+  // Nuevos campos del modelo de datos
+  const precioConDescuento = calcularPrecioConDescuento(producto.precio, producto.descuento);
+  const tieneDescuento = (producto.descuento || 0) > 0;
+  const stockDisponible = producto.stock || 0;
+  const esDestacado = producto.destacado || false;
 
   // Compartir
   function handleShare(kind: string) {
     if (!producto) return;
     const pageUrl =
       window.location.origin + window.location.pathname + `/${producto.id}`;
-    const title = producto.titulo || "Producto LevelUp";
+    const title = producto.nombre || "Producto LevelUp";
     const text = `Mira este producto: ${title}`;
 
     function openUrl(url: string) {
@@ -360,6 +378,10 @@ const ProductoDetalle: React.FC = () => {
               disponible={disponible}
               mainImg={mainImg}
               handleShare={handleShare}
+              precioConDescuento={precioConDescuento}
+              tieneDescuento={tieneDescuento}
+              stockDisponible={stockDisponible}
+              esDestacado={esDestacado}
             />
           </div>
         </section>
@@ -368,7 +390,7 @@ const ProductoDetalle: React.FC = () => {
             .filter(
               (p) =>
                 p.id !== producto.id &&
-                p.subcategoriaId === producto.subcategoriaId
+                p.categoria.id === producto.categoria.id
             )
             .slice(0, 4)}
           onCardClick={(id) => {
