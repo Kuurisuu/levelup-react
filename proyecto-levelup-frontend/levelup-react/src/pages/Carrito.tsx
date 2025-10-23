@@ -12,7 +12,7 @@ import {
 } from "../logic/carrito";
 import { setCarritoLS, ProductoEnCarrito } from "../logic/storage";
 import { productosArray, categorias, subcategorias, Producto } from "../data/catalogo";
-
+import { useNavigate } from "react-router-dom";
 // Interfaces
 interface User {
   id: string;
@@ -183,6 +183,20 @@ const Carrito: React.FC = (): React.JSX.Element => {
     setTotal("$0");
     actualizarNumerito();
   }
+// nueva funcion para el checkout
+function handleCheckout(): void {
+  // Verificar que el usuario esté logueado
+  const session = localStorage.getItem("lvup_user_session");
+  const navigate = useNavigate();
+
+  if (!session) {
+    alert('Debes iniciar sesión para proceder con la compra');
+    navigate('/login');
+    return;
+  }
+  // Usar hook useNavigate de react-router-dom 
+  navigate("/checkout");
+}
 
   function handleVolver(): void {
     window.location.href = "/";
@@ -205,7 +219,7 @@ const Carrito: React.FC = (): React.JSX.Element => {
               />
               <CarritoAcciones
                 onVaciar={handleVaciar}
-                onComprar={handleComprar}
+                onCheckout={handleCheckout}
                 total={total}
                 aplicaDuoc={aplicaDuoc}
                 onVolver={handleVolver}
