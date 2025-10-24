@@ -161,7 +161,14 @@ const Contacto = () => {
                   <div>
                     <h3>WhatsApp</h3>
                     <p>
-                      +56 9 1234 5678
+                      <a 
+                        href="https://wa.me/56912345678?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20los%20productos%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20información%20sobre%20disponibilidad%20y%20precios?"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="whatsapp-link"
+                      >
+                        +56 9 1234 5678
+                      </a> /* el target es para abrir la pagina en una nueva pestaña y el rel es para que no se cargue la pagina en el mismo navegador */
                       <br />
                       Atención personalizada
                     </p>

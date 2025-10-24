@@ -140,7 +140,7 @@ export function useFiltros(): UseFiltrosReturn {
   const productosFiltrados = useMemo(() => {
     return productosArray
       .filter((p) => {
-        // Si hay subcategorías seleccionadas
+        // Si hay subcategorías seleccionadas, usar solo esas
         if (filtros.subcategorias.length > 0) {
           // Si hay un "Todos" de alguna categoría, incluir todos los productos de esa categoría
           const allCats = filtros.subcategorias.filter((s) =>
@@ -149,22 +149,23 @@ export function useFiltros(): UseFiltrosReturn {
           if (allCats.length > 0) {
             // Si el producto pertenece a alguna categoría con ALL-XXX seleccionado
             if (
-              allCats.some((all) => p.categoriaId === all.replace("ALL-", ""))
+              allCats.some((all) => p.categoria.id === all.replace("ALL-", ""))
             ) {
               return true;
             }
           }
           // O si pertenece a alguna subcategoría seleccionada
-          return filtros.subcategorias.includes(p.subcategoriaId);
+          return filtros.subcategorias.includes(p.subcategoria?.id || "");
         }
-        // Si no hay subcategorías, filtrar por categoría principal (excepto "todos")
+        
+        // Si no hay subcategorías seleccionadas, filtrar por categoría principal
         if (filtros.categoria === "todos") return true;
-        return p.categoriaId === filtros.categoria;
+        return p.categoria.id === filtros.categoria;
       })
       .filter((p) =>
         filtros.texto
-          ? p.titulo.toLowerCase().includes(filtros.texto.toLowerCase())
-          : true
+          ? p.nombre.toLowerCase().includes(filtros.texto.toLowerCase()) //se leeria asi esto: "si hay texto, filtrar por el texto"
+          : true //si no hay texto, mostrar todos los productos
       )
       .filter((p) =>
         filtros.precioMin ? p.precio >= Number(filtros.precioMin) : true

@@ -34,10 +34,10 @@ export default function Home(): React.JSX.Element {
         </div>
       </section>
 
-      {/* Botón mostrar más */}
+      {/* Botones mostrar más/menos */}
       <div
         className=""
-        style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}
+        style={{ display: "flex", justifyContent: "center", margin: "1rem 0", gap: "1rem" }}
       >
         {productos.length < productosArray.length && (
           <button
@@ -46,6 +46,16 @@ export default function Home(): React.JSX.Element {
             onClick={() => setPageHome((prev) => prev + 1)}
           >
             Mostrar más
+          </button>
+        )}
+        
+        {pageHome > 1 && ( //si la pagina es mayor a 1, se muestra el boton de mostrar menos
+          <button
+            id="btn-mostrar-menos-home"
+            className="boton-menu boton-mostrar-menos"
+            onClick={() => setPageHome((prev) => Math.max(1, prev - 1))}
+          >
+            Mostrar menos
           </button>
         )}
       </div>

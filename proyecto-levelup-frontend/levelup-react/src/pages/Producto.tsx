@@ -3,6 +3,15 @@ import { useLocation } from "react-router-dom";
 import { useFiltros } from "../logic/useFiltros";
 import Filtros from "../components/Filtros";
 import ListaProductos from "../components/ProductoList";
+import type { Producto, Review } from "../data/catalogo";
+import { calcularRatingPromedio } from "../utils/ratingUtils"; //nuevo import
+
+// Funciones auxiliares para manejar los nuevos campos
+const calcularPrecioConDescuento = (precio: number, descuento?: number): number | null => {
+  return descuento ? precio * (1 - descuento / 100.0) : null;
+};
+
+// La función calcularRatingPromedio ahora se importa desde utils/ratingUtils
 
 export default function Producto(): React.JSX.Element {
   const location = useLocation();
@@ -27,7 +36,7 @@ export default function Producto(): React.JSX.Element {
     }
   }, [location.search]);
 
-  const [asideAbierto, setAsideAbierto] = useState<boolean>(false);
+  const [asideAbierto, setAsideAbierto] = useState<boolean>(false); //estado para abrir y cerrar el aside
   const toggleAside = (): void => setAsideAbierto(!asideAbierto);
 
   // Diccionario para mostrar nombres legibles
@@ -53,8 +62,12 @@ export default function Producto(): React.JSX.Element {
     PR: "Poleras Personalizadas",
   };
 
+  // Mostrar todos los productos filtrados
+  const productosAMostrar = productosFiltrados;
+  
   let titulo = "Todos los productos";
   const tieneBusqueda = filtros.texto && filtros.texto.trim() !== "";
+  
   if (tieneBusqueda) {
     if (productosFiltrados.length === 0) {
       titulo = `No se encontraron resultados para "${filtros.texto}"`;
@@ -89,15 +102,17 @@ export default function Producto(): React.JSX.Element {
       ></div>
 
       <section className="seccion-productos">
-        <button
-          id="abrir-filtros"
-          className="boton-menu boton-filtro-mobile"
-          onClick={toggleAside}
-        >
-          <i className="bi bi-funnel"></i> Filtros
-        </button>
+        <div className="controles-productos">
+          <button
+            id="abrir-filtros"
+            className="boton-menu boton-filtro-mobile"
+            onClick={toggleAside}
+          >
+            <i className="bi bi-funnel"></i> Filtros
+          </button> 
+        </div>
 
-        <ListaProductos productos={productosFiltrados} titulo={titulo} />
+        <ListaProductos productos={productosAMostrar} titulo={titulo} />
       </section>
     </main>
   );

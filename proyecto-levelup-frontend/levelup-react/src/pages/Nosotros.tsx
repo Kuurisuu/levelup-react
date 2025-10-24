@@ -65,11 +65,7 @@ const Nosotros = () => {
                   recompense a nuestros clientes más fieles.
                 </p>
               </div>
-              {/* imagen representativa del gaming */}
-              <div className="historia-imagen">
-                <img src="/img/otros/gaming-setup.jpg" alt="Gaming Setup" />
-              </div>
-            </div>
+            </div> //borre esa imagen random q no salia porque no tenia una imagen
           </div>
         </section>
 

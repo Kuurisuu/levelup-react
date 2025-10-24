@@ -45,7 +45,7 @@ const GamingHub = () => {
         "El crecimiento de los esports en Chile: Una industria en expansión",
       description:
         "Los deportes electrónicos han experimentado un crecimiento exponencial en Chile durante los últimos años. Desde torneos locales hasta competencias internacionales, el país se posiciona como un referente en la región. Conoce los equipos más destacados y las oportunidades que ofrece esta industria.",
-      link: "#",
+      link: "https://esports.eldesconcierto.cl/", //link de la pagina de esports
     },
     {
       id: 4,
@@ -105,7 +105,7 @@ const GamingHub = () => {
         {/* seccion hero */}
         <section className="hero-blogs">
           <div className="container">
-            <h1>Gaming Hub</h1>
+            <h1>Blogs</h1> //le cambie el nombre na mas
             <p>Tu portal de noticias y guías de videojuegos</p>
           </div>
         </section>

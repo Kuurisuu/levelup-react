@@ -1,5 +1,6 @@
 import React from "react";
 
+//no se q cambio aca XD XD XD pero me aparece en los commits 
 interface ProductoDetalleComentariosProps {
   stars: React.ReactNode;
   notaRatingComentariosRef: React.RefObject<HTMLParagraphElement>;

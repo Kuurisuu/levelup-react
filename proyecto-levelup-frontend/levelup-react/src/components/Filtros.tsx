@@ -50,7 +50,7 @@ export default function Filtros({
         <ul className="menu-categorias">
           <li className="categoria">
             <button
-              className="boton-categoria abrir-subcat"
+              className={`boton-categoria abrir-subcat ${filtros.categoria === "todos" ? "active" : ""}`} //agrege el active para que se vea el boton activo
               onClick={() => setCategoria("todos")}
               aria-label="Mostrar todos"
             >
@@ -59,8 +59,11 @@ export default function Filtros({
           </li>
           <li className={`categoria${openSubcat === "EN" ? " open" : ""}`}>
             <button
-              className="boton-categoria abrir-subcat"
-              onClick={() => handleToggleSubcat("EN")}
+              className={`boton-categoria abrir-subcat ${filtros.categoria === "EN" ? "active" : ""}`} //si en filtro categoria es igual a entretenimiento, se activa el boton
+              onClick={() => {
+                setCategoria("EN"); //si se clickea el boton, se activa la categoria
+                handleToggleSubcat("EN"); //si se clickea el boton, se activa el subcategoria
+              }}
             >
               Entretenimiento <span>{openSubcat === "EN" ? "▲" : "▼"}</span>
             </button>
@@ -91,8 +94,11 @@ export default function Filtros({
           </li>
           <li className={`categoria${openSubcat === "CO" ? " open" : ""}`}>
             <button
-              className="boton-categoria abrir-subcat"
-              onClick={() => handleToggleSubcat("CO")}
+              className={`boton-categoria abrir-subcat ${filtros.categoria === "CO" ? "active" : ""}`}
+              onClick={() => {
+                setCategoria("CO");
+                handleToggleSubcat("CO");
+              }}
             >
               Consolas <span>{openSubcat === "CO" ? "▲" : "▼"}</span>
             </button>
@@ -146,8 +152,11 @@ export default function Filtros({
           </li>
           <li className={`categoria${openSubcat === "PE" ? " open" : ""}`}>
             <button
-              className="boton-categoria abrir-subcat"
-              onClick={() => handleToggleSubcat("PE")}
+              className={`boton-categoria abrir-subcat ${filtros.categoria === "PE" ? "active" : ""}`}
+              onClick={() => {
+                setCategoria("PE");
+                handleToggleSubcat("PE");
+              }}
             >
               Perifericos <span>{openSubcat === "PE" ? "▲" : "▼"}</span>
             </button>
@@ -234,8 +243,11 @@ export default function Filtros({
           </li>
           <li className={`categoria${openSubcat === "RO" ? " open" : ""}`}>
             <button
-              className="boton-categoria abrir-subcat"
-              onClick={() => handleToggleSubcat("RO")}
+              className={`boton-categoria abrir-subcat ${filtros.categoria === "RO" ? "active" : ""}`}
+              onClick={() => {
+                setCategoria("RO");
+                handleToggleSubcat("RO");
+              }}
             >
               Ropa <span>{openSubcat === "RO" ? "▲" : "▼"}</span>
             </button>
