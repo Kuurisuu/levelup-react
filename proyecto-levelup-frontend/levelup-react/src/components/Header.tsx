@@ -74,7 +74,7 @@ export default function Header(): React.JSX.Element {
     }
 
     // ====== Setup Auth UI ======
-    (function setupAuthUI(): void {
+    function setupAuthUI(): void {
       const session = getUserSession();
       const role = getRole();
       const identBtn = document.querySelector(".boton-identificate");
@@ -126,39 +126,76 @@ export default function Header(): React.JSX.Element {
           menu.appendChild(li);
         }
       }
-    })();
+    }
+
+    // Run once on mount
+    setupAuthUI();
+
+    // Listen to login/logout events to refresh UI
+    function onLogout() {
+      setupAuthUI();
+    }
+    function onLogin() {
+      setupAuthUI();
+    }
+
+    window.addEventListener("lvup:logout", onLogout);
+    window.addEventListener("lvup:login", onLogin);
 
     // ====== Menu Lateral ======
-    (function setupMenuLateral(): void {
-      const toggleBtn = document.querySelector(
-        ".menu-toggle"
-      ) as HTMLButtonElement | null;
-      const menuLateral = document.querySelector(
-        "#menu-lateral"
-      ) as HTMLElement | null;
-      const cerrarBtn = document.querySelector(
-        ".menu-lateral-cerrar"
-      ) as HTMLButtonElement | null;
-      const overlay = document.querySelector(
-        "#overlay-menu"
-      ) as HTMLElement | null;
+    const toggleBtn = document.querySelector(
+      ".menu-toggle"
+    ) as HTMLButtonElement | null;
+    const menuLateral = document.querySelector(
+      "#menu-lateral"
+    ) as HTMLElement | null;
+    const cerrarBtn = document.querySelector(
+      ".menu-lateral-cerrar"
+    ) as HTMLButtonElement | null;
+    const overlay = document.querySelector(
+      "#overlay-menu"
+    ) as HTMLElement | null;
 
-      if (!toggleBtn || !menuLateral || !cerrarBtn || !overlay) return;
+    let abrirMenu: (() => void) | null = null;
+    let cerrarMenu: (() => void) | null = null;
 
-      function abrirMenu(): void {
-        menuLateral!.classList.add("abierto");
-        overlay!.classList.add("visible");
-      }
+    let listenersAdded = false;
+    if (toggleBtn && menuLateral && cerrarBtn && overlay) {
+      const _abrirMenu = () => {
+        menuLateral.classList.add("abierto");
+        overlay.classList.add("visible");
+      };
+      const _cerrarMenu = () => {
+        menuLateral.classList.remove("abierto");
+        overlay.classList.remove("visible");
+      };
 
-      function cerrarMenu(): void {
-        menuLateral!.classList.remove("abierto");
-        overlay!.classList.remove("visible");
-      }
+      toggleBtn.addEventListener("click", _abrirMenu);
+      cerrarBtn.addEventListener("click", _cerrarMenu);
+      overlay.addEventListener("click", _cerrarMenu);
+      listenersAdded = true;
 
-      toggleBtn.addEventListener("click", abrirMenu);
-      cerrarBtn.addEventListener("click", cerrarMenu);
-      overlay.addEventListener("click", cerrarMenu);
-    })();
+      // cleanup function will remove these
+      const removeMenuListeners = () => {
+        toggleBtn.removeEventListener("click", _abrirMenu);
+        cerrarBtn.removeEventListener("click", _cerrarMenu);
+        overlay.removeEventListener("click", _cerrarMenu);
+      };
+
+      // store cleanup reference locally
+      (window as any).__lvup_removeMenuListeners = removeMenuListeners;
+    }
+
+    // cleanup listeners on unmount
+    return () => {
+      window.removeEventListener("lvup:logout", onLogout);
+      window.removeEventListener("lvup:login", onLogin);
+      // remove menu listeners if created
+      try {
+        const rem = (window as any).__lvup_removeMenuListeners;
+        if (typeof rem === "function") rem();
+      } catch {}
+    };
   }, []);
 
   return (

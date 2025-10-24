@@ -370,7 +370,7 @@ section {
 /*Boton secundario*/
 
 .boton-menu.deco-levelup {
-  color: var(--clr-main);
+  color: var(--clr-white);
   background: linear-gradient(
     to top,
     rgb(var(--clr-blue)),
@@ -378,7 +378,7 @@ section {
   ); /*Fondo del boton*/
   box-shadow: 0 0px 10px var(--clr-blue, 0.35); /*Sombra del boton*/
   transition: transform 0.3s ease;
-  text-transform: uppercase;
+  font-weight: bold;
 }
 
 /*Boton terciario*/
@@ -1313,7 +1313,7 @@ footer {
 
   /* Ajustar espacio con main */
   main {
-    margin-top: 10rem;
+    margin-top: 11rem;
   }
 
   /* Carrusel */
@@ -1377,7 +1377,7 @@ footer {
 
 @media (max-width: 380px) {
   main {
-    margin-top: 11.5rem;
+    margin-top: 13.9rem;
   }
 
   .menu-celular {
