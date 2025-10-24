@@ -179,7 +179,7 @@ function generarHTMLBoleta(orden: OrdenCompra): string {
             ${orden.productos.map(producto => `
               <tr>
                 <td>
-                  <img src="${producto.imagen}" alt="${producto.titulo}" class="producto-imagen" 
+                  <img src="${producto.imagen || '/img/otros/placeholder.png'}" alt="${producto.titulo}" class="producto-imagen" 
                        onerror="this.src='/img/otros/placeholder.png'">
                 </td>
                 <td>${producto.titulo}</td>

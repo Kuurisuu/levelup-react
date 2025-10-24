@@ -80,6 +80,7 @@ function formatCLP(num: number): string {
 }
 
 const Carrito: React.FC = (): React.JSX.Element => {
+  const navigate = useNavigate();
   const [productos, setProductos] = useState<ProductoEnCarrito[]>([]);
   const [descripciones, setDescripciones] = useState<string[]>([]);
   const [estado, setEstado] = useState<"vacio" | "lleno" | "comprado">("vacio"); // vacio, lleno, comprado
@@ -190,7 +191,6 @@ const Carrito: React.FC = (): React.JSX.Element => {
 function handleCheckout(): void {
   // Verificar que el usuario esté logueado
   const session = localStorage.getItem("lvup_user_session");
-  const navigate = useNavigate();
 
   if (!session) {
     alert('Debes iniciar sesión para proceder con la compra');

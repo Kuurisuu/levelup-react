@@ -31,6 +31,12 @@ const CheckoutRapido: React.FC<CheckoutRapidoProps> = ({
   onEditarTarjeta
 }) => {
   const [mostrarDetalles, setMostrarDetalles] = useState(false);
+  
+  // Debug: verificar datos de productos
+  console.log('CheckoutRapido - productos:', productos);
+  console.log('CheckoutRapido - primer producto:', productos[0]);
+  console.log('CheckoutRapido - imagenUrl del primer producto:', productos[0]?.imagenUrl);
+  console.log('CheckoutRapido - todas las propiedades del primer producto:', Object.keys(productos[0] || {}));
 
   const enmascararTarjeta = (numero: string): string => { //funcion para enmascarar el numero de tarjeta
     const numeroLimpio = numero.replace(/\s/g, ''); //elimina los espacios del numero de tarjeta
@@ -70,11 +76,18 @@ const CheckoutRapido: React.FC<CheckoutRapidoProps> = ({
             {productos.slice(0, 2).map((producto) => (
               <div key={producto.id} className="producto-rapido">
                 <img 
-                  src={producto.imagenUrl} 
+                  src={
+                    producto.imagenUrl 
+                      ? (producto.imagenUrl.startsWith("./")
+                          ? import.meta.env.BASE_URL + producto.imagenUrl.replace(/^\.\//, "")
+                          : producto.imagenUrl)
+                      : 'https://via.placeholder.com/100x100?text=No+Image'
+                  }
                   alt={producto.nombre}
+                  style={{ width: '60px', height: '60px', objectFit: 'cover' }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = '/img/otros/placeholder.png';
+                    target.src = 'https://via.placeholder.com/100x100?text=Error';
                   }}
                 />
                 <div className="producto-info">
@@ -95,11 +108,18 @@ const CheckoutRapido: React.FC<CheckoutRapidoProps> = ({
               {productos.slice(2).map((producto) => (
                 <div key={producto.id} className="producto-rapido">
                   <img 
-                    src={producto.imagenUrl} 
+                    src={
+                      producto.imagenUrl 
+                        ? (producto.imagenUrl.startsWith("./")
+                            ? import.meta.env.BASE_URL + producto.imagenUrl.replace(/^\.\//, "")
+                            : producto.imagenUrl)
+                        : 'https://via.placeholder.com/100x100?text=No+Image'
+                    }
                     alt={producto.nombre}
+                    style={{ width: '60px', height: '60px', objectFit: 'cover' }}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = '/img/otros/placeholder.png';
+                      target.src = 'https://via.placeholder.com/100x100?text=Error';
                     }}
                   />
                   <div className="producto-info">

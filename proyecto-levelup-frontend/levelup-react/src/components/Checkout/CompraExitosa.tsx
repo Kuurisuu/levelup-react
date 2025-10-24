@@ -101,8 +101,12 @@ const CompraExitosa: React.FC<CompraExitosaProps> = ({
               <div key={producto.id} className="producto-comprado">
                 <div className="producto-imagen">
                   <img 
-                    src={producto.imagen} 
-                    alt={producto.titulo}
+                    src={
+                      producto.imagenUrl && producto.imagenUrl.startsWith("./")
+                        ? import.meta.env.BASE_URL + producto.imagenUrl.replace(/^\.\//, "")
+                        : producto.imagenUrl || '/img/otros/placeholder.png'
+                    }
+                    alt={producto.nombre}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/img/otros/placeholder.png';
@@ -110,7 +114,7 @@ const CompraExitosa: React.FC<CompraExitosaProps> = ({
                   />
                 </div>
                 <div className="producto-detalle">
-                  <h5>{producto.titulo}</h5>
+                  <h5>{producto.nombre}</h5>
                   <p className="producto-precio">{formatCLP(producto.precio)}</p>
                   <p className="producto-cantidad">Cantidad: {producto.cantidad}</p>
                   <p className="producto-subtotal">
