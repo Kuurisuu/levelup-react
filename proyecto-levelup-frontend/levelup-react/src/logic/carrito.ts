@@ -38,6 +38,8 @@ export function agregarAlCarrito(producto: Producto): void {
 
   setCarritoLS(carrito);
   actualizarNumerito();
+  // Notificar a la UI que el carrito cambió (para que componentes reactivos puedan actualizarse)
+  try { window.dispatchEvent(new CustomEvent('carrito:change')); } catch (e) { /* noop en SSR */ }
 }
 
 // Eliminar producto por id
@@ -46,12 +48,14 @@ export function eliminarDelCarrito(id: string): void {
   carrito = carrito.filter((p) => p.id !== id);
   setCarritoLS(carrito);
   actualizarNumerito();
+  try { window.dispatchEvent(new CustomEvent('carrito:change')); } catch (e) { /* noop */ }
 }
 
 // Vaciar carrito
 export function vaciarCarrito(): void {
   setCarritoLS([]);
   actualizarNumerito();
+  try { window.dispatchEvent(new CustomEvent('carrito:change')); } catch (e) { /* noop */ }
 }
 
 // Calcular total

@@ -97,6 +97,17 @@ const Carrito: React.FC = (): React.JSX.Element => {
     // eslint-disable-next-line
   }, []);
 
+  // Escuchar cambios del carrito disparados desde logic/carrito
+  useEffect(() => {
+    const handler = () => {
+      cargarProductosCarrito();
+      cargarProductosSugeridos();
+    };
+    window.addEventListener('carrito:change', handler as EventListener);
+    return () => window.removeEventListener('carrito:change', handler as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function cargarProductosSugeridos(): void {
     // Obtener productos aleatorios que no estén en el carrito
     const productosEnCarrito = getCarrito();
