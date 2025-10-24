@@ -3,6 +3,9 @@ import CarritoVacio from "../components/Carrito/CarritoVacio";
 import CarritoProductos from "../components/Carrito/CarritoProductos";
 import CarritoAcciones from "../components/Carrito/CarritoAcciones";
 import CarritoComprado from "../components/Carrito/CarritoComprado";
+import CarritoResumen from "../components/Carrito/CarritoResumen";
+import CarritoSugerencias from "../components/Carrito/CarritoSugerencias";
+import ModalConfirmacion from "../components/Carrito/ModalConfirmacion";
 import {
   getCarrito,
   eliminarDelCarrito,
@@ -82,11 +85,32 @@ const Carrito: React.FC = (): React.JSX.Element => {
   const [estado, setEstado] = useState<"vacio" | "lleno" | "comprado">("vacio"); // vacio, lleno, comprado
   const [total, setTotal] = useState<string>("$0");
   const [aplicaDuoc, setAplicaDuoc] = useState<boolean>(false);
+  const [modalAbierto, setModalAbierto] = useState<boolean>(false);
+  const [productoAEliminar, setProductoAEliminar] = useState<string | null>(null);
+  const [productosSugeridos, setProductosSugeridos] = useState<Producto[]>([]);
 
   useEffect(() => {
     cargarProductosCarrito();
+    cargarProductosSugeridos();
     // eslint-disable-next-line
   }, []);
+
+  function cargarProductosSugeridos(): void {
+    // Obtener productos aleatorios que no estén en el carrito
+    const productosEnCarrito = getCarrito();
+    const idsEnCarrito = productosEnCarrito.map((p: ProductoEnCarrito) => p.id);
+    const productosDisponibles = productosArray.filter((p: Producto) => !idsEnCarrito.includes(p.id));
+    
+    // Seleccionar 6 productos aleatorios
+    const sugeridos: Producto[] = [];
+    const copiaDisponibles = [...productosDisponibles];
+    for (let i = 0; i < Math.min(6, copiaDisponibles.length); i++) {
+      const indiceAleatorio = Math.floor(Math.random() * copiaDisponibles.length);
+      sugeridos.push(copiaDisponibles[indiceAleatorio]);
+      copiaDisponibles.splice(indiceAleatorio, 1);
+    }
+    setProductosSugeridos(sugeridos);
+  }
 
   function cargarProductosCarrito(): void {
     const productosEnCarrito = getCarrito();
@@ -141,9 +165,24 @@ const Carrito: React.FC = (): React.JSX.Element => {
   }
 
   function handleEliminar(id: string): void {
-    eliminarDelCarrito(id);
-    cargarProductosCarrito();
-    actualizarNumerito();
+    // Abrir modal de confirmación
+    setProductoAEliminar(id);
+    setModalAbierto(true);
+  }
+
+  function confirmarEliminacion(): void {
+    if (productoAEliminar) {
+      eliminarDelCarrito(productoAEliminar);
+      cargarProductosCarrito();
+      actualizarNumerito();
+    }
+    setModalAbierto(false);
+    setProductoAEliminar(null);
+  }
+
+  function cancelarEliminacion(): void {
+    setModalAbierto(false);
+    setProductoAEliminar(null);
   }
 
   function handleAumentar(id: string): void {
@@ -188,14 +227,18 @@ const Carrito: React.FC = (): React.JSX.Element => {
     window.location.href = "/";
   }
 
+  // Calcular cantidad total de productos (sumando todas las cantidades)
+  const cantidadTotalProductos = productos.reduce((total, producto) => total + producto.cantidad, 0);
+
   return (
     <div className="wrapper">
       <main className="main-carrito">
         <h2 className="titulo-principal">Carrito</h2>
+        <p className="carrito-count">Tu carrito ({cantidadTotalProductos} productos)</p>
         <div className="contenedor-carrito">
-          {estado === "vacio" && <CarritoVacio />}
-          {estado === "lleno" && (
-            <>
+          <div className="carrito-productos-seccion">
+            {estado === "vacio" && <CarritoVacio />}
+            {estado === "lleno" && (
               <CarritoProductos
                 productos={productos}
                 descripciones={descripciones}
@@ -203,18 +246,28 @@ const Carrito: React.FC = (): React.JSX.Element => {
                 onAumentar={handleAumentar}
                 onDisminuir={handleDisminuir}
               />
-              <CarritoAcciones
-                onVaciar={handleVaciar}
-                onComprar={handleComprar}
-                total={total}
-                aplicaDuoc={aplicaDuoc}
-                onVolver={handleVolver}
-              />
-            </>
+            )}
+            {estado === "comprado" && <CarritoComprado />}
+          </div>
+          {estado === "lleno" && (
+            <CarritoResumen
+              total={total}
+              cantidadProductos={cantidadTotalProductos}
+              onPagar={handleComprar}
+            />
           )}
-          {estado === "comprado" && <CarritoComprado />}
         </div>
+        
+        {estado === "lleno" && productosSugeridos.length > 0 && (
+          <CarritoSugerencias productos={productosSugeridos} />
+        )}
       </main>
+      <ModalConfirmacion
+        isOpen={modalAbierto}
+        onConfirm={confirmarEliminacion}
+        onCancel={cancelarEliminacion}
+        mensaje="¿Confirmas que quieres eliminar este producto de tu carro de compras?"
+      />
     </div>
   );
 };
