@@ -18,6 +18,7 @@
   --clr-heading-text: #ffffff;
   --clr-body-text: #d3d3d3;
   --clr-blue: 0, 123, 255;
+  
   --clr-green: 0, 200, 83;
   --clr-black2: 30, 30, 30;
   --clr-main2: 17, 17, 17;
@@ -718,12 +719,21 @@ section {
   overflow: hidden; /* Para que los badges no se salgan del contenedor */
 }
 
+/* Ajustes para imágenes dentro de las cards: mantener proporción, evitar aplastamiento
+   en imágenes verticales y aún permitir zoom en hover */
 .producto-imagen {
-  width: 100%; /* ancho completo del contenedor */
-  height: 100%; /* altura completa del contenedor */
-  object-fit: cover; /* llena el contenedor manteniendo proporción */
-  object-position: center; /* centra la imagen */
+  max-width: 100%; /* no exceder el ancho del contenedor */
+  max-height: 100%; /* no exceder la altura del contenedor */
+  width: auto; /* dejar que la dimensión principal controle el escalado */
+  height: auto; /* mantener proporción natural */
+  object-fit: contain; /* contenida sin recortar ni deformar */
+  display: block;
   transition: transform 0.3s ease; /* transición suave para el zoom */
+}
+
+/* Zoom respetando aspect-ratio: al hacer hover, escalar con transform, no tocar width/height */
+.producto-imagen-container:hover .producto-imagen {
+  transform: scale(1.06); /* ligero zoom, mantiene proporciones */
 }
 
 .producto-imagen-container:hover .producto-imagen {

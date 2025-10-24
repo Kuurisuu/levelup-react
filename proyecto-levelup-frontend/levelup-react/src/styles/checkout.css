@@ -253,7 +253,12 @@
   border: 1px solid var(--clr-main-light);
 }
 
-.producto-imagen {
+.checkout-resumen .producto-imagen,
+.orden-detalle .producto-imagen,
+.producto-comprado .producto-imagen,
+.producto-rapido .producto-imagen {
+  /* Limitar la regla al resumen/orden/checkout rápido para evitar afectar
+     tarjetas genéricas que usen la misma clase en otras páginas */
   width: 80px;
   height: 80px;
   border-radius: 8px;

@@ -121,14 +121,6 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
               </div>
             </div>
             
-            {/* Stock */}
-            <div className="producto-stock">
-              <span className="stock-label">Stock:</span>
-              <span className={`stock-value ${producto.stock > 10 ? 'alto' : producto.stock > 0 ? 'bajo' : 'agotado'}`}>
-                {producto.stock > 10 ? 'Disponible' : producto.stock > 0 ? `Solo ${producto.stock} unidades` : 'Agotado'}
-              </span>
-            </div>
-            
             {/* Botón de agregar con icono de carrito */}
             <button
               className={`producto-agregar ${producto.disponible ? "active" : ""}`}

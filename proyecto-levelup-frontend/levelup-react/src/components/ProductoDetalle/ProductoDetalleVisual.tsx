@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; //importamos los hooks de react para el estado y el efecto
+import React, { useState, useEffect, useRef } from "react"; //importamos los hooks de react para el estado, efecto y refs
 import { Producto } from "../../data/catalogo"; 
 
 
@@ -33,29 +33,44 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
     setZoomPosition({ x, y }); //se setea la posicion del zoom
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => { //se ejecuta cuando el mouse se desplaza sobre la imagen
-    // Siempre prevenir el scroll de la página cuando el mouse está  sobre la imagen
-    e.preventDefault(); 
-    e.stopPropagation(); //se evita que el scroll se propague a otros elementos
-     
-    // Si no está en zoom, activarlo con el scroll
-    if (!isZoomed) {
-      setIsZoomed(true); //se activa el zoom
-      setIsMoving(false); // Fijo para hacer zoom inicial
-      setZoomLevel(1.2); // Zoom inicial suave
-      return; //se retorna para que no se ejecute el codigo de abajo
-    }
-    
-    const delta = e.deltaY > 0 ? -0.2 : 0.2; //se calcula el delta q es el cambio de zoom
-    const newZoomLevel = Math.max(1, Math.min(3, zoomLevel + delta)); //se calcula el nuevo nivel de zoom
-    
-    setZoomLevel(newZoomLevel); //se setea el nuevo nivel de zoom
-    
-    // Si llega a 1x, cerrar zoom
-    if (newZoomLevel <= 1) {
-      closeZoom();
-    }
-  };
+  // Usamos un ref al contenedor para añadir un listener nativo con { passive: false }
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  // Ref para leer el estado actual de isZoomed dentro del listener sin re-suscribirlo
+  const isZoomedRef = useRef(isZoomed);
+  useEffect(() => { isZoomedRef.current = isZoomed; }, [isZoomed]);
+
+  // Añadir listener wheel nativo una vez, permitiendo preventDefault
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const wheelListener = (evt: WheelEvent) => {
+      // prevenir scroll del documento cuando estemos sobre el contenedor
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      if (!isZoomedRef.current) {
+        setIsZoomed(true);
+        setIsMoving(false);
+        setZoomLevel(1.2);
+        return;
+      }
+
+      const delta = evt.deltaY > 0 ? -0.2 : 0.2;
+      setZoomLevel(prev => {
+        const newLevel = Math.max(1, Math.min(3, prev + delta));
+        if (newLevel <= 1) {
+          // cerrar zoom si llega a 1x
+          setIsZoomed(false);
+          setIsMoving(false);
+        }
+        return newLevel;
+      });
+    };
+
+    el.addEventListener('wheel', wheelListener, { passive: false });
+    return () => el.removeEventListener('wheel', wheelListener as EventListener);
+  }, []);
 
   const toggleZoom = () => {
     if (!isZoomed) {
@@ -179,12 +194,12 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
       
       {/* Imagen principal con zoom */}
       <div 
+        ref={containerRef}
         className={`producto-detalle-main-img-container ${isZoomed ? 'zoomed' : ''}`}
         onClick={toggleZoom}
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onWheel={handleWheel}
       >
         <img
           className="producto-detalle-main-img"
