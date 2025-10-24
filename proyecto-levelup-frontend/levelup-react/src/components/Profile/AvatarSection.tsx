@@ -74,7 +74,9 @@ const AvatarSection: React.FC<Props> = ({
         </h1>
         <p className="user-email">{email}</p>
         <div className="user-id-row">
-          <span className="status-badge user-id-badge">ID No: {userId || "-"}</span>
+          <span className="status-badge user-id-badge">
+            ID No: {userId || "-"}
+          </span>
           <button
             type="button"
             className="btn-icon copy-id-btn"

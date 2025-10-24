@@ -235,7 +235,6 @@ const Profile = () => {
         // Setear userId para badge/copy
         setUserId(found.id || session.userId || null);
 
-
         // Construir objeto de datos del usuario
 
         const data: UserData = {
@@ -678,7 +677,11 @@ const Profile = () => {
               >
                 Configuración de Cuenta
               </button>
-              <div className={`accordion-panel ${openSection === "settings" ? "open" : "closed"}`}>
+              <div
+                className={`accordion-panel ${
+                  openSection === "settings" ? "open" : "closed"
+                }`}
+              >
                 <SettingsSection
                   setChangingPassword={setChangingPassword}
                   changingPassword={changingPassword}
