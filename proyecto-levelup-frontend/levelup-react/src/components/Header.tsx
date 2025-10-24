@@ -236,7 +236,7 @@ export default function Header(): React.JSX.Element {
                 </button>
                 <ul className="despliegue-submenu">
                   <li>
-                    <Link to="/gaming-hub">Blogs</Link> //cambie el nombre na mas
+                    <Link to="/gaming-hub">Blogs</Link>
                   </li>
                   <li>
                     <Link to="/eventos">Eventos</Link>
@@ -262,7 +262,7 @@ export default function Header(): React.JSX.Element {
                       rel="noopener noreferrer"
                     >
                       🔧 Contacto Soporte
-                    </a> // el wazaaaaAAaAaA!!!1
+                    </a>
                   </li>
                 </ul>
               </li>

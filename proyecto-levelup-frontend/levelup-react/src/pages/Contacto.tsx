@@ -168,7 +168,7 @@ const Contacto = () => {
                         className="whatsapp-link"
                       >
                         +56 9 1234 5678
-                      </a> /* el target es para abrir la pagina en una nueva pestaña y el rel es para que no se cargue la pagina en el mismo navegador */
+                      </a>
                       <br />
                       Atención personalizada
                     </p>

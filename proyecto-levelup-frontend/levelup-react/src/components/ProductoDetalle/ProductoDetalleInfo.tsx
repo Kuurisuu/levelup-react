@@ -62,14 +62,14 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
     <div className="producto-detalle-precio-container">
       {tieneDescuento && precioConDescuento ? (
         <>
-          <div className="precio-actual-detalle"> //se actualizaron los nombres para andar en onda 
+          <div className="precio-actual-detalle"> 
             {formatPriceCLP(precioConDescuento)}
           </div>
           <div className="precio-anterior-detalle">
             {formatPriceCLP(producto.precio)}
           </div>
           <div className="descuento-porcentaje">
-            -{Math.round(((producto.precio - precioConDescuento) / producto.precio) * 100)}% //aca el calculo es para sacar el porcentaje de descuento
+            -{Math.round(((producto.precio - precioConDescuento) / producto.precio) * 100)}%
           </div>
         </>
       ) : (
@@ -81,7 +81,7 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
     <div className="producto-detalle-descripcion">{producto.descripcion}</div>
     
     {/* Información adicional del producto */}
-    <div className="producto-detalle-info-adicional"> // se borro el stock disponible porque no se usaba y se agrego el stock disponible diferente 
+    <div className="producto-detalle-info-adicional"> 
       <span className="producto-stock-info">
         <i className="bi bi-box"></i> Stock: {stockDisponible} unidades
       </span>

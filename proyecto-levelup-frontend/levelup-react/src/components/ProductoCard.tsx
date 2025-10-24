@@ -74,17 +74,12 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
         <div className="producto-detalles">
           {/* Información principal */}
           <div className="producto-info-principal">
-            {/* Marca/Fabricante */}
-            <div className="producto-marca">
-              {producto.fabricante || "Sony"}
-            </div>
-            
             {/* Título del producto */}
             <h3 className="producto-titulo">{producto.nombre}</h3>
             
-            {/* Categoría */}
+            {/* Categoría con marca */}
             <p className="producto-categoria">
-              {categoria.nombre} • {subcategoria?.nombre || ""}
+              {producto.fabricante || "Sony"} • {categoria.nombre} • {subcategoria?.nombre || ""}
             </p>
             
             {/* Descripción con scroll */}
@@ -114,20 +109,16 @@ export default function ProductoCard({ producto, onClick }: ProductoCardProps): 
             
             {/* Precios en una línea */}
             <div className="producto-precio-container">
-              {tieneDescuento ? (
-                <div className="precio-linea">
-                  <span className="precio-actual">
-                    {formatPriceCLP(producto.precioConDescuento!)}
-                  </span>
+              <div className="precio-linea">
+                <span className="precio-actual">
+                  {tieneDescuento ? formatPriceCLP(producto.precioConDescuento!) : formatPriceCLP(producto.precio)}
+                </span>
+                {tieneDescuento && (
                   <span className="precio-anterior">
                     {formatPriceCLP(producto.precio)}
                   </span>
-                </div>
-              ) : (
-                <div className="precio-actual">
-                  {formatPriceCLP(producto.precio)}
-                </div>
-              )}
+                )}
+              </div>
             </div>
             
             {/* Stock */}
