@@ -70,15 +70,15 @@ const CheckoutRapido: React.FC<CheckoutRapidoProps> = ({
             {productos.slice(0, 2).map((producto) => (
               <div key={producto.id} className="producto-rapido">
                 <img 
-                  src={producto.imagen} 
-                  alt={producto.titulo}
+                  src={producto.imagenUrl} 
+                  alt={producto.nombre}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = '/img/otros/placeholder.png';
                   }}
                 />
                 <div className="producto-info">
-                  <h4>{producto.titulo}</h4>
+                  <h4>{producto.nombre}</h4>
                   <p>{producto.cantidad} x {formatCLP(producto.precio)}</p>
                 </div>
               </div>
@@ -95,15 +95,15 @@ const CheckoutRapido: React.FC<CheckoutRapidoProps> = ({
               {productos.slice(2).map((producto) => (
                 <div key={producto.id} className="producto-rapido">
                   <img 
-                    src={producto.imagen} 
-                    alt={producto.titulo}
+                    src={producto.imagenUrl} 
+                    alt={producto.nombre}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/img/otros/placeholder.png';
                     }}
                   />
                   <div className="producto-info">
-                    <h4>{producto.titulo}</h4>
+                    <h4>{producto.nombre}</h4>
                     <p>{producto.cantidad} x {formatCLP(producto.precio)}</p>
                   </div>
                 </div>

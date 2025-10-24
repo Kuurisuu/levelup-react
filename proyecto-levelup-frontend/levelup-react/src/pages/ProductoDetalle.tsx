@@ -175,7 +175,7 @@ const ProductoDetalle: React.FC = () => {
       ? window.location.pathname
       : window.location.pathname.replace(/\/$/, "") + `/${producto.id}`;
     const pageUrl = window.location.origin + path;
-    const title = producto.titulo || "Producto LevelUp";
+    const title = producto.nombre || "Producto LevelUp";
     const text = `Mira este producto: ${title}`;
 
     function openUrl(url: string) {
