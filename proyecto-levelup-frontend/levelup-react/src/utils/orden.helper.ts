@@ -101,11 +101,20 @@ export function crearOrdenCompra(
   const codigo = generarCodigoOrden();
   const valores = calcularValoresOrden(productos, aplicaDescuentoDuoc);
 
+  // Mapear productos del carrito a la estructura esperada por el PDF
+  const productosMapeados = productos.map(producto => ({
+    id: producto.id,
+    titulo: (producto as any).nombre || producto.titulo || 'Producto',
+    precio: producto.precio,
+    imagen: (producto as any).imagenUrl || producto.imagen || '/img/otros/placeholder.png',
+    cantidad: producto.cantidad
+  }));
+
   return {
     codigo,
     fecha: new Date().toISOString(),
     datosEnvio,
-    productos,
+    productos: productosMapeados,
     subtotal: valores.subtotal,
     descuento: valores.descuento,
     iva: valores.iva,
