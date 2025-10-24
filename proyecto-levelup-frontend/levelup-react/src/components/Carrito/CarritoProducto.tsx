@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductoEnCarrito } from "../../logic/storage";
+import { ProductoEnCarrito } from "../../utils/orden.helper";
 
 interface CarritoProductoProps {
   producto: ProductoEnCarrito;
@@ -16,54 +16,61 @@ const CarritoProducto: React.FC<CarritoProductoProps> = ({
   onAumentar,
   onDisminuir,
 }): React.JSX.Element => (
-  <div className="carrito-producto">
-    <img
-      className="carrito-producto-imagen"
-      src={producto.imagenUrl} //antes era imagen
-      alt={producto.nombre} //antes era titulo 
-    />
-    <div className="carrito-producto-titulo">
-      <small>Titulo</small>
-      <h3>{producto.nombre}</h3> //antes era titulo 
+  <div className="carrito-producto nuevo-layout">
+    <div className="carrito-producto-imagen-box">
+      <img
+        className="carrito-producto-imagen"
+        src={producto.imagenUrl || producto.imagen || '/img/otros/placeholder.png'}
+        alt={producto.nombre || producto.titulo || 'Producto'}
+      />
     </div>
-    <div className="carrito-producto-descripcion">
-      <small>Descripción</small>
-      <p>{descripcion || ""}</p>
+
+    <div className="carrito-producto-info">
+        <h3 className="carrito-producto-marca">{producto.nombre || producto.titulo || 'Producto'}</h3>
+        <button
+          className="carrito-producto-eliminar sutil"
+          onClick={() => onEliminar(producto.id)}
+          aria-label="Eliminar"
+        >
+          <i className="bi bi-trash"></i>
+          <span className="eliminar-text">Eliminar</span>
+        </button>
     </div>
-    <div className="carrito-producto-cantidad">
-      <small>Cantidad</small>
-      <div className="carrito-cantidad">
-        <button
-          className="carrito-cantidad-disminuir"
-          aria-label="Disminuir"
-          onClick={() => onDisminuir(producto.id)}
-        >
-          -
-        </button>
-        <span className="carrito-cantidad-contador">{producto.cantidad}</span>
-        <button
-          className="carrito-cantidad-aumentar"
-          aria-label="Aumentar"
-          onClick={() => onAumentar(producto.id)}
-        >
-          +
-        </button>
+
+    <div className="carrito-producto-right">
+      <div className="carrito-producto-precio-box">
+        <div className="carrito-cantidad">
+          <button
+            className="carrito-cantidad-disminuir"
+            aria-label="Disminuir"
+            onClick={() => onDisminuir(producto.id)}
+          >
+            -
+          </button>
+          <span className="carrito-cantidad-contador">{producto.cantidad}</span>
+          <button
+            className="carrito-cantidad-aumentar"
+            aria-label="Aumentar"
+            onClick={() => onAumentar(producto.id)}
+          >
+            +
+          </button>
+        </div>
+        <div className="precios-container">
+          <div className="precio-row">
+            <span className="label">Precio</span>
+            <span className="value carrito-producto-precio">{producto.precioCLP || `$${producto.precio.toLocaleString()}`}</span>
+          </div>
+            
+          {producto.cantidad > 1 && (
+            <div className="precio-row subtotal">
+              <span className="label">Subtotal</span>
+              <span className="value carrito-producto-subtotal">{producto.subtotalCLP || `$${(producto.precio * producto.cantidad).toLocaleString()}`}</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
-    <div className="carrito-producto-precio">
-      <small>Precio</small>
-      <p>{producto.precioCLP}</p>
-    </div>
-    <div className="carrito-producto-subtotal">
-      <small>Subtotal</small>
-      <p>{producto.subtotalCLP}</p>
-    </div>
-    <button
-      className="carrito-producto-eliminar"
-      onClick={() => onEliminar(producto.id)}
-    >
-      <i className="bi bi-trash-fill"></i>
-    </button>
   </div>
 );
 

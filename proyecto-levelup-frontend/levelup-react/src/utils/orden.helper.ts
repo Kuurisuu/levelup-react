@@ -30,10 +30,16 @@ export interface OrdenCompra {
 //esta interface seria el carrito que esta en la parte de la pasarela de pago 
 export interface ProductoEnCarrito {
   id: string;
-  titulo: string;
+  nombre: string;
+  titulo?: string;
   precio: number;
-  imagen: string;
+  imagenUrl: string;
+  imagen?: string;
   cantidad: number;
+  categoria: any;
+  subcategoria?: any;
+  precioCLP?: string;
+  subtotalCLP?: string;
 }
 
 /**
@@ -104,10 +110,14 @@ export function crearOrdenCompra(
   // Mapear productos del carrito a la estructura esperada por el PDF
   const productosMapeados = productos.map(producto => ({
     id: producto.id,
-    titulo: (producto as any).nombre || producto.titulo || 'Producto',
+    nombre: producto.nombre || producto.titulo || 'Producto',
+    titulo: producto.titulo,
     precio: producto.precio,
-    imagen: (producto as any).imagenUrl || producto.imagen || '/img/otros/placeholder.png',
-    cantidad: producto.cantidad
+    imagenUrl: producto.imagenUrl || producto.imagen || '/img/otros/placeholder.png',
+    imagen: producto.imagen,
+    cantidad: producto.cantidad,
+    categoria: producto.categoria,
+    subcategoria: producto.subcategoria
   }));
 
   return {

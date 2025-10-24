@@ -3,6 +3,9 @@ import CarritoVacio from "../components/Carrito/CarritoVacio";
 import CarritoProductos from "../components/Carrito/CarritoProductos";
 import CarritoAcciones from "../components/Carrito/CarritoAcciones";
 import CarritoComprado from "../components/Carrito/CarritoComprado";
+import CarritoResumen from "../components/Carrito/CarritoResumen";
+import CarritoSugerencias from "../components/Carrito/CarritoSugerencias";
+import ModalConfirmacion from "../components/Carrito/ModalConfirmacion";
 import {
   getCarrito,
   eliminarDelCarrito,
@@ -13,6 +16,7 @@ import {
 import { setCarritoLS, ProductoEnCarrito } from "../logic/storage";
 import { productosArray, categorias, subcategorias, Producto } from "../data/catalogo";
 import { useNavigate } from "react-router-dom";
+
 // Interfaces
 interface User {
   id: string;
@@ -67,16 +71,13 @@ function isDuocEmail(email: string): boolean {
 }
 
 function formatCLP(num: number): string {
-  // Redondear a la decena más cercana (múltiplos de 10) para que sea mas legible
-  const roundedNum = Math.round(num / 10) * 10;
   return (
-    roundedNum?.toLocaleString("es-CL", { //formatear el numero en CLP
+    num?.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
       maximumFractionDigits: 0,
-      minimumFractionDigits: 0, //no decimales
     }) || "$0"
-  );  
+  );
 }
 
 const Carrito: React.FC = (): React.JSX.Element => {
@@ -86,11 +87,32 @@ const Carrito: React.FC = (): React.JSX.Element => {
   const [estado, setEstado] = useState<"vacio" | "lleno" | "comprado">("vacio"); // vacio, lleno, comprado
   const [total, setTotal] = useState<string>("$0");
   const [aplicaDuoc, setAplicaDuoc] = useState<boolean>(false);
+  const [modalAbierto, setModalAbierto] = useState<boolean>(false);
+  const [productoAEliminar, setProductoAEliminar] = useState<string | null>(null);
+  const [productosSugeridos, setProductosSugeridos] = useState<Producto[]>([]);
 
   useEffect(() => {
     cargarProductosCarrito();
+    cargarProductosSugeridos();
     // eslint-disable-next-line
   }, []);
+
+  function cargarProductosSugeridos(): void {
+    // Obtener productos aleatorios que no estén en el carrito
+    const productosEnCarrito = getCarrito();
+    const idsEnCarrito = productosEnCarrito.map((p: ProductoEnCarrito) => p.id);
+    const productosDisponibles = productosArray.filter((p: Producto) => !idsEnCarrito.includes(p.id));
+    
+    // Seleccionar 6 productos aleatorios
+    const sugeridos: Producto[] = [];
+    const copiaDisponibles = [...productosDisponibles];
+    for (let i = 0; i < Math.min(6, copiaDisponibles.length); i++) {
+      const indiceAleatorio = Math.floor(Math.random() * copiaDisponibles.length);
+      sugeridos.push(copiaDisponibles[indiceAleatorio]);
+      copiaDisponibles.splice(indiceAleatorio, 1);
+    }
+    setProductosSugeridos(sugeridos);
+  }
 
   function cargarProductosCarrito(): void {
     const productosEnCarrito = getCarrito();
@@ -110,7 +132,7 @@ const Carrito: React.FC = (): React.JSX.Element => {
           catalogoBase.find((p: Producto) => p.id === producto.id) ||
           ({} as Producto);
         const catNombre =
-          categorias.find((c) => c.id === base.categoria.id)?.nombre || ""; // loq ue hacemos aqui es buscar la categoria por el id de la categoria
+          categorias.find((c) => c.id === base.categoria?.id)?.nombre || "";
         const subNombre =
           subcategorias.find((s) => s.id === base.subcategoria?.id)?.nombre || "";
         return (
@@ -145,9 +167,24 @@ const Carrito: React.FC = (): React.JSX.Element => {
   }
 
   function handleEliminar(id: string): void {
-    eliminarDelCarrito(id);
-    cargarProductosCarrito();
-    actualizarNumerito();
+    // Abrir modal de confirmación
+    setProductoAEliminar(id);
+    setModalAbierto(true);
+  }
+
+  function confirmarEliminacion(): void {
+    if (productoAEliminar) {
+      eliminarDelCarrito(productoAEliminar);
+      cargarProductosCarrito();
+      actualizarNumerito();
+    }
+    setModalAbierto(false);
+    setProductoAEliminar(null);
+  }
+
+  function cancelarEliminacion(): void {
+    setModalAbierto(false);
+    setProductoAEliminar(null);
   }
 
   function handleAumentar(id: string): void {
@@ -180,39 +217,34 @@ const Carrito: React.FC = (): React.JSX.Element => {
   }
 
   function handleComprar(): void {
-    vaciarCarrito();
-    setEstado("comprado");
-    setProductos([]);
-    setDescripciones([]);
-    setTotal("$0");
-    actualizarNumerito();
-  }
-// nueva funcion para el checkout
-function handleCheckout(): void {
-  // Verificar que el usuario esté logueado
-  const session = localStorage.getItem("lvup_user_session");
+    // Verificar que el usuario esté logueado
+    const session = localStorage.getItem("lvup_user_session");
 
-  if (!session) {
-    alert('Debes iniciar sesión para proceder con la compra');
-    navigate('/login');
-    return;
+    if (!session) {
+      alert('Debes iniciar sesión para proceder con la compra');
+      navigate('/login');
+      return;
+    }
+    // Navegar al checkout
+    navigate("/checkout");
   }
-  // Usar hook useNavigate de react-router-dom 
-  navigate("/checkout");
-}
 
   function handleVolver(): void {
     window.location.href = "/";
   }
 
+  // Calcular cantidad total de productos (sumando todas las cantidades)
+  const cantidadTotalProductos = productos.reduce((total, producto) => total + producto.cantidad, 0);
+
   return (
     <div className="wrapper">
       <main className="main-carrito">
         <h2 className="titulo-principal">Carrito</h2>
+        <p className="carrito-count">Tu carrito ({cantidadTotalProductos} productos)</p>
         <div className="contenedor-carrito">
-          {estado === "vacio" && <CarritoVacio />}
-          {estado === "lleno" && (
-            <>
+          <div className="carrito-productos-seccion">
+            {estado === "vacio" && <CarritoVacio />}
+            {estado === "lleno" && (
               <CarritoProductos
                 productos={productos}
                 descripciones={descripciones}
@@ -220,18 +252,28 @@ function handleCheckout(): void {
                 onAumentar={handleAumentar}
                 onDisminuir={handleDisminuir}
               />
-              <CarritoAcciones
-                onVaciar={handleVaciar}
-                onCheckout={handleCheckout}
-                total={total}
-                aplicaDuoc={aplicaDuoc}
-                onVolver={handleVolver}
-              />
-            </>
+            )}
+            {estado === "comprado" && <CarritoComprado />}
+          </div>
+          {estado === "lleno" && (
+            <CarritoResumen
+              total={total}
+              cantidadProductos={cantidadTotalProductos}
+              onPagar={handleComprar}
+            />
           )}
-          {estado === "comprado" && <CarritoComprado />}
         </div>
+        
+        {estado === "lleno" && productosSugeridos.length > 0 && (
+          <CarritoSugerencias productos={productosSugeridos} />
+        )}
       </main>
+      <ModalConfirmacion
+        isOpen={modalAbierto}
+        onConfirm={confirmarEliminacion}
+        onCancel={cancelarEliminacion}
+        mensaje="¿Confirmas que quieres eliminar este producto de tu carro de compras?"
+      />
     </div>
   );
 };
