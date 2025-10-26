@@ -119,6 +119,115 @@ export default function Header(): React.JSX.Element {
             });
           }
         }
+        // --- Mobile: cambiar boton ingresar a Cerrar Sesión ---
+        const botonCelular = document.querySelector(
+          ".boton-identificate-celular"
+        ) as HTMLAnchorElement | null;
+        if (botonCelular) {
+          botonCelular.innerHTML = `<i class=\"bi bi-person-fill\"></i> Cerrar Sesión`;
+          botonCelular.setAttribute("href", "#");
+          botonCelular.setAttribute("id", "lvup-logout-celular");
+          botonCelular.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            handleLogout();
+          });
+        }
+
+        // --- Menu lateral (mobile): agregar Perfil y Cerrar Sesión ---
+        const menuLateralList = document.querySelector(
+          "#menu-lateral ul"
+        ) as HTMLUListElement | null;
+        if (menuLateralList) {
+          // evitar duplicados
+          if (!menuLateralList.querySelector(".lvup-perfil-link")) {
+            const liPerfil = document.createElement("li");
+            liPerfil.className = "lvup-perfil-link";
+            liPerfil.innerHTML = `<a href=\"/profile\">Perfil</a>`;
+            menuLateralList.appendChild(liPerfil);
+            const a = liPerfil.querySelector("a");
+            if (a) {
+              a.addEventListener("click", (ev) => {
+                ev.preventDefault();
+                navigate("/profile");
+                // cerrar menu lateral si está abierto
+                const menuLateralEl = document.querySelector("#menu-lateral");
+                const overlay = document.querySelector("#overlay-menu");
+                menuLateralEl?.classList.remove("abierto");
+                overlay?.classList.remove("visible");
+              });
+            }
+          }
+
+          if (!menuLateralList.querySelector(".lvup-logout-link")) {
+            const liLogout = document.createElement("li");
+            liLogout.className = "lvup-logout-link";
+            liLogout.innerHTML = `<button class=\"boton-menu\">Cerrar Sesión</button>`;
+            menuLateralList.appendChild(liLogout);
+            const btn = liLogout.querySelector("button");
+            if (btn) btn.addEventListener("click", () => handleLogout());
+          }
+        }
+      } else {
+        // No hay session: asegurarse de que el boton celular muestre Ingresar
+        const botonCelular = document.querySelector(
+          ".boton-identificate-celular"
+        ) as HTMLAnchorElement | null;
+        if (botonCelular) {
+          botonCelular.innerHTML = `<i class=\"bi bi-person-fill\"></i> Ingresar`;
+          botonCelular.setAttribute("href", "/login");
+          botonCelular.removeAttribute("id");
+        }
+
+        // Asegurar que en el menu lateral existan Iniciar sesión y Registrarse
+        const menuLateralList = document.querySelector(
+          "#menu-lateral ul"
+        ) as HTMLUListElement | null;
+        if (menuLateralList) {
+          // eliminar perfiles/logout si existen
+          const existPerfil =
+            menuLateralList.querySelector(".lvup-perfil-link");
+          if (existPerfil) existPerfil.remove();
+          const existLogout =
+            menuLateralList.querySelector(".lvup-logout-link");
+          if (existLogout) existLogout.remove();
+
+          // añadir login/register si no existen
+          if (!menuLateralList.querySelector(".lvup-login-link")) {
+            const liLogin = document.createElement("li");
+            liLogin.className = "lvup-login-link";
+            liLogin.innerHTML = `<a href=\"/login\">Iniciar sesión</a>`;
+            menuLateralList.appendChild(liLogin);
+            const a = liLogin.querySelector("a");
+            if (a) {
+              a.addEventListener("click", (ev) => {
+                ev.preventDefault();
+                navigate("/login");
+                const menuLateralEl = document.querySelector("#menu-lateral");
+                const overlay = document.querySelector("#overlay-menu");
+                menuLateralEl?.classList.remove("abierto");
+                overlay?.classList.remove("visible");
+              });
+            }
+          }
+
+          if (!menuLateralList.querySelector(".lvup-register-link")) {
+            const liReg = document.createElement("li");
+            liReg.className = "lvup-register-link";
+            liReg.innerHTML = `<a href=\"/register\">Registrarse</a>`;
+            menuLateralList.appendChild(liReg);
+            const a = liReg.querySelector("a");
+            if (a) {
+              a.addEventListener("click", (ev) => {
+                ev.preventDefault();
+                navigate("/register");
+                const menuLateralEl = document.querySelector("#menu-lateral");
+                const overlay = document.querySelector("#overlay-menu");
+                menuLateralEl?.classList.remove("abierto");
+                overlay?.classList.remove("visible");
+              });
+            }
+          }
+        }
       }
 
       // ocultar link admin si no corresponde
@@ -313,7 +422,7 @@ export default function Header(): React.JSX.Element {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      🔧 Contacto Soporte
+                      Contacto Soporte
                     </a>
                   </li>
                 </ul>
@@ -389,7 +498,7 @@ export default function Header(): React.JSX.Element {
               target="_blank"
               rel="noopener noreferrer"
             >
-              🎧 Soporte
+              Soporte
             </a>
           </li>
         </ul>

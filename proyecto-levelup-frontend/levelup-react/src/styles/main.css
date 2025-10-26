@@ -371,7 +371,7 @@ section {
 /*Boton secundario*/
 
 .boton-menu.deco-levelup {
-  color: var(--clr-white);
+  color: var(--clr-heading-text);
   background: linear-gradient(
     to top,
     rgb(var(--clr-blue)),
@@ -2001,6 +2001,7 @@ footer {
   padding: 40px 20px;
   border-top: 1px solid var(--clr-black);
   width: 100%;
+  position: relative;
 }
 
 .footer-trust {
@@ -2170,6 +2171,14 @@ footer {
   }
 }
 
+/* Espacio en móvil para barras fijas (acciones en detalle) */
+@media (max-width: 1025px) {
+  /* Añadir espacio al final del body para que la barra fija de acciones no tape el footer */
+  body {
+    padding-bottom: calc(84px + var(--footer-height));
+  }
+}
+
 @media (max-width: 380px) {
   main {
     margin-top: 13.9rem;
@@ -2190,7 +2199,7 @@ footer {
 /* Intermedio: tablets y pantallas medianas */
 @media (max-width: 1024px) {
   .carrito-producto {
-    /* reduce number of columns but keep image + content + a couple of action columns */
+    /* Reduce el número de columnas pero mantiene imagen + contenido + un par de columnas de acción */
     grid-template-columns: 96px minmax(0, 1.2fr) 180px 140px 40px;
     gap: 0.8rem;
     align-items: center;
@@ -2316,7 +2325,7 @@ footer {
 }
 
 /* Mobile */
-@media (max-width: 600px) {
+@media (max-width: 723px) {
   .productos {
     gap: 1rem; /* menos espacio entre tarjetas */
   }

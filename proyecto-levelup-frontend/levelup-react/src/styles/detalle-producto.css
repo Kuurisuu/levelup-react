@@ -99,7 +99,12 @@
   justify-content: center;
   gap: 0.5rem;
 
-  background: linear-gradient(to top, rgb(var(--clr-main2))) padding-box,
+  background: linear-gradient(
+        to top,
+        rgb(var(--clr-main2)),
+        rgb(var(--clr-black2))
+      )
+      padding-box,
     /* Fondo interno */
       linear-gradient(to top, rgb(var(--clr-blue)), rgb(var(--clr-green)))
       border-box; /* Borde degradado */
@@ -488,6 +493,10 @@
     padding: 1rem 2rem;
     background-color: var(--clr-main);
     border-top: 1px solid var(--clr-black);
+    z-index: 100000;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+    min-height: 84px;
   }
 }
 
@@ -655,9 +664,15 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 0.7; }
-  50% { opacity: 1; }
-  100% { opacity: 0.7; }
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
 }
 
 /* Precios mejorados */
@@ -698,7 +713,6 @@
   background: var(--clr-blue);
   border-radius: 2px;
 }
-
 
 /* Contador de imágenes */
 .image-counter {
@@ -745,22 +759,22 @@
   .producto-detalle-main-img-container.zoomed {
     padding: 1rem;
   }
-  
+
   .zoom-overlay {
     padding: 0.5rem 1rem;
   }
-  
+
   .zoom-overlay p {
     font-size: 0.8rem;
   }
-  
+
   .image-counter {
     top: 5px;
     right: 5px;
     font-size: 0.7rem;
     padding: 3px 6px;
   }
-  
+
   .zoom-indicator {
     top: 35px; /* ajustado para móviles también */
     right: 5px;
