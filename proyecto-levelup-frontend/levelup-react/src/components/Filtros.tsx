@@ -5,7 +5,9 @@ interface FiltrosProps {
   filtros: FiltrosType;
   setCategoria: (id: string) => void;
   toggleSubcategoria: (id: string) => void;
-  actualizar: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  actualizar: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
   limpiar: () => void;
   asideAbierto: boolean;
   toggleAside: () => void;
@@ -23,6 +25,22 @@ export default function Filtros({
   const [openSubcat, setOpenSubcat] = useState<string>("");
   const handleToggleSubcat = (cat: string): void => {
     setOpenSubcat(openSubcat === cat ? "" : cat);
+  };
+  // Mapa de subcategorías por categoría para calcular conteos locales
+  const categoryMap: Record<string, string[]> = {
+    EN: ["JM"],
+    CO: ["MA", "HA", "AC"],
+    PE: ["MO", "TE", "AU", "MT", "MI", "CW"],
+    RO: ["PG", "PR"],
+  };
+
+  const countSelected = (cat: string): number => {
+    return filtros.subcategorias.reduce((acc, s) => {
+      if (s.startsWith("ALL-")) {
+        return acc + (s === `ALL-${cat}` ? 1 : 0);
+      }
+      return acc + (categoryMap[cat]?.includes(s) ? 1 : 0);
+    }, 0);
   };
   return (
     <aside
@@ -50,7 +68,9 @@ export default function Filtros({
         <ul className="menu-categorias">
           <li className="categoria">
             <button
-              className={`boton-categoria abrir-subcat ${filtros.categoria === "todos" ? "active" : ""}`} //agrege el active para que se vea el boton activo
+              className={`boton-categoria abrir-subcat ${
+                filtros.categoria === "todos" ? "active" : ""
+              }`} //agrege el active para que se vea el boton activo
               onClick={() => setCategoria("todos")}
               aria-label="Mostrar todos"
             >
@@ -59,234 +79,310 @@ export default function Filtros({
           </li>
           <li className={`categoria${openSubcat === "EN" ? " open" : ""}`}>
             <button
-              className={`boton-categoria abrir-subcat ${filtros.categoria === "EN" ? "active" : ""}`} //si en filtro categoria es igual a entretenimiento, se activa el boton
+              className={`boton-categoria abrir-subcat ${
+                openSubcat === "EN" || filtros.categoria === "EN"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() => {
-                setCategoria("EN"); //si se clickea el boton, se activa la categoria
-                handleToggleSubcat("EN"); //si se clickea el boton, se activa el subcategoria
+                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
+                handleToggleSubcat("EN");
               }}
+              aria-expanded={openSubcat === "EN"}
             >
-              Entretenimiento <span>{openSubcat === "EN" ? "▲" : "▼"}</span>
+              <span className="boton-categoria-label">Entretenimiento</span>
+              {countSelected("EN") > 0 && (
+                <span className="filtro-badge" aria-hidden="true">
+                  {countSelected("EN")}
+                </span>
+              )}
+              <i
+                className={`bi caret-icon ${
+                  openSubcat === "EN"
+                    ? "bi-caret-up-fill"
+                    : "bi-caret-down-fill"
+                }`}
+                aria-hidden="true"
+              />
             </button>
-            {openSubcat === "EN" && (
-              <ul className="subcategorias">
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={filtros.subcategorias.includes("ALL-EN")}
-                      onChange={() => toggleSubcategoria("ALL-EN")}
-                    />
-                    Todos
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={filtros.subcategorias.includes("JM")}
-                      onChange={() => toggleSubcategoria("JM")}
-                    />
-                    Juegos de Mesa
-                  </label>
-                </li>
-              </ul>
-            )}
+
+            <ul
+              className={`subcategorias ${openSubcat === "EN" ? "open" : ""}`}
+            >
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filtros.subcategorias.includes("ALL-EN")}
+                    onChange={() => toggleSubcategoria("ALL-EN")}
+                  />
+                  Todos
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filtros.subcategorias.includes("JM")}
+                    onChange={() => toggleSubcategoria("JM")}
+                  />
+                  Juegos de Mesa
+                </label>
+              </li>
+            </ul>
           </li>
           <li className={`categoria${openSubcat === "CO" ? " open" : ""}`}>
             <button
-              className={`boton-categoria abrir-subcat ${filtros.categoria === "CO" ? "active" : ""}`}
+              className={`boton-categoria abrir-subcat ${
+                openSubcat === "CO" || filtros.categoria === "CO"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() => {
-                setCategoria("CO");
+                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
                 handleToggleSubcat("CO");
               }}
+              aria-expanded={openSubcat === "CO"}
             >
-              Consolas <span>{openSubcat === "CO" ? "▲" : "▼"}</span>
+              <span className="boton-categoria-label">Consolas</span>
+              {countSelected("CO") > 0 && (
+                <span className="filtro-badge" aria-hidden="true">
+                  {countSelected("CO")}
+                </span>
+              )}
+              <i
+                className={`bi caret-icon ${
+                  openSubcat === "CO"
+                    ? "bi-caret-up-fill"
+                    : "bi-caret-down-fill"
+                }`}
+                aria-hidden="true"
+              />
             </button>
-            {openSubcat === "CO" && (
-              <ul className="subcategorias">
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={filtros.subcategorias.includes("ALL-CO")}
-                      onChange={() => toggleSubcategoria("ALL-CO")}
-                    />
-                    Todos
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("MA")}
-                      onChange={() => toggleSubcategoria("MA")}
-                    />
-                    Mandos
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("HA")}
-                      onChange={() => toggleSubcategoria("HA")}
-                    />
-                    Hardware
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("AC")}
-                      onChange={() => toggleSubcategoria("AC")}
-                    />
-                    Accesorios
-                  </label>
-                </li>
-              </ul>
-            )}
+
+            <ul
+              className={`subcategorias ${openSubcat === "CO" ? "open" : ""}`}
+            >
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filtros.subcategorias.includes("ALL-CO")}
+                    onChange={() => toggleSubcategoria("ALL-CO")}
+                  />
+                  Todos
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("MA")}
+                    onChange={() => toggleSubcategoria("MA")}
+                  />
+                  Mandos
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("HA")}
+                    onChange={() => toggleSubcategoria("HA")}
+                  />
+                  Hardware
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("AC")}
+                    onChange={() => toggleSubcategoria("AC")}
+                  />
+                  Accesorios
+                </label>
+              </li>
+            </ul>
           </li>
           <li className={`categoria${openSubcat === "PE" ? " open" : ""}`}>
             <button
-              className={`boton-categoria abrir-subcat ${filtros.categoria === "PE" ? "active" : ""}`}
+              className={`boton-categoria abrir-subcat ${
+                openSubcat === "PE" || filtros.categoria === "PE"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() => {
-                setCategoria("PE");
+                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
                 handleToggleSubcat("PE");
               }}
+              aria-expanded={openSubcat === "PE"}
             >
-              Perifericos <span>{openSubcat === "PE" ? "▲" : "▼"}</span>
+              <span className="boton-categoria-label">Perifericos</span>
+              {countSelected("PE") > 0 && (
+                <span className="filtro-badge" aria-hidden="true">
+                  {countSelected("PE")}
+                </span>
+              )}
+              <i
+                className={`bi caret-icon ${
+                  openSubcat === "PE"
+                    ? "bi-caret-up-fill"
+                    : "bi-caret-down-fill"
+                }`}
+                aria-hidden="true"
+              />
             </button>
-            {openSubcat === "PE" && (
-              <ul className="subcategorias">
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={filtros.subcategorias.includes("ALL-PE")}
-                      onChange={() => toggleSubcategoria("ALL-PE")}
-                    />
-                    Todos
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("MO")}
-                      onChange={() => toggleSubcategoria("MO")}
-                    />
-                    Mouse
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("TE")}
-                      onChange={() => toggleSubcategoria("TE")}
-                    />
-                    Teclado
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("AU")}
-                      onChange={() => toggleSubcategoria("AU")}
-                    />
-                    Auriculares
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("MT")}
-                      onChange={() => toggleSubcategoria("MT")}
-                    />
-                    Monitores
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("MI")}
-                      onChange={() => toggleSubcategoria("MI")}
-                    />
-                    Microfonos
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("CW")}
-                      onChange={() => toggleSubcategoria("CW")}
-                    />
-                    Camara web
-                  </label>
-                </li>
-              </ul>
-            )}
+
+            <ul
+              className={`subcategorias ${openSubcat === "PE" ? "open" : ""}`}
+            >
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filtros.subcategorias.includes("ALL-PE")}
+                    onChange={() => toggleSubcategoria("ALL-PE")}
+                  />
+                  Todos
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("MO")}
+                    onChange={() => toggleSubcategoria("MO")}
+                  />
+                  Mouse
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("TE")}
+                    onChange={() => toggleSubcategoria("TE")}
+                  />
+                  Teclado
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("AU")}
+                    onChange={() => toggleSubcategoria("AU")}
+                  />
+                  Auriculares
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("MT")}
+                    onChange={() => toggleSubcategoria("MT")}
+                  />
+                  Monitores
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("MI")}
+                    onChange={() => toggleSubcategoria("MI")}
+                  />
+                  Microfonos
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("CW")}
+                    onChange={() => toggleSubcategoria("CW")}
+                  />
+                  Camara web
+                </label>
+              </li>
+            </ul>
           </li>
           <li className={`categoria${openSubcat === "RO" ? " open" : ""}`}>
             <button
-              className={`boton-categoria abrir-subcat ${filtros.categoria === "RO" ? "active" : ""}`}
+              className={`boton-categoria abrir-subcat ${
+                openSubcat === "RO" || filtros.categoria === "RO"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() => {
-                setCategoria("RO");
+                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
                 handleToggleSubcat("RO");
               }}
+              aria-expanded={openSubcat === "RO"}
             >
-              Ropa <span>{openSubcat === "RO" ? "▲" : "▼"}</span>
+              <span className="boton-categoria-label">Ropa</span>
+              {countSelected("RO") > 0 && (
+                <span className="filtro-badge" aria-hidden="true">
+                  {countSelected("RO")}
+                </span>
+              )}
+              <i
+                className={`bi caret-icon ${
+                  openSubcat === "RO"
+                    ? "bi-caret-up-fill"
+                    : "bi-caret-down-fill"
+                }`}
+                aria-hidden="true"
+              />
             </button>
-            {openSubcat === "RO" && (
-              <ul className="subcategorias">
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={filtros.subcategorias.includes("ALL-RO")}
-                      onChange={() => toggleSubcategoria("ALL-RO")}
-                    />
-                    Todos
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("PG")}
-                      onChange={() => toggleSubcategoria("PG")}
-                    />
-                    Polerones Gamers Personalizados
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="filtro-subcat"
-                      checked={filtros.subcategorias.includes("PR")}
-                      onChange={() => toggleSubcategoria("PR")}
-                    />
-                    Poleras Personalizadas
-                  </label>
-                </li>
-              </ul>
-            )}
+
+            <ul
+              className={`subcategorias ${openSubcat === "RO" ? "open" : ""}`}
+            >
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filtros.subcategorias.includes("ALL-RO")}
+                    onChange={() => toggleSubcategoria("ALL-RO")}
+                  />
+                  Todos
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("PG")}
+                    onChange={() => toggleSubcategoria("PG")}
+                  />
+                  Polerones Gamers Personalizados
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="filtro-subcat"
+                    checked={filtros.subcategorias.includes("PR")}
+                    onChange={() => toggleSubcategoria("PR")}
+                  />
+                  Poleras Personalizadas
+                </label>
+              </li>
+            </ul>
           </li>
         </ul>
 

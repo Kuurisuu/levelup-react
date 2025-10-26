@@ -94,7 +94,11 @@ export default function Header(): React.JSX.Element {
         if (detailsSub) detailsSub.textContent = "Tu cuenta";
 
         if (submenu) {
+          // Añadir enlace a Perfil y opción de Cerrar Sesión
           submenu.innerHTML = `
+            <li>
+              <a href="/profile" class="despliegue-submenu-link">Perfil</a>
+            </li>
             <li>
               <button type="button" id="lvup-logout" class="despliegue-submenu-boton">
                 Cerrar Sesión
@@ -103,6 +107,17 @@ export default function Header(): React.JSX.Element {
           `;
           const logoutBtn = submenu.querySelector("#lvup-logout");
           if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
+
+          // Usar navigate para el link de perfil
+          const perfilLink = submenu.querySelector(
+            ".despliegue-submenu-link"
+          ) as HTMLAnchorElement | null;
+          if (perfilLink) {
+            perfilLink.addEventListener("click", (ev) => {
+              ev.preventDefault();
+              navigate("/profile");
+            });
+          }
         }
       }
 
@@ -293,7 +308,7 @@ export default function Header(): React.JSX.Element {
                     <Link to="/contacto">Contáctanos</Link>
                   </li>
                   <li>
-                    <a 
+                    <a
                       href="https://wa.me/56912345678?text=¡Hola!%20Necesito%20soporte%20técnico%20para%20un%20producto%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20la%20solución%20del%20problema?"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -369,7 +384,7 @@ export default function Header(): React.JSX.Element {
             <Link to="/contacto">Contáctanos</Link>
           </li>
           <li>
-            <a 
+            <a
               href="https://wa.me/56912345678?text=¡Hola!%20Necesito%20soporte%20técnico%20para%20un%20producto%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20la%20solución%20del%20problema?"
               target="_blank"
               rel="noopener noreferrer"
