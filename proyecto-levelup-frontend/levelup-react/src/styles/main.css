@@ -74,6 +74,18 @@ body {
   background-color: var(--clr-main);
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 img,
 picture,
 video,
@@ -136,7 +148,9 @@ button {
 
 main {
   display: block;
-  margin-top: 8rem;
+  margin-top: var(--header-height);
+  /* permitir que el main crezca dentro del body flex para empujar el footer abajo */
+  flex: 1 0 auto;
 }
 
 section {
@@ -2109,7 +2123,7 @@ footer {
 
   /* Ajustar espacio con main */
   main {
-    margin-top: 11rem;
+    margin-top: var(--header-height);
   }
 
   /* Carrusel */

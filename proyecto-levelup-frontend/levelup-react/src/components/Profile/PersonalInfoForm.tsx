@@ -44,7 +44,7 @@ const PersonalInfoForm: React.FC<Props> = ({
 }) => {
   return (
     <div className="personal-info-section">
-      <h3>Información Personal</h3>
+      <h3>{isEditing ? "Editar Perfil" : "Información Personal"}</h3>
       <div className="perfil-form">
         <div className="form-group">
           <label

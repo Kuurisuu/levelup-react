@@ -57,7 +57,7 @@ export default function ProductoCard({
         }
       }}
     >
-      <div className="producto producto-card" data-id={producto.id}>
+      <article className="producto producto-card" data-id={producto.id}>
         <div className="producto-imagen-container">
           {/* Badge de descuento en la esquina superior izquierda */}
           {tieneDescuento && (
@@ -165,7 +165,7 @@ export default function ProductoCard({
             </button>
           </div>
         </div>
-      </div>
+      </article>
     </div>
   );
 }

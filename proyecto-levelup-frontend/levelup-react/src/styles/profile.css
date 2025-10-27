@@ -1,10 +1,17 @@
 .main-profile {
   width: 80%;
-  margin: 0 auto;
+  margin: var(--header-height) auto;
+  /* Centrar vertical y horizontalmente el contenido (tarjeta) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* ocupar al menos la altura visible descontando header/footer para centrar en el viewport */
 }
 
 .profile-card {
-  margin: 1rem 0;
+  margin: 0;
+  /* ocupar el ancho del contenedor .main-profile pero limitar con max-width */
+  width: 100%;
   border-radius: 1rem;
   padding: 1rem;
   border: 1px solid transparent;
@@ -84,6 +91,72 @@
   display: flex;
   gap: 0.6rem;
   align-items: center;
+}
+
+/* Nuevo: acciones de edición dentro del panel 'Información Personal' centradas */
+/* input valid state (match personal info) */
+.perfil-input.valid {
+  border-color: rgba(46, 204, 113, 0.9);
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.06);
+  /* force dark background and white text even when browser default styles try to override */
+  background: var(--clr-black) !important;
+  color: var(--clr-white) !important;
+}
+
+/* Ensure select (dropdown) stays dark when valid */
+.perfil-form select.perfil-input.valid {
+  background: var(--clr-black) !important;
+  color: var(--clr-white) !important;
+  -webkit-text-fill-color: var(--clr-white) !important; /* Safari */
+}
+
+/* Focus states should also keep dark background */
+.perfil-input.valid:focus,
+.perfil-form select.perfil-input.valid:focus {
+  background: var(--clr-black) !important;
+  color: var(--clr-white) !important;
+}
+.personal-actions {
+  margin-top: 0.9rem;
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center; /* centrar los botones */
+  align-items: center;
+}
+.personal-actions .edit-actions {
+  justify-content: center;
+}
+
+.pw-field-wrapper {
+  position: relative;
+}
+.pw-field-wrapper .perfil-input {
+  padding-right: 2.6rem; /* espacio para el botón ojo */
+}
+.pw-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--clr-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.pw-toggle-btn:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* Mostrar los toggles inactivos cuando aria-disabled="true" */
+.accordion-toggle[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .perfil-actions #pf-msg {
