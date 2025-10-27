@@ -38,7 +38,9 @@ const SettingsSection: React.FC<Props> = ({
   const [showConfirm, setShowConfirm] = React.useState(false);
   return (
     <div className="settings-section">
-      <h3>{changingPassword ? "Cambiar Contraseña" : "Configuración de Cuenta"}</h3>
+      <h3>
+        {changingPassword ? "Cambiar Contraseña" : "Configuración de Cuenta"}
+      </h3>
       <div className="settings-options">
         {!changingPassword && (
           <ul className="settings-list">
@@ -134,10 +136,14 @@ const SettingsSection: React.FC<Props> = ({
                 <button
                   type="button"
                   className="pw-toggle-btn"
-                  aria-label={showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={
+                    showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"
+                  }
                   onClick={() => setShowCurrent((s) => !s)}
                 >
-                  <i className={`bi ${showCurrent ? "bi-eye" : "bi-eye-slash"}`}></i>
+                  <i
+                    className={`bi ${showCurrent ? "bi-eye" : "bi-eye-slash"}`}
+                  ></i>
                 </button>
               </div>
               {pwdErrors.currentPassword && (
@@ -168,10 +174,14 @@ const SettingsSection: React.FC<Props> = ({
                 <button
                   type="button"
                   className="pw-toggle-btn"
-                  aria-label={showNew ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={
+                    showNew ? "Ocultar contraseña" : "Mostrar contraseña"
+                  }
                   onClick={() => setShowNew((s) => !s)}
                 >
-                  <i className={`bi ${showNew ? "bi-eye" : "bi-eye-slash"}`}></i>
+                  <i
+                    className={`bi ${showNew ? "bi-eye" : "bi-eye-slash"}`}
+                  ></i>
                 </button>
               </div>
               {pwdErrors.newPassword && (
@@ -205,10 +215,14 @@ const SettingsSection: React.FC<Props> = ({
                 <button
                   type="button"
                   className="pw-toggle-btn"
-                  aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={
+                    showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"
+                  }
                   onClick={() => setShowConfirm((s) => !s)}
                 >
-                  <i className={`bi ${showConfirm ? "bi-eye" : "bi-eye-slash"}`}></i>
+                  <i
+                    className={`bi ${showConfirm ? "bi-eye" : "bi-eye-slash"}`}
+                  ></i>
                 </button>
               </div>
               {pwdErrors.confirmPassword && (

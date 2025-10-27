@@ -557,14 +557,12 @@ const Profile = () => {
   useEffect(() => {
     if (!changingPassword) return;
 
-
     const anyTyped =
       (pwdFields.currentPassword && pwdFields.currentPassword.length > 0) ||
       (pwdFields.newPassword && pwdFields.newPassword.length > 0) ||
       (pwdFields.confirmPassword && pwdFields.confirmPassword.length > 0);
 
     if (!anyTyped) {
-
       setPwdErrors({});
       setValidFields((prev) => ({
         ...prev,
