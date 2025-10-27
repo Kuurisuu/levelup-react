@@ -25,7 +25,7 @@
 
 /* Sobrescribir estilos del main para admin */
 main {
-   margin-top: 3% !important; /* Sin margen superior */
+   margin-top: 6% !important; /* Sin margen superior */
    padding: 0 !important; /* Sin padding */
 }
 
