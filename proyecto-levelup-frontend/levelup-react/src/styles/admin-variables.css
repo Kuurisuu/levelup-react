@@ -1,0 +1,123 @@
+/* Variables de colores */
+:root {
+   --primary-bg: #121212;
+   --secondary-bg: #1E1E1E;
+   --accent-blue: #1E90FF;
+   --accent-green: #39FF14;
+   --text-primary: #FFFFFF;
+   --text-secondary: #D3D3D3;
+   --text-color: #FFFFFF;
+   --text-muted: #9ca3af;
+   --border-color: #333333;
+   --card-bg: #1E1E1E;
+   --success: #4CAF50;
+   --warning: #FFC107;
+   --danger: #F44336;
+   --info: #2196F3;
+}
+
+/* Sobrescribir estilos del wrapper para admin */
+.wrapper {
+   max-width: 99% !important; /* Sin límite de ancho */
+   padding-inline: 0 !important; /* Sin padding lateral */
+   width: 100% !important;
+}
+
+/* Sobrescribir estilos del main para admin */
+main {
+   margin-top: 3% !important; /* Sin margen superior */
+   padding: 0 !important; /* Sin padding */
+}
+
+/* Estilos generales */
+.admin-body {
+   font-family: 'Roboto', sans-serif;
+   background-color: var(--primary-bg);
+   color: var(--text-primary);
+   margin: 0;
+   padding: 0;
+   min-height: 100vh;
+   display: flex;
+}
+
+a {
+   text-decoration: none;
+   color: var(--accent-blue);
+   transition: color 0.3s ease;
+}
+
+a:hover {
+   color: var(--accent-green);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+   from { opacity: 0; transform: translateY(10px); }
+   to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+   animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes spin {
+   0% { transform: rotate(0deg); }
+   100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+   0%, 100% { transform: scale(1); }
+   50% { transform: scale(1.05); }
+}
+
+@keyframes bounce {
+   0% { transform: translateY(0); }
+   100% { transform: translateY(-3px); }
+}
+
+@keyframes progressGlow {
+   from {
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+   }
+   to {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+   }
+}
+
+@keyframes shimmer {
+   0% {
+      left: -100%;
+   }
+   100% {
+      left: 100%;
+   }
+}
+
+@keyframes pulse-glow {
+   0% {
+      filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
+   }
+   100% {
+      filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.6));
+   }
+}
+
+@keyframes progress-glow-blue {
+   0% {
+      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+   }
+   100% {
+      filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.6));
+   }
+}
+
+@keyframes pulse-highlight {
+   0% {
+      r: 5;
+      opacity: 0.8;
+   }
+   100% {
+      r: 7;
+      opacity: 1;
+   }
+}

@@ -14,8 +14,12 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Blog from "./pages/Blog";
 import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminProductos from "./pages/AdminProductos";
 import AdminUsuarios from "./pages/AdminUsuarios";
+import AdminOrdenes from "./pages/AdminOrdenes";
+import AdminCategorias from "./pages/AdminCategorias";
+import AdminReportes from "./pages/AdminReportes";
 import Checkout from "./pages/Checkout";
 
 export default function App() {
@@ -38,8 +42,12 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/productos" element={<AdminProductos />} />
           <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+          <Route path="/admin/ordenes" element={<AdminOrdenes />} />
+          <Route path="/admin/categorias" element={<AdminCategorias />} />
+          <Route path="/admin/reportes" element={<AdminReportes />} />
         </Routes>
       </main>
       <Footer />

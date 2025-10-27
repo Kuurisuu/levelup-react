@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
+import { obtenerProductos } from '../data/catalogo';
 import '../styles/admin.css';
 
-type Producto = {
+type ProductoAdmin = {
+  id: string;
   codigo: string;
   nombre: string;
   descripcion: string;
@@ -10,7 +12,14 @@ type Producto = {
   stock: number;
   stockCritico: number | null;
   categoria: string;
+  subcategoria?: string;
   imagen: string;
+  disponible: boolean;
+  destacado: boolean;
+  fabricante?: string;
+  distribuidor?: string;
+  descuento?: number;
+  rating: number;
 };
 
 type FormErrors = {
@@ -21,9 +30,110 @@ type FormErrors = {
   categoria?: string;
 };
 
+// Componente memoizado para filas de productos
+const FilaProducto = memo(({ 
+  producto, 
+  onEdit, 
+  onDelete 
+}: { 
+  producto: ProductoAdmin; 
+  onEdit: (producto: ProductoAdmin) => void; 
+  onDelete: (id: string) => void; 
+}) => {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  const handleImageError = () => {
+    setImageError(true);
+  };
+  
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+  
+  const imageSrc = imageError 
+    ? './img/otros/placeholder.png' 
+    : (producto.imagen.startsWith('./') ? producto.imagen : `./${producto.imagen}`);
+  
+  return (
+    <tr key={producto.id}>
+      <td>
+        <div className="contenedor-imagen-producto">
+          <img 
+            src={imageSrc}
+            alt={producto.nombre}
+            className={`imagen-producto-tabla ${imageLoaded ? 'loaded' : 'loading'}`}
+            loading="lazy"
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+          />
+        </div>
+      </td>
+      <td>
+        <strong>{producto.codigo}</strong>
+      </td>
+      <td>
+        <div className="info-producto">
+          <strong>{producto.nombre}</strong>
+          {producto.destacado && <span className="badge-destacado">Destacado</span>}
+        </div>
+      </td>
+      <td>{producto.categoria}</td>
+      <td>{producto.subcategoria || '-'}</td>
+      <td>
+        <div className="precio-info">
+          {producto.descuento && producto.descuento > 0 ? (
+            <>
+              <span className="precio-original">${Number(producto.precio).toLocaleString('es-CL')}</span>
+              <span className="precio-descuento">${Number(producto.precio * (1 - producto.descuento / 100)).toLocaleString('es-CL')}</span>
+              <span className="descuento-badge">-{producto.descuento}%</span>
+            </>
+          ) : (
+            <span>${Number(producto.precio).toLocaleString('es-CL')}</span>
+          )}
+        </div>
+      </td>
+      <td>
+        <span className={producto.stock <= 5 ? 'stock-bajo' : 'stock-normal'}>
+          {producto.stock}
+        </span>
+      </td>
+      <td>
+        <span className={producto.disponible ? 'status-disponible' : 'status-no-disponible'}>
+          {producto.disponible ? 'Disponible' : 'No disponible'}
+        </span>
+      </td>
+      <td>
+        <div className="rating-info">
+          <span className="rating-stars">★</span>
+          <span>{producto.rating ? producto.rating.toFixed(1) : '0.0'}</span>
+        </div>
+      </td>
+      <td>
+        <div className="acciones-producto">
+          <button 
+            className="btn-editar" 
+            onClick={() => onEdit(producto)}
+            title="Editar producto"
+          >
+            Editar
+          </button>
+          <button 
+            className="btn-eliminar" 
+            onClick={() => onDelete(producto.id)}
+            title="Eliminar producto"
+          >
+            Eliminar
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+});
+
 const AdminProductos = () => {
   // estado para productos
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [productos, setProductos] = useState<ProductoAdmin[]>([]);
   
   // estado para el formulario
   const [formData, setFormData] = useState({
@@ -34,24 +144,51 @@ const AdminProductos = () => {
     stock: '',
     stockCritico: '',
     categoria: '',
-    imagen: ''
+    subcategoria: '',
+    imagen: '',
+    fabricante: '',
+    distribuidor: '',
+    descuento: '',
+    rating: ''
   });
 
   // estado para errores
   const [errors, setErrors] = useState<FormErrors>({});
 
   // estado para edicion
-  const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
+  const [editingProduct, setEditingProduct] = useState<ProductoAdmin | null>(null);
 
   // clave de storage
   const STORAGE_KEY = 'admin_productos';
 
+  // función para convertir producto del catálogo a formato admin (memoizada)
+  const convertirProductoCatalogo = useCallback((producto: any): ProductoAdmin => {
+    return {
+      id: producto.id || `prod_${Date.now()}`,
+      codigo: producto.id || `prod_${Date.now()}`, // Usar el ID como código
+      nombre: producto.nombre || 'Sin nombre',
+      descripcion: producto.descripcion || '',
+      precio: producto.precio || 0,
+      stock: producto.stock || 0,
+      stockCritico: null,
+      categoria: producto.categoria?.nombre || 'Sin categoría',
+      subcategoria: producto.subcategoria?.nombre || '',
+      imagen: producto.imagenUrl || './img/otros/placeholder.png',
+      disponible: producto.disponible !== undefined ? producto.disponible : true,
+      destacado: producto.destacado || false,
+      fabricante: producto.fabricante || '',
+      distribuidor: producto.distribuidor || '',
+      descuento: producto.descuento || 0,
+      rating: producto.rating || 0
+    };
+  }, []);
+
   // funciones de storage
-  const guardar = (lista: Producto[]) => {
+  const guardar = (lista: ProductoAdmin[]) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
   };
 
-  const cargar = (): Producto[] => {
+  const cargar = (): ProductoAdmin[] => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     } catch {
@@ -61,9 +198,30 @@ const AdminProductos = () => {
 
   // cargar productos al montar componente
   useEffect(() => {
-    const productosGuardados = cargar();
-    setProductos(productosGuardados);
-  }, []);
+    try {
+      // Cargar productos del catálogo
+      const productosCatalogo = obtenerProductos();
+      const productosConvertidos = productosCatalogo.map(convertirProductoCatalogo);
+      
+      // Cargar productos guardados localmente
+      const productosGuardados = cargar();
+      
+      // Combinar productos del catálogo con los guardados localmente
+      // Los productos guardados localmente tienen prioridad sobre los del catálogo
+      const productosCombinados = [...productosConvertidos];
+      
+      // Agregar productos guardados que no estén en el catálogo
+      productosGuardados.forEach(productoGuardado => {
+        if (!productosCombinados.find(p => p.id === productoGuardado.id)) {
+          productosCombinados.push(productoGuardado);
+        }
+      });
+      
+      setProductos(productosCombinados);
+    } catch (error) {
+      console.error('Error loading products:', error);
+    }
+  }, [convertirProductoCatalogo]);
 
   // manejar cambios en el formulario
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -133,7 +291,8 @@ const AdminProductos = () => {
       return;
     }
 
-    const producto: Producto = {
+    const producto: ProductoAdmin = {
+      id: editingProduct ? editingProduct.id : `prod_${Date.now()}`,
       codigo: formData.codigo.trim(),
       nombre: formData.nombre.trim(),
       descripcion: formData.descripcion.trim(),
@@ -141,14 +300,21 @@ const AdminProductos = () => {
       stock: Number(formData.stock),
       stockCritico: formData.stockCritico ? Number(formData.stockCritico) : null,
       categoria: formData.categoria,
-      imagen: formData.imagen.trim()
+      subcategoria: formData.subcategoria || '',
+      imagen: formData.imagen.trim() || './img/otros/placeholder.png',
+      disponible: true,
+      destacado: false,
+      fabricante: formData.fabricante || '',
+      distribuidor: formData.distribuidor || '',
+      descuento: formData.descuento ? Number(formData.descuento) : 0,
+      rating: formData.rating ? Number(formData.rating) : 0
     };
 
     let nuevaLista;
     if (editingProduct) {
       // editar producto existente
       nuevaLista = productos.map(p => 
-        p.codigo === editingProduct.codigo ? producto : p
+        p.id === editingProduct.id ? producto : p
       );
     } else {
       // agregar nuevo producto
@@ -170,14 +336,19 @@ const AdminProductos = () => {
       stock: '',
       stockCritico: '',
       categoria: '',
-      imagen: ''
+      subcategoria: '',
+      imagen: '',
+      fabricante: '',
+      distribuidor: '',
+      descuento: '',
+      rating: ''
     });
     setErrors({});
     setEditingProduct(null);
   };
 
   // editar producto
-  const handleEdit = (producto: Producto) => {
+  const handleEdit = (producto: ProductoAdmin) => {
     setFormData({
       codigo: producto.codigo,
       nombre: producto.nombre,
@@ -186,16 +357,21 @@ const AdminProductos = () => {
       stock: producto.stock.toString(),
       stockCritico: producto.stockCritico ? producto.stockCritico.toString() : '',
       categoria: producto.categoria,
-      imagen: producto.imagen || ''
+      subcategoria: producto.subcategoria || '',
+      imagen: producto.imagen || '',
+      fabricante: producto.fabricante || '',
+      distribuidor: producto.distribuidor || '',
+      descuento: producto.descuento ? producto.descuento.toString() : '',
+      rating: producto.rating ? producto.rating.toString() : ''
     });
     setEditingProduct(producto);
     setErrors({});
   };
 
   // eliminar producto
-  const handleDelete = (codigo: string) => {
+  const handleDelete = (id: string) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-      const nuevaLista = productos.filter(p => p.codigo !== codigo);
+      const nuevaLista = productos.filter(p => p.id !== id);
       setProductos(nuevaLista);
       guardar(nuevaLista);
     }
@@ -209,6 +385,11 @@ const AdminProductos = () => {
             <h2>Admin</h2>
             <ul>
               <li>
+                <Link to="/admin/dashboard">
+                  <i className="bi bi-speedometer2"></i> Dashboard
+                </Link>
+              </li>
+              <li>
                 <Link to="/admin/usuarios">
                   <i className="bi bi-people-fill"></i> Usuarios
                 </Link>
@@ -216,6 +397,21 @@ const AdminProductos = () => {
               <li>
                 <Link to="/admin/productos">
                   <i className="bi bi-controller"></i> Productos
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/ordenes">
+                  <i className="bi bi-cart-check"></i> Órdenes
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/categorias">
+                  <i className="bi bi-tags"></i> Categorías
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/reportes">
+                  <i className="bi bi-graph-up"></i> Reportes
                 </Link>
               </li>
             </ul>
@@ -349,44 +545,35 @@ const AdminProductos = () => {
             </section>
 
             <section>
-              <h2>Listado</h2>
-              <table id="tabla-productos">
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {productos.map(producto => (
-                    <tr key={producto.codigo}>
-                      <td>{producto.codigo}</td>
-                      <td>{producto.nombre}</td>
-                      <td>{producto.categoria}</td>
-                      <td>${Number(producto.precio).toLocaleString('es-CL')}</td>
-                      <td>{producto.stock}</td>
-                      <td>
-                        <button 
-                          className="btn-editar" 
-                          onClick={() => handleEdit(producto)}
-                        >
-                          Editar
-                        </button>
-                        <button 
-                          className="btn-eliminar" 
-                          onClick={() => handleDelete(producto.codigo)}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
+              <h2>Listado de productos</h2>
+              <div className="tabla-productos-container">
+                <table id="tabla-productos">
+                  <thead>
+                    <tr>
+                      <th>Imagen</th>
+                      <th>Código</th>
+                      <th>Nombre</th>
+                      <th>Categoría</th>
+                      <th>Subcategoría</th>
+                      <th>Precio</th>
+                      <th>Stock</th>
+                      <th>Estado</th>
+                      <th>Rating</th>
+                      <th>Acciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {productos.map(producto => (
+                      <FilaProducto
+                        key={producto.id}
+                        producto={producto}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </section>
           </main>
         </div>

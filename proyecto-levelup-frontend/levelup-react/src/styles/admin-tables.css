@@ -1,0 +1,600 @@
+/* Tablas */
+.admin-content table {
+  width: 100%;
+  background-color: var(--secondary-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+.admin-content th,
+.admin-content td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-content th {
+  background-color: var(--primary-bg);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.admin-content td {
+  color: var(--text-secondary);
+}
+
+.admin-content tr:hover {
+  background-color: rgba(30, 144, 255, 0.05);
+}
+
+/* Botones de tabla */
+.btn-editar,
+.btn-eliminar {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+  margin: 0 2px !important;
+  border-radius: 3px !important;
+}
+
+.btn-editar {
+  background-color: var(--info) !important;
+}
+
+.btn-editar:hover {
+  background-color: #1976d2 !important;
+}
+
+.btn-eliminar {
+  background-color: var(--danger) !important;
+}
+
+.btn-eliminar:hover {
+  background-color: #d32f2f !important;
+}
+
+/* Tablas de usuarios/productos */
+#tabla-usuarios,
+#tabla-productos {
+   width: 100%;
+   border-collapse: collapse;
+   background-color: #161616;
+   border: 1px solid var(--border-color);
+}
+
+#tabla-usuarios thead th,
+#tabla-productos thead th {
+   background-color: var(--secondary-bg);
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   font-size: .8rem;
+   letter-spacing: .3px;
+}
+
+#tabla-usuarios th, #tabla-usuarios td,
+#tabla-productos th, #tabla-productos td {
+   padding: 10px 12px;
+   border-bottom: 1px solid var(--border-color);
+   color: var(--text-primary);
+}
+
+#tabla-usuarios tbody tr:hover,
+#tabla-productos tbody tr:hover {
+   background-color: rgba(255,255,255,.03);
+}
+
+/* Filas cebradas para que sea más VISIBLE el listado */
+#tabla-usuarios tbody tr:nth-child(even),
+#tabla-productos tbody tr:nth-child(even) {
+   background-color: #1a1a1a;
+}
+
+/* Botones en acciones de tabla */
+.btn-editar,
+.btn-eliminar {
+   border: 0;
+   padding: 6px 10px;
+   border-radius: 6px;
+   cursor: pointer;
+   font-size: .85rem;
+}
+
+.btn-editar { 
+   background-color: rgba(30,144,255,.15); 
+   color: var(--text-primary); 
+}
+
+.btn-eliminar { 
+   background-color: rgba(244,67,54,.15); 
+   color: var(--danger); 
+}
+
+.btn-editar:hover { 
+   background-color: rgba(30,144,255,.25); 
+}
+
+.btn-eliminar:hover { 
+   background-color: rgba(244,67,54,.25); 
+}
+
+/* Estilos específicos para categorías */
+#tabla-categorias {
+   width: 100%;
+   border-collapse: collapse;
+   background-color: #161616;
+   border: 1px solid var(--border-color);
+   border-radius: 8px;
+   overflow: hidden;
+   box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+
+#tabla-categorias thead th {
+   background-color: var(--secondary-bg);
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   font-size: .8rem;
+   letter-spacing: .3px;
+   font-weight: 600;
+   padding: 15px 12px;
+   text-align: left;
+   border-bottom: 2px solid var(--border-color);
+}
+
+#tabla-categorias th, #tabla-categorias td {
+   padding: 12px;
+   border-bottom: 1px solid var(--border-color);
+   color: var(--text-primary);
+   vertical-align: middle;
+}
+
+#tabla-categorias tbody tr:hover {
+   background-color: rgba(255,255,255,.03);
+   transition: background-color 0.2s ease;
+}
+
+#tabla-categorias tbody tr:nth-child(even) {
+   background-color: #1a1a1a;
+}
+
+/* Columna de subcategorías con mejor alineación */
+#tabla-categorias td:nth-child(4) {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   flex-wrap: wrap;
+}
+
+/* Contenedor responsive para la tabla */
+.tabla-categorias-container {
+   overflow-x: auto;
+   margin-bottom: 20px;
+   border-radius: 8px;
+   box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+
+/* Estados de categorías */
+.status-activo {
+   color: var(--success);
+   font-weight: 500;
+}
+
+.status-inactivo {
+   color: var(--danger);
+   font-weight: 500;
+}
+
+/* Información de subcategorías */
+.subcategorias-info {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   flex-wrap: wrap;
+}
+
+.contador-subcategorias {
+   color: var(--text-secondary);
+   font-size: .9rem;
+   font-weight: 500;
+}
+
+/* Acciones de categoría */
+.acciones-categoria {
+   display: flex;
+   gap: 8px;
+   flex-wrap: wrap;
+}
+
+/* Descripción de categoría */
+.descripcion-categoria {
+   color: var(--text-secondary);
+   font-size: .9rem;
+   line-height: 1.4;
+   max-width: 300px;
+   display: block;
+}
+
+/* Subcategorías existentes en el formulario */
+.subcategorias-existentes {
+   margin-top: 20px;
+   padding: 15px;
+   background-color: #1a1a1a;
+   border-radius: 8px;
+   border: 1px solid var(--border-color);
+}
+
+.subcategorias-existentes h3 {
+   color: var(--accent-blue);
+   margin: 0 0 15px 0;
+   font-size: 1rem;
+   font-weight: 600;
+}
+
+.lista-subcategorias {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+}
+
+.item-subcategoria {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 12px;
+   background-color: #161616;
+   border-radius: 6px;
+   border: 1px solid var(--border-color);
+   transition: all 0.2s ease;
+}
+
+.item-subcategoria:hover {
+   background-color: #1e1e1e;
+   border-color: var(--accent-blue);
+}
+
+.info-subcategoria {
+   display: flex;
+   flex-direction: column;
+   gap: 4px;
+   flex: 1;
+}
+
+.info-subcategoria strong {
+   color: var(--text-primary);
+   font-size: .9rem;
+}
+
+.descripcion-subcategoria {
+   color: var(--text-secondary);
+   font-size: .8rem;
+   line-height: 1.3;
+}
+
+.acciones-subcategoria {
+   display: flex;
+   gap: 8px;
+   flex-shrink: 0;
+}
+
+.acciones-subcategoria .btn-editar,
+.acciones-subcategoria .btn-eliminar {
+   padding: 4px 8px;
+   font-size: .75rem;
+}
+
+/* Sección de subcategorías */
+.subcategorias-section {
+   margin-bottom: 20px;
+   padding: 15px;
+   background-color: #1a1a1a;
+   border-radius: 8px;
+   border: 1px solid var(--border-color);
+}
+
+.subcategorias-section h3 {
+   color: var(--accent-blue);
+   margin: 0 0 15px 0;
+   font-size: 1rem;
+   font-weight: 600;
+}
+
+/* Tabla de subcategorías */
+.tabla-subcategorias {
+   width: 100%;
+   border-collapse: collapse;
+   background-color: #161616;
+   border: 1px solid var(--border-color);
+   border-radius: 6px;
+   overflow: hidden;
+}
+
+.tabla-subcategorias thead th {
+   background-color: var(--primary-bg);
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   font-size: .75rem;
+   letter-spacing: .3px;
+   padding: 8px 10px;
+}
+
+.tabla-subcategorias th, .tabla-subcategorias td {
+   padding: 8px 10px;
+   border-bottom: 1px solid var(--border-color);
+   color: var(--text-primary);
+}
+
+.tabla-subcategorias tbody tr:hover {
+   background-color: rgba(255,255,255,.03);
+}
+
+.tabla-subcategorias tbody tr:nth-child(even) {
+   background-color: #1a1a1a;
+}
+
+/* Botones de subcategorías */
+.tabla-subcategorias .btn-editar,
+.tabla-subcategorias .btn-eliminar {
+   padding: 4px 8px;
+   font-size: .75rem;
+   margin: 0 2px;
+}
+
+/* Estilos específicos para tabla de productos */
+.tabla-productos-container {
+   overflow-x: auto;
+   margin-bottom: 20px;
+   border-radius: 8px;
+   box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+
+#tabla-productos {
+   width: 100%;
+   border-collapse: collapse;
+   background-color: #161616;
+   border: 1px solid var(--border-color);
+   border-radius: 8px;
+   overflow: hidden;
+   min-width: 1000px;
+}
+
+#tabla-productos thead th {
+   background-color: var(--secondary-bg);
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   font-size: .8rem;
+   letter-spacing: .3px;
+   font-weight: 600;
+   padding: 15px 12px;
+   text-align: left;
+   border-bottom: 2px solid var(--border-color);
+}
+
+#tabla-productos th, #tabla-productos td {
+   padding: 12px;
+   border-bottom: 1px solid var(--border-color);
+   color: var(--text-primary);
+   vertical-align: middle;
+}
+
+#tabla-productos tbody tr:hover {
+   background-color: rgba(255,255,255,.03);
+   transition: background-color 0.2s ease;
+}
+
+#tabla-productos tbody tr:nth-child(even) {
+   background-color: #1a1a1a;
+}
+
+/* Contenedor de imagen del producto */
+.contenedor-imagen-producto {
+   width: 50px;
+   height: 50px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background-color: #1a1a1a;
+   border-radius: 6px;
+   border: 1px solid var(--border-color);
+   overflow: hidden;
+}
+
+/* Imagen del producto en tabla */
+.imagen-producto-tabla {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   border-radius: 6px;
+   transition: opacity 0.3s ease;
+   background-color: #1a1a1a;
+}
+
+/* Estados de carga de imagen */
+.imagen-producto-tabla.loading {
+   opacity: 0;
+   background-color: #2a2a2a;
+}
+
+.imagen-producto-tabla.loaded {
+   opacity: 1;
+}
+
+/* Evitar parpadeo durante la carga */
+.imagen-producto-tabla:not([src]) {
+   opacity: 0;
+   background-color: #2a2a2a;
+}
+
+/* Información del producto */
+.info-producto {
+   display: flex;
+   flex-direction: column;
+   gap: 4px;
+}
+
+.badge-destacado {
+   background-color: rgba(57, 255, 20, 0.15);
+   color: var(--accent-green);
+   padding: 2px 6px;
+   border-radius: 4px;
+   font-size: .7rem;
+   font-weight: 500;
+   width: fit-content;
+}
+
+/* Información de precios */
+.precio-info {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+}
+
+.precio-original {
+   text-decoration: line-through;
+   color: var(--text-secondary);
+   font-size: .8rem;
+}
+
+.precio-descuento {
+   color: var(--accent-green);
+   font-weight: 600;
+}
+
+.descuento-badge {
+   background-color: var(--danger);
+   color: white;
+   padding: 2px 4px;
+   border-radius: 3px;
+   font-size: .7rem;
+   font-weight: 500;
+   width: fit-content;
+}
+
+/* Estados de stock */
+.stock-bajo {
+   color: var(--danger);
+   font-weight: 600;
+}
+
+.stock-normal {
+   color: var(--text-primary);
+}
+
+/* Estados de disponibilidad */
+.status-disponible {
+   color: var(--success);
+   font-weight: 500;
+}
+
+.status-no-disponible {
+   color: var(--danger);
+   font-weight: 500;
+}
+
+/* Rating */
+.rating-info {
+   display: flex;
+   align-items: center;
+   gap: 4px;
+}
+
+.rating-stars {
+   color: var(--warning);
+   font-size: .9rem;
+}
+
+/* Acciones del producto */
+.acciones-producto {
+   display: flex;
+   gap: 8px;
+   flex-wrap: wrap;
+}
+
+.acciones-producto .btn-editar,
+.acciones-producto .btn-eliminar {
+   padding: 4px 8px;
+   font-size: .75rem;
+}
+
+/* Recent Orders */
+.section-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 20px;
+}
+
+.section-header h3 {
+   margin: 0;
+   font-size: 1.2rem;
+   color: var(--text-primary);
+}
+
+.view-all {
+   font-size: 0.9rem;
+   color: var(--accent-blue);
+}
+
+.table-responsive {
+   overflow-x: auto;
+}
+
+.orders-table {
+   width: 100%;
+   border-collapse: collapse;
+}
+
+.orders-table th, 
+.orders-table td {
+   padding: 12px 15px;
+   text-align: left;
+   border-bottom: 1px solid var(--border-color);
+}
+
+.orders-table th {
+   font-weight: 500;
+   color: var(--text-secondary);
+   font-size: 0.85rem;
+   text-transform: uppercase;
+   letter-spacing: 0.5px;
+}
+
+.orders-table tbody tr:hover {
+   background-color: rgba(255, 255, 255, 0.02);
+}
+
+.status-badge {
+   display: inline-block;
+   padding: 4px 8px;
+   border-radius: 12px;
+   font-size: 0.75rem;
+   font-weight: 500;
+}
+
+.status-badge.completed {
+   background-color: rgba(76, 175, 80, 0.1);
+   color: var(--success);
+}
+
+.status-badge.pending {
+   background-color: rgba(255, 193, 7, 0.1);
+   color: var(--warning);
+}
+
+.status-badge.cancelled {
+   background-color: rgba(244, 67, 54, 0.1);
+   color: var(--danger);
+}
+
+.btn-icon {
+   background: none;
+   border: none;
+   color: var(--text-secondary);
+   cursor: pointer;
+   padding: 5px;
+   border-radius: 4px;
+   transition: all 0.3s ease;
+}
+
+.btn-icon:hover {
+   color: var(--accent-blue);
+   background-color: rgba(30, 144, 255, 0.1);
+}
