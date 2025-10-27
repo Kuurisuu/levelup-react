@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import '../styles/admin.css';
 
-const Admin = () => {
+const AdminOrdenes = () => {
   return (
     <div className="wrapper">
       <main>
@@ -45,8 +45,10 @@ const Admin = () => {
 
           {/* CONTENIDO */}
           <main className="admin-content">
-            <h1>Panel de Administración</h1>
-            <p>Selecciona una opción en el menú lateral.</p>
+            <h1>Órdenes</h1>
+            <div>
+              <p>Aquí se gestionarán las órdenes de compra. Se podrán ver, editar, cambiar estados, procesar pagos, etc.</p>
+            </div>
           </main>
         </div>
       </main>
@@ -54,4 +56,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default AdminOrdenes;
