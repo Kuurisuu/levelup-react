@@ -501,9 +501,110 @@ const Profile = () => {
     }
   };
 
+  // Cuando entramos en modo editar perfil, validar todos los campos obligatorios inmediatamente
+  // Al salir del modo edición (guardar o cancelar) limpiar el estado de validación para dejarlos neutrales
+  useEffect(() => {
+    const personalKeys = [
+      "nombre",
+      "apellido",
+      "email",
+      "fechaNacimiento",
+      "region",
+      "comuna",
+    ];
+
+    if (isEditing) {
+      const { errors: valErrors } = validatePersonalInfo(userData);
+
+      setErrors((prev) => ({ ...prev, ...valErrors }));
+
+      // marcar campos válidos/ inválidos
+      setValidFields((prev) => ({
+        ...prev,
+        nombre: !valErrors.nombre,
+        apellido: !valErrors.apellido,
+        email: !valErrors.email,
+        fechaNacimiento: !valErrors.fechaNacimiento,
+        region: !valErrors.region,
+        comuna: !valErrors.comuna,
+      }));
+    } else {
+      // limpiar errores y validFlags solo para campos personales
+      setErrors((prev) => {
+        const next = { ...prev } as Record<string, string>;
+        personalKeys.forEach((k) => delete next[k]);
+        return next;
+      });
+
+      setValidFields((prev) => {
+        const next = { ...prev } as Record<string, boolean>;
+        personalKeys.forEach((k) => {
+          if (k in next) next[k] = false;
+        });
+        return next;
+      });
+    }
+  }, [isEditing]);
+
+  // cuando cambiamos a modo cambiar contraseña, mantenemos el panel settings abierto
+  useEffect(() => {
+    if (changingPassword) {
+      setOpenSection("settings");
+    }
+  }, [changingPassword]);
+
+  // validación en tiempo real para campos de contraseña cuando se esta editando contraseña
+  useEffect(() => {
+    if (!changingPassword) return;
+
+    const anyTyped =
+      (pwdFields.currentPassword && pwdFields.currentPassword.length > 0) ||
+      (pwdFields.newPassword && pwdFields.newPassword.length > 0) ||
+      (pwdFields.confirmPassword && pwdFields.confirmPassword.length > 0);
+
+    if (!anyTyped) {
+      setPwdErrors({});
+      setValidFields((prev) => ({
+        ...prev,
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false,
+      }));
+      return;
+    }
+
+    const errs = validatePasswordFieldsFor(pwdFields);
+    setPwdErrors(errs);
+
+    // actualizar validFields para que labelClassPwd y estilos de inputs muestren correcto/incorrecto
+    setValidFields((prev) => ({
+      ...prev,
+      currentPassword: !errs.currentPassword && !!pwdFields.currentPassword,
+      newPassword: !errs.newPassword && !!pwdFields.newPassword,
+      confirmPassword: !errs.confirmPassword && !!pwdFields.confirmPassword,
+    }));
+  }, [pwdFields, changingPassword]);
+
+  // cuando salimos de modo cambiar contraseña, limpiar los estados de validacion relacionados
+  useEffect(() => {
+    if (changingPassword) return;
+    setValidFields((prev) => ({
+      ...prev,
+      currentPassword: false,
+      newPassword: false,
+      confirmPassword: false,
+    }));
+    setPwdErrors({});
+  }, [changingPassword]);
+
+  const handleToggleSection = (name: string) => {
+    // Si estamos en modo edición o cambiando contraseña, bloquear cualquier cambio de sección
+    if (isEditing || changingPassword) return;
+    setOpenSection((s) => (s === name ? "" : name));
+  };
+
   // Cerrar sesión
   const handleLogout = () => {
-    // Use shared logout util so other parts can react
     try {
       // Dinamicamente importar el módulo de auth y llamar a logoutAndNotify
       import("../logic/auth").then((m) => {
@@ -528,7 +629,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="main-profile">
+    <main className="main-profile">
       <div className="profile-card">
         <div className="profile-header">
           <AvatarSection
@@ -544,51 +645,6 @@ const Profile = () => {
             onClickChangeAvatar={handleClickChangeAvatar}
             onCopyId={handleCopyId}
           />
-
-          <div className="perfil-actions">
-            {!isEditing ? (
-              <button
-                className="boton-menu deco-levelup edit-profile-btn"
-                onClick={() => setIsEditing(true)}
-              >
-                <i className="bi bi-pencil"></i>
-                Editar Perfil
-              </button>
-            ) : (
-              <div className="edit-actions">
-                <button
-                  className="boton-menu deco-levelup save-btn"
-                  onClick={handleSaveProfile}
-                  disabled={isSaving}
-                  aria-disabled={isSaving}
-                >
-                  <i className="bi bi-check"></i>
-                  {isSaving ? "Guardando..." : "Guardar"}
-                </button>
-                <button
-                  className="boton-menu border-levelup cancel-btn"
-                  onClick={handleCancelEdit}
-                  disabled={isSaving}
-                  aria-disabled={isSaving}
-                >
-                  <i className="bi bi-x"></i>
-                  Cancelar
-                </button>
-                {userData.avatar && (
-                  <button
-                    type="button"
-                    className="boton-menu border-levelup remove-avatar-inline"
-                    onClick={handleRemoveAvatar}
-                    disabled={isSaving}
-                    aria-label="Eliminar foto de perfil"
-                  >
-                    <i className="bi bi-trash"></i>
-                    Eliminar foto
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="profile-content">
@@ -597,9 +653,8 @@ const Profile = () => {
               <button
                 aria-expanded={openSection === "personal"}
                 className="accordion-toggle"
-                onClick={() =>
-                  setOpenSection((s) => (s === "personal" ? "" : "personal"))
-                }
+                aria-disabled={isEditing || changingPassword ? "true" : "false"}
+                onClick={() => handleToggleSection("personal")}
               >
                 Información Personal
               </button>
@@ -616,6 +671,53 @@ const Profile = () => {
                   handleInputChange={handleInputChange}
                   handleFieldBlur={handleFieldBlur}
                 />
+                <div className="personal-actions">
+                  {!isEditing ? (
+                    <button
+                      className="boton-menu deco-levelup edit-profile-btn"
+                      onClick={() => {
+                        setIsEditing(true);
+                        setOpenSection("personal");
+                      }}
+                    >
+                      <i className="bi bi-pencil"></i>
+                      Editar Perfil
+                    </button>
+                  ) : (
+                    <div className="edit-actions">
+                      <button
+                        className="boton-menu deco-levelup save-btn"
+                        onClick={handleSaveProfile}
+                        disabled={isSaving}
+                        aria-disabled={isSaving}
+                      >
+                        <i className="bi bi-check"></i>
+                        {isSaving ? "Guardando..." : "Guardar"}
+                      </button>
+                      <button
+                        className="boton-menu border-levelup cancel-btn"
+                        onClick={handleCancelEdit}
+                        disabled={isSaving}
+                        aria-disabled={isSaving}
+                      >
+                        <i className="bi bi-x"></i>
+                        Cancelar
+                      </button>
+                      {userData.avatar && (
+                        <button
+                          type="button"
+                          className="boton-menu border-levelup remove-avatar-inline"
+                          onClick={handleRemoveAvatar}
+                          disabled={isSaving}
+                          aria-label="Eliminar foto de perfil"
+                        >
+                          <i className="bi bi-trash"></i>
+                          Eliminar foto
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -623,9 +725,8 @@ const Profile = () => {
               <button
                 aria-expanded={openSection === "orders"}
                 className="accordion-toggle"
-                onClick={() =>
-                  setOpenSection((s) => (s === "orders" ? "" : "orders"))
-                }
+                aria-disabled={isEditing || changingPassword ? "true" : "false"}
+                onClick={() => handleToggleSection("orders")}
               >
                 Historial de Pedidos
               </button>
@@ -645,9 +746,8 @@ const Profile = () => {
               <button
                 aria-expanded={openSection === "points"}
                 className="accordion-toggle"
-                onClick={() =>
-                  setOpenSection((s) => (s === "points" ? "" : "points"))
-                }
+                aria-disabled={isEditing || changingPassword ? "true" : "false"}
+                onClick={() => handleToggleSection("points")}
               >
                 Puntos Level-Up
               </button>
@@ -671,9 +771,8 @@ const Profile = () => {
               <button
                 aria-expanded={openSection === "settings"}
                 className="accordion-toggle"
-                onClick={() =>
-                  setOpenSection((s) => (s === "settings" ? "" : "settings"))
-                }
+                aria-disabled={isEditing || changingPassword ? "true" : "false"}
+                onClick={() => handleToggleSection("settings")}
               >
                 Configuración de Cuenta
               </button>
@@ -689,6 +788,7 @@ const Profile = () => {
                   setPwdFields={setPwdFields}
                   pwdErrors={pwdErrors}
                   labelClassPwd={labelClassPwd}
+                  validFields={validFields}
                   handlePwdChangeSubmit={handlePwdChangeSubmit}
                   handleLogout={handleLogout}
                   handleDeleteAccount={handleDeleteAccount}
@@ -698,7 +798,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
