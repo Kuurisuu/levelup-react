@@ -1,0 +1,347 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Header > Debería hacer match con el snapshot 1`] = `
+<div>
+  <header
+    class="main-header container-fluid"
+  >
+    <div
+      class="main-header-container wrapper"
+    >
+      <div
+        class="header-row"
+      >
+        <div
+          class="header-left"
+        >
+          <button
+            aria-label="Abrir menú"
+            class="menu-toggle boton-menu"
+          >
+            <i
+              class="bi bi-list"
+            />
+          </button>
+          <a
+            class="logo"
+            href="/"
+          >
+            <img
+              alt="Logo Level Up"
+              src="/img/otros/logo.png"
+            />
+          </a>
+        </div>
+        <div
+          class="menu-celular"
+        >
+          <ul
+            class="menu-celular-lista"
+          >
+            <li
+              class="menu-celular-item"
+            >
+              <a
+                class="boton-menu border-levelup boton-identificate-celular"
+                href="/login"
+              >
+                <i
+                  class="bi bi-person-fill"
+                />
+                 Ingresar
+              </a>
+            </li>
+            <li>
+              <a
+                class="boton-menu boton-carrito-header"
+                href="/carrito"
+              >
+                <i
+                  class="bi bi-cart-fill"
+                />
+                <span
+                  class="contador-carrito"
+                >
+                  0
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div
+          class="header-search"
+        >
+          <form
+            autocomplete="off"
+            id="form-busqueda"
+          >
+            <input
+              class="input-busqueda"
+              name="q"
+              placeholder="Buscar productos..."
+              type="search"
+              value=""
+            />
+            <button
+              aria-label="Buscar"
+              class="boton-busqueda"
+              type="submit"
+            >
+              <i
+                class="bi bi-search"
+              />
+            </button>
+          </form>
+        </div>
+        <nav
+          class="header-nav"
+        >
+          <ul
+            class="menu"
+          >
+            <li>
+              <a
+                class="boton-submenu"
+                href="/"
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                class="boton-submenu"
+                href="/producto"
+              >
+                Productos
+              </a>
+            </li>
+            <li
+              class="tiene-submenu"
+            >
+              <button
+                class="boton-submenu"
+              >
+                Comunidad 
+                <i
+                  class="bi bi-caret-down-fill"
+                />
+              </button>
+              <ul
+                class="despliegue-submenu"
+              >
+                <li>
+                  <a
+                    href="/gaming-hub"
+                  >
+                    Blogs
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/eventos"
+                  >
+                    Eventos
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li
+              class="tiene-submenu"
+            >
+              <button
+                class="boton-submenu"
+              >
+                Nosotros 
+                <i
+                  class="bi bi-caret-down-fill"
+                />
+              </button>
+              <ul
+                class="despliegue-submenu"
+              >
+                <li>
+                  <a
+                    href="/nosotros"
+                  >
+                    Nuestra empresa
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/contacto"
+                  >
+                    Contáctanos
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://wa.me/56912345678?text=¡Hola!%20Necesito%20soporte%20técnico%20para%20un%20producto%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20la%20solución%20del%20problema?"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Contacto Soporte
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li
+              class="tiene-submenu"
+            >
+              <button
+                class="boton-submenu boton-identificate"
+              >
+                <i
+                  class="bi bi-person-fill"
+                />
+                <span
+                  class="detalles-identificate"
+                >
+                  <span>
+                    Ingresar
+                  </span>
+                  <span>
+                    Tu cuenta
+                  </span>
+                </span>
+                <i
+                  class="bi bi-caret-down-fill"
+                />
+              </button>
+              <ul
+                class="despliegue-submenu"
+              >
+                <li>
+                  <a
+                    href="/login"
+                  >
+                    Iniciar sesión
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/register"
+                  >
+                    Registrarse
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                class="boton-menu boton-carrito-header"
+                href="/carrito"
+              >
+                <i
+                  class="bi bi-cart-fill"
+                />
+                <span
+                  class="contador-carrito"
+                >
+                  0
+                </span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+    <aside
+      class="menu-lateral"
+      id="menu-lateral"
+    >
+      <header>
+        <div
+          class="menu-lateral-header"
+        >
+          <h2>
+            Menú LevelUp
+          </h2>
+          <button
+            aria-label="Cerrar menú"
+            class="menu-lateral-cerrar boton-menu"
+          >
+            <i
+              class="bi bi-x"
+            />
+          </button>
+        </div>
+      </header>
+      <ul>
+        <li>
+          <a
+            href="/"
+          >
+            Home
+          </a>
+        </li>
+        <li>
+          <a
+            href="/producto"
+          >
+            Productos
+          </a>
+        </li>
+        <li>
+          <a
+            href="/gaming-hub"
+          >
+            Blogs
+          </a>
+        </li>
+        <li>
+          <a
+            href="/eventos"
+          >
+            Eventos
+          </a>
+        </li>
+        <li>
+          <a
+            href="/nosotros"
+          >
+            Nuestra empresa
+          </a>
+        </li>
+        <li>
+          <a
+            href="/contacto"
+          >
+            Contáctanos
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://wa.me/56912345678?text=¡Hola!%20Necesito%20soporte%20técnico%20para%20un%20producto%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20la%20solución%20del%20problema?"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Soporte
+          </a>
+        </li>
+        <li
+          class="lvup-login-link"
+        >
+          <a
+            href="/login"
+          >
+            Iniciar sesión
+          </a>
+        </li>
+        <li
+          class="lvup-register-link"
+        >
+          <a
+            href="/register"
+          >
+            Registrarse
+          </a>
+        </li>
+      </ul>
+    </aside>
+    <div
+      class="overlay-menu"
+      id="overlay-menu"
+    />
+  </header>
+</div>
+`;

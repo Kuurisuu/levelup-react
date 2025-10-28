@@ -1,0 +1,274 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProductoList > Debería hacer match con el snapshot cuando está vacío 1`] = `
+<div>
+  <section
+    class="seccion-productos"
+  >
+    <h2
+      class="titulo-principal"
+    >
+      Todos los productos
+    </h2>
+    <div
+      class="productos"
+    >
+      <p
+        class="sin-resultados"
+      >
+        No se encontraron productos.
+      </p>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`ProductoList > Debería hacer match con el snapshot cuando tiene productos 1`] = `
+<div>
+  <section
+    class="seccion-productos"
+  >
+    <h2
+      class="titulo-principal"
+    >
+      Todos los productos
+    </h2>
+    <div
+      class="productos"
+    >
+      <div
+        class="contenedor-productos"
+      >
+        <article
+          class="producto producto-card"
+          data-id="prod-1"
+        >
+          <div
+            class="producto-imagen-container"
+          >
+            <div
+              class="producto-disponible-badge disponible"
+            >
+              Disponible
+            </div>
+            <div
+              class="producto-codigo-badge"
+            >
+              prod-1
+            </div>
+            <img
+              alt="Producto Test 1"
+              class="producto-imagen"
+              src="/img/test1.jpg"
+            />
+          </div>
+          <div
+            class="producto-detalles"
+          >
+            <div
+              class="producto-info-principal"
+            >
+              <div
+                class="producto-marca"
+              >
+                Test Manufacturer
+              </div>
+              <h3
+                class="producto-titulo"
+              >
+                Producto Test 1
+              </h3>
+              <p
+                class="producto-categoria"
+              >
+                Categoría Test
+                 
+                • Subcategoría Test
+              </p>
+              <div
+                class="producto-descripcion-container"
+              >
+                <p
+                  class="producto-descripcion"
+                >
+                  Descripción del producto 1
+                </p>
+              </div>
+            </div>
+            <div
+              class="producto-info-secundaria"
+            >
+              <div
+                class="producto-rating-container"
+              >
+                <div
+                  class="producto-rating"
+                  style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                >
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                </div>
+                <span
+                  class="producto-rating-promedio"
+                >
+                  4.5
+                </span>
+              </div>
+              <div
+                class="producto-precio-container"
+              >
+                <div
+                  class="precio-linea"
+                >
+                  <span
+                    class="precio-actual"
+                  >
+                    $10.000 CLP
+                  </span>
+                </div>
+              </div>
+              <button
+                class="producto-agregar active"
+              >
+                <i
+                  class="bi bi-cart-plus"
+                />
+                AGREGAR
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div
+        class="contenedor-productos"
+      >
+        <article
+          class="producto producto-card"
+          data-id="prod-2"
+        >
+          <div
+            class="producto-imagen-container"
+          >
+            <div
+              class="producto-disponible-badge disponible"
+            >
+              Disponible
+            </div>
+            <div
+              class="producto-codigo-badge"
+            >
+              prod-2
+            </div>
+            <img
+              alt="Producto Test 2"
+              class="producto-imagen"
+              src="/img/test2.jpg"
+            />
+          </div>
+          <div
+            class="producto-detalles"
+          >
+            <div
+              class="producto-info-principal"
+            >
+              <div
+                class="producto-marca"
+              >
+                Test Manufacturer 2
+              </div>
+              <h3
+                class="producto-titulo"
+              >
+                Producto Test 2
+              </h3>
+              <p
+                class="producto-categoria"
+              >
+                Categoría Test 2
+                 
+                • Subcategoría Test 2
+              </p>
+              <div
+                class="producto-descripcion-container"
+              >
+                <p
+                  class="producto-descripcion"
+                >
+                  Descripción del producto 2
+                </p>
+              </div>
+            </div>
+            <div
+              class="producto-info-secundaria"
+            >
+              <div
+                class="producto-rating-container"
+              >
+                <div
+                  class="producto-rating"
+                  style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                >
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star"
+                  />
+                </div>
+                <span
+                  class="producto-rating-promedio"
+                >
+                  4.0
+                </span>
+              </div>
+              <div
+                class="producto-precio-container"
+              >
+                <div
+                  class="precio-linea"
+                >
+                  <span
+                    class="precio-actual"
+                  >
+                    $20.000 CLP
+                  </span>
+                </div>
+              </div>
+              <button
+                class="producto-agregar active"
+              >
+                <i
+                  class="bi bi-cart-plus"
+                />
+                AGREGAR
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</div>
+`;

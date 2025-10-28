@@ -1,0 +1,131 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProductoCard > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="contenedor-productos"
+  >
+    <article
+      class="producto producto-card"
+      data-id="test-1"
+    >
+      <div
+        class="producto-imagen-container"
+      >
+        <div
+          class="producto-disponible-badge disponible"
+        >
+          Disponible
+        </div>
+        <div
+          class="producto-codigo-badge"
+        >
+          test-1
+        </div>
+        <img
+          alt="PlayStation 5"
+          class="producto-imagen"
+          src="/img/ps5.jpg"
+        />
+      </div>
+      <div
+        class="producto-detalles"
+      >
+        <div
+          class="producto-info-principal"
+        >
+          <div
+            class="producto-marca"
+          >
+            Sony
+          </div>
+          <h3
+            class="producto-titulo"
+          >
+            PlayStation 5
+          </h3>
+          <p
+            class="producto-categoria"
+          >
+            Consolas
+             
+            • PlayStation
+          </p>
+          <div
+            class="producto-descripcion-container"
+          >
+            <p
+              class="producto-descripcion"
+            >
+              Consola de videojuegos de última generación
+            </p>
+          </div>
+        </div>
+        <div
+          class="producto-info-secundaria"
+        >
+          <div
+            class="producto-rating-container"
+          >
+            <div
+              class="producto-rating"
+              style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+            >
+              <i
+                class="bi bi-star-fill"
+              />
+              <i
+                class="bi bi-star-fill"
+              />
+              <i
+                class="bi bi-star-fill"
+              />
+              <i
+                class="bi bi-star-fill"
+              />
+              <i
+                class="bi bi-star-fill"
+              />
+            </div>
+            <span
+              class="producto-rating-promedio"
+            >
+              4.5
+            </span>
+            <span
+              class="producto-reviews-count"
+            >
+              (
+              10
+               reseña
+              s
+              )
+            </span>
+          </div>
+          <div
+            class="producto-precio-container"
+          >
+            <div
+              class="precio-linea"
+            >
+              <span
+                class="precio-actual"
+              >
+                $500.000
+              </span>
+            </div>
+          </div>
+          <button
+            class="producto-agregar active"
+          >
+            <i
+              class="bi bi-cart-plus"
+            />
+            AGREGAR
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+`;
