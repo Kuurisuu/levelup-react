@@ -163,6 +163,12 @@ exports[`ProductoList > Debería hacer match con el snapshot cuando tiene produc
             class="producto-imagen-container"
           >
             <div
+              class="producto-descuento-badge"
+            >
+              10
+              % OFF
+            </div>
+            <div
               class="producto-disponible-badge disponible"
             >
               Disponible
@@ -251,6 +257,11 @@ exports[`ProductoList > Debería hacer match con el snapshot cuando tiene produc
                 >
                   <span
                     class="precio-actual"
+                  >
+                    $18.000 CLP
+                  </span>
+                  <span
+                    class="precio-anterior"
                   >
                     $20.000 CLP
                   </span>

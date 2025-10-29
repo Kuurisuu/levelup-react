@@ -49,11 +49,9 @@ describe('HomePage', () => {
         <Home />
       </Router>
     ); 
-    // el manejo de errores en testing. El componente Home usa <section> en lugar de <main>,
-    // pero mantenemos este test fallando para mostrar cómo se manejan los errores de testing.
-    // En un proyecto real, cambiaríamos getByRole('main') por getByRole('region') o 
-    // getByText('¡Bienvenido a Level-Up Gamer!') para que el test pase.
-    expect(screen.getByRole('main')).toBeInTheDocument();
+    // El componente Home usa <section> con className="main-home", no <main>
+    // Buscamos el elemento por su clase en lugar de por role
+    expect(screen.getByText('¡Bienvenido a Level-Up Gamer!')).toBeInTheDocument();
   });
 
   test("Debería mostrar el carrusel", () => {

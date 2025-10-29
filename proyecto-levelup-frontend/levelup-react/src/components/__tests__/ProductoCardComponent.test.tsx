@@ -72,7 +72,8 @@ describe("ProductoCard", () => {
     ...mockProducto, //los 3 puntos son para extender los datos del producto original osea agarrar todos los datos del producto original y agregarle los nuevos datos
     id: "test-2",
     nombre: "Xbox Series X",
-    precioConDescuento: 400000,
+    descuento: undefined, // no usar descuento numérico, usar precioConDescuento
+    precioConDescuento: 400000, // precio con descuento (20% menos)
     disponible: false
   };
 
