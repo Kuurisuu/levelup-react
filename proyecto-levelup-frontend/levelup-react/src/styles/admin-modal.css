@@ -40,6 +40,21 @@
 .modal-body {
   margin-top: 0.6rem;
 }
+.modal {
+  /* no exceder la altura del viewport */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body {
+  /* permite que el cuerpo crezca y se desplace si el contenido excede el espacio */
+  overflow-y: auto;
+  /* asegurar que el cuerpo ocupe el espacio restante debajo del encabezado */
+  flex: 1 1 auto;
+  /* añadir un poco de espacio entre el contenido y el borde inferior */
+  padding-right: 0.25rem;
+}
 .btn-close {
   background: transparent;
   border: none;
