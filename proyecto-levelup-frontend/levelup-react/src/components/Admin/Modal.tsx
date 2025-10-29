@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import "../../styles/admin-modal.css";
 
 interface ModalProps {
   title?: string;
