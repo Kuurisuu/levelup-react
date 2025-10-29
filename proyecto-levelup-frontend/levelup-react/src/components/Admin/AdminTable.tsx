@@ -10,7 +10,7 @@ interface AdminTableProps<T> {
   columns: Column<T>[];
   data: T[];
 }
-
+//comentario q añadir para comitear los cambios
 function AdminTable<T extends Record<string, any>>({
   columns,
   data,
