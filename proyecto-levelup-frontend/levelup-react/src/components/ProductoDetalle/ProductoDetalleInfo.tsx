@@ -52,36 +52,71 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
       <p className="producto-detalle-estrellas-valor" ref={notaRatingRef}></p>
       {(() => {
         const estadisticasRating = obtenerEstadisticasRating(producto);
-        return estadisticasRating.usuariosUnicos > 0 && ( //si el numero de usuarios unicos es mayor a 0, se muestra el numero de usuarios unicos
-          <span className="producto-detalle-usuarios-count">
-            {estadisticasRating.usuariosUnicos} reseña{estadisticasRating.usuariosUnicos !== 1 ? 's' : ''} //si el numero de usuarios unicos es diferente a 1, se muestra la palabra "s" en plural osea de reseña a reseñas 
-          </span>
+        return (
+          estadisticasRating.usuariosUnicos > 0 && ( //si el numero de usuarios unicos es mayor a 0, se muestra el numero de usuarios unicos
+            <span className="producto-detalle-usuarios-count">
+              {estadisticasRating.usuariosUnicos} reseña
+              {estadisticasRating.usuariosUnicos !== 1 ? "s" : ""} //si el
+              numero de usuarios unicos es diferente a 1, se muestra la palabra
+              "s" en plural osea de reseña a reseñas
+            </span>
+          )
         );
       })()}
     </div>
     <div className="producto-detalle-precio-container">
-      {tieneDescuento && precioConDescuento ? (
-        <>
-          <div className="precio-actual-detalle"> 
-            {formatPriceCLP(precioConDescuento)}
-          </div>
-          <div className="precio-anterior-detalle">
-            {formatPriceCLP(producto.precio)}
-          </div>
-          <div className="descuento-porcentaje">
-            -{Math.round(((producto.precio - precioConDescuento) / producto.precio) * 100)}%
-          </div>
-        </>
-      ) : (
-        <div className="precio-actual-detalle">
-          {formatPriceCLP(producto.precio)}
-        </div>
-      )}
+      {(() => {
+        // detecta si el usuario es de Duoc
+        let duocMember = false;
+        try {
+          const raw = localStorage.getItem("lvup_user_session");
+          if (raw) {
+            const s = JSON.parse(raw) as { duocMember?: boolean };
+            duocMember = !!s.duocMember;
+          }
+        } catch (e) {
+          duocMember = false;
+        }
+
+        const basePrice =
+          tieneDescuento && precioConDescuento
+            ? precioConDescuento
+            : producto.precio;
+        const displayedPrice = duocMember
+          ? Math.round(basePrice * 0.8)
+          : basePrice;
+
+        return (
+          <>
+            <div className="precio-actual-detalle">
+              {formatPriceCLP(displayedPrice)}
+            </div>
+            {(tieneDescuento || duocMember) && (
+              <div className="precio-anterior-detalle">
+                {formatPriceCLP(producto.precio)}
+              </div>
+            )}
+            {tieneDescuento && precioConDescuento && (
+              <div className="descuento-porcentaje">
+                -
+                {Math.round(
+                  ((producto.precio - precioConDescuento) / producto.precio) *
+                    100
+                )}
+                %
+              </div>
+            )}
+            {duocMember && (
+              <div className="descuento-porcentaje duoc">-20%</div>
+            )}
+          </>
+        );
+      })()}
     </div>
     <div className="producto-detalle-descripcion">{producto.descripcion}</div>
-    
+
     {/* Información adicional del producto */}
-    <div className="producto-detalle-info-adicional"> 
+    <div className="producto-detalle-info-adicional">
       <span className="producto-stock-info">
         <i className="bi bi-box"></i> Stock: {stockDisponible} unidades
       </span>
@@ -91,17 +126,21 @@ const ProductoDetalleInfo: React.FC<ProductoDetalleInfoProps> = ({
       <p>
         <strong>Fabricante:</strong>
         <span id="origen-fabricante">
-          {producto.fabricante || (cat.includes("Consola")
-            ? "Sony / Microsoft / Nintendo"
-            : cat.includes("Perifer")
-            ? "Logitech / HyperX / Razer"
-            : "LevelUp Partners")}
+          {producto.fabricante ||
+            (cat.includes("Consola")
+              ? "Sony / Microsoft / Nintendo"
+              : cat.includes("Perifer")
+              ? "Logitech / HyperX / Razer"
+              : "LevelUp Partners")}
         </span>
       </p>
       <p>
         <strong>Distribuidor:</strong>
         <span id="origen-distribuidor">
-          {producto.distribuidor || (sub ? `${sub} LATAM Distribución` : "Distribuidor autorizado LATAM")}
+          {producto.distribuidor ||
+            (sub
+              ? `${sub} LATAM Distribución`
+              : "Distribuidor autorizado LATAM")}
         </span>
       </p>
     </div>

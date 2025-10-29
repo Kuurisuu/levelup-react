@@ -111,8 +111,11 @@ const Carrito: React.FC = (): React.JSX.Element => {
       cargarProductosSugeridos();
     };
     window.addEventListener("carrito:change", handler as EventListener);
-    return () =>
+    window.addEventListener("lvup:products", handler as EventListener);
+    return () => {
       window.removeEventListener("carrito:change", handler as EventListener);
+      window.removeEventListener("lvup:products", handler as EventListener);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -120,7 +123,25 @@ const Carrito: React.FC = (): React.JSX.Element => {
     // Obtener productos aleatorios que no estén en el carrito
     const productosEnCarrito = getCarrito();
     const idsEnCarrito = productosEnCarrito.map((p: ProductoEnCarrito) => p.id);
-    const productosDisponibles = productosArray.filter(
+
+    // Fusionar productos administrados persistidos (lvup_products) con el catálogo base para que
+    // nuevos productos creados sean visibles en las sugerencias.
+    let merged: Producto[] = productosArray.slice();
+    try {
+      const raw = localStorage.getItem("lvup_products") || "[]";
+      const persisted: Producto[] = JSON.parse(raw);
+      if (Array.isArray(persisted) && persisted.length > 0) {
+        const ids = new Set(persisted.map((p) => p.id));
+        merged = [
+          ...persisted,
+          ...productosArray.filter((p) => !ids.has(p.id)),
+        ];
+      }
+    } catch (e) {
+      merged = productosArray.slice();
+    }
+
+    const productosDisponibles = merged.filter(
       (p: Producto) => !idsEnCarrito.includes(p.id)
     );
 
@@ -149,9 +170,24 @@ const Carrito: React.FC = (): React.JSX.Element => {
       } catch (_) {
         catalogoBase = [];
       }
+      // Merge persisted admin products so cart resolution honors admin deletions/edits
+      let merged: Producto[] = productosArray.slice();
+      try {
+        const raw = localStorage.getItem("lvup_products") || "[]";
+        const persisted: Producto[] = JSON.parse(raw);
+        if (Array.isArray(persisted) && persisted.length > 0) {
+          // persisted catalog is authoritative
+          merged = persisted;
+        }
+      } catch (e) {
+        merged = productosArray.slice();
+      }
+
       const descripciones = productosEnCarrito.map(
         (producto: ProductoEnCarrito) => {
           const base =
+            // Prefer persisted catalog first, then the imported catalog, then the saved catalogo-base fallback
+            merged.find((p: Producto) => p.id === producto.id) ||
             productosArray.find((p: Producto) => p.id === producto.id) ||
             catalogoBase.find((p: Producto) => p.id === producto.id) ||
             ({} as Producto);
@@ -166,13 +202,44 @@ const Carrito: React.FC = (): React.JSX.Element => {
           );
         }
       );
-      // Formatear precios y subtotales
+
+      // Formatear precios y subtotales: si el usuario Duoc, sumar 20 puntos al descuento del producto
+      const user = getCurrentUser();
+      const aplicaDuocFlag = user && isDuocEmail(user.email);
+
       const productosFormateados = productosEnCarrito.map(
-        (producto: ProductoEnCarrito) => ({
-          ...producto,
-          precioCLP: formatCLP(producto.precio),
-          subtotalCLP: formatCLP(producto.precio * producto.cantidad),
-        })
+        (producto: ProductoEnCarrito) => {
+          // resolver base product again to get original discount
+          const base =
+            merged.find((p: Producto) => p.id === producto.id) ||
+            productosArray.find((p: Producto) => p.id === producto.id) ||
+            catalogoBase.find((p: Producto) => p.id === producto.id) ||
+            ({} as Producto);
+
+          const originalDescuento =
+            base.descuento ??
+            (base.precioConDescuento
+              ? Math.round(
+                  ((base.precio - base.precioConDescuento!) / base.precio) * 100
+                )
+              : 0);
+
+          const totalDescuento = originalDescuento + (aplicaDuocFlag ? 20 : 0);
+
+          const precioAntes = base.precio || producto.precio;
+          const precioAhora =
+            totalDescuento > 0
+              ? Math.round(precioAntes * (1 - totalDescuento / 100))
+              : precioAntes;
+
+          return {
+            ...producto,
+            precioCLP: formatCLP(precioAhora),
+            subtotalCLP: formatCLP(precioAhora * producto.cantidad),
+            precioAnteriorCLP:
+              totalDescuento > 0 ? formatCLP(precioAntes) : undefined,
+          } as ProductoEnCarrito & { precioAnteriorCLP?: string };
+        }
       );
       setProductos(productosFormateados);
       setDescripciones(descripciones);

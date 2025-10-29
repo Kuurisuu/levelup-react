@@ -899,6 +899,17 @@ section {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Badge de porcentaje amarillo siguiendo el color amarillo tipico de Duoc*/
+.descuento-porcentaje.duoc {
+  font-weight: bold;
+  color: #f1c40f; /* color de las estrellas */
+  background-color: rgba(241, 196, 15, 0.12); /* amarillo opaco */
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
 /* Badge de disponibilidad (esquina superior derecha) */
 .producto-disponible-badge {
   position: absolute;

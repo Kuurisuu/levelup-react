@@ -69,6 +69,10 @@ const AdminProductos: React.FC = () => {
   const confirmDelete = () => {
     if (!selected) return;
     setProducts((prev) => prev.filter((x) => x.id !== selected.id));
+    // Notificar a otras partes de la app que los productos han sido actualizados
+    try {
+      window.dispatchEvent(new Event("lvup:products"));
+    } catch (e) {}
     setConfirmOpen(false);
     setSelected(null);
   };
@@ -197,6 +201,11 @@ const AdminProductos: React.FC = () => {
       if (exists) return prev.map((p) => (p.id === newProd.id ? newProd : p));
       return [newProd, ...prev];
     });
+
+    // notify other parts of the app that products have been updated
+    try {
+      window.dispatchEvent(new Event("lvup:products"));
+    } catch (e) {}
 
     setModalOpen(false);
     setEditing(null);

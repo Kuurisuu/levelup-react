@@ -26,26 +26,47 @@ export default function ProductoCard({
   const rating = Math.max(0, Math.min(5, estadisticasRating.promedio)); //lo que hace es que el rating sea entre 0 y 5
   const usuariosUnicos = estadisticasRating.usuariosUnicos; //setea el numero de usuarios unicos
 
-  const stars = Array.from(
-    { length: 5 },
-    (
-      _,
-      i //crea un array de 5 estrellas
-    ) => (
-      <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`} /> //si el rating es mayor a la estrella, se pone la estrella llena
-    )
-  );
+  const stars = Array.from({ length: 5 }, (_, i) => (
+    <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`} />
+  ));
 
-  // Calcular descuento si existe, si existe, se calcula el descuento
-  const tieneDescuento =
-    producto.precioConDescuento &&
-    producto.precioConDescuento < producto.precio; //si el precio con descuento es mayor al precio, se calcula el descuento
-  const porcentajeDescuento = tieneDescuento
-    ? Math.round(
+  // calcular precio con descuentos (incluyendo beneficio Duoc)
+  const existingPercent = (() => {
+    if (typeof (producto as any).descuento === "number")
+      return (producto as any).descuento as number;
+    if (
+      producto.precioConDescuento &&
+      producto.precioConDescuento < producto.precio
+    ) {
+      return Math.round(
         ((producto.precio - producto.precioConDescuento!) / producto.precio) *
           100
-      ) //si el precio con descuento es mayor al precio, se calcula el descuento
-    : 0; //si no existe, se setea a 0
+      );
+    }
+    return 0;
+  })();
+
+  // detectar si el usuario es de Duoc
+  let duocMember = false;
+  try {
+    const raw = localStorage.getItem("lvup_user_session");
+    if (raw) {
+      const s = JSON.parse(raw) as { duocMember?: boolean };
+      duocMember = !!s.duocMember;
+    }
+  } catch (e) {
+    duocMember = false;
+  }
+
+  // sumar los descuentos
+  const combinedPercent = existingPercent + (duocMember ? 20 : 0);
+  const precioAntes = producto.precio;
+  const precioAhora =
+    combinedPercent > 0
+      ? Math.round(precioAntes * (1 - combinedPercent / 100))
+      : precioAntes;
+  const tieneDescuento = combinedPercent > 0;
+  const porcentajeDescuento = combinedPercent;
 
   return (
     <div
@@ -59,7 +80,6 @@ export default function ProductoCard({
     >
       <article className="producto producto-card" data-id={producto.id}>
         <div className="producto-imagen-container">
-          {/* Badge de descuento en la esquina superior izquierda */}
           {tieneDescuento && (
             <div className="producto-descuento-badge">
               {porcentajeDescuento}% OFF
@@ -137,13 +157,11 @@ export default function ProductoCard({
             <div className="producto-precio-container">
               <div className="precio-linea">
                 <span className="precio-actual">
-                  {tieneDescuento
-                    ? formatPriceCLP(producto.precioConDescuento!)
-                    : formatPriceCLP(producto.precio)}
+                  {formatPriceCLP(precioAhora)}
                 </span>
                 {tieneDescuento && (
                   <span className="precio-anterior">
-                    {formatPriceCLP(producto.precio)}
+                    {formatPriceCLP(precioAntes)}
                   </span>
                 )}
               </div>
