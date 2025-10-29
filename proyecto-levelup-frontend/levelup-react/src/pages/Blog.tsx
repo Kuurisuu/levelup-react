@@ -120,7 +120,7 @@ const Blog = () => {
 
   return (
     <div className="wrapper">
-      <main>
+      <section>
         {/* seccion hero */}
         <section className="hero-blogs">
           <div className="container">
@@ -198,7 +198,7 @@ const Blog = () => {
             </div>
           </div>
         </section>
-      </main>
+      </section>
     </div>
   );
 };

@@ -9,7 +9,7 @@ import SettingsSection from "../components/Profile/SettingsSection";
 
 type UserData = {
   nombre: string;
-  apellido: string;
+  apellidos: string;
   email: string;
   telefono: string;
   fechaNacimiento: string;
@@ -29,7 +29,7 @@ const Profile = () => {
   // Estado para los datos del usuario
   const [userData, setUserData] = useState<UserData>({
     nombre: "",
-    apellido: "",
+    apellidos: "",
     email: "",
     telefono: "",
     fechaNacimiento: "",
@@ -68,11 +68,11 @@ const Profile = () => {
     else if (data.nombre.trim().length < 2)
       e.nombre = "El nombre debe tener al menos 2 caracteres";
 
-    // Apellido
-    if (!data.apellido || !data.apellido.trim())
-      e.apellido = "El apellido es requerido";
-    else if (data.apellido.trim().length < 2)
-      e.apellido = "El apellido debe tener al menos 2 caracteres";
+    // Apellidos
+    if (!data.apellidos || !data.apellidos.trim())
+      e.apellidos = "Los apellidos son requeridos";
+    else if (data.apellidos.trim().length < 2)
+      e.apellidos = "Los apellidos deben tener al menos 2 caracteres";
 
     // Email obligatorio y dominio
     if (!data.email || !data.email.trim()) e.email = "El email es requerido";
@@ -112,7 +112,7 @@ const Profile = () => {
   const [validFields, setValidFields] = useState<Record<string, boolean>>({});
   const requiredFields = [
     "nombre",
-    "apellido",
+    "apellidos",
     "email",
     "fechaNacimiento",
     "region",
@@ -143,10 +143,10 @@ const Profile = () => {
         if (v.trim().length < 2)
           return "El nombre debe tener al menos 2 caracteres";
         return undefined;
-      case "apellido":
-        if (!v.trim()) return "El apellido es requerido";
+      case "apellidos":
+        if (!v.trim()) return "Los apellidos son requeridos";
         if (v.trim().length < 2)
-          return "El apellido debe tener al menos 2 caracteres";
+          return "Los apellidos deben tener al menos 2 caracteres";
         return undefined;
       case "email":
         if (!v.trim()) return "El email es requerido";
@@ -239,7 +239,7 @@ const Profile = () => {
 
         const data: UserData = {
           nombre: found.nombre || found.displayName || "",
-          apellido: found.apellido || "",
+          apellidos: found.apellidos || found.apellido || "",
           email: found.email || "",
           telefono: found.telefono || "",
           fechaNacimiento: found.fechaNacimiento || "",
@@ -506,7 +506,7 @@ const Profile = () => {
   useEffect(() => {
     const personalKeys = [
       "nombre",
-      "apellido",
+      "apellidos",
       "email",
       "fechaNacimiento",
       "region",
@@ -522,7 +522,7 @@ const Profile = () => {
       setValidFields((prev) => ({
         ...prev,
         nombre: !valErrors.nombre,
-        apellido: !valErrors.apellido,
+        apellidos: !valErrors.apellidos,
         email: !valErrors.email,
         fechaNacimiento: !valErrors.fechaNacimiento,
         region: !valErrors.region,
@@ -629,13 +629,13 @@ const Profile = () => {
   }
 
   return (
-    <main className="main-profile">
+    <section className="main-profile">
       <div className="profile-card">
         <div className="profile-header">
           <AvatarSection
             avatar={userData.avatar}
             nombre={userData.nombre}
-            apellido={userData.apellido}
+            apellido={userData.apellidos}
             email={userData.email}
             userId={userId}
             copyMsg={copyMsg}
@@ -798,7 +798,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </main>
+    </section>
   );
 };
 

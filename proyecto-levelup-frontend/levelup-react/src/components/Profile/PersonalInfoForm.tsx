@@ -6,7 +6,7 @@ import { REGIONES } from "../../utils/regiones";
 
 type UserData = {
   nombre: string;
-  apellido: string;
+  apellidos: string;
   email: string;
   telefono: string;
   fechaNacimiento: string;
@@ -91,39 +91,39 @@ const PersonalInfoForm: React.FC<Props> = ({
           <label
             className={
               isEditing
-                ? errors.apellido
+                ? errors.apellidos
                   ? "label invalid"
-                  : validFields.apellido
+                  : validFields.apellidos
                   ? "label valid"
                   : "label"
                 : ""
             }
-            htmlFor="apellido"
+            htmlFor="apellidos"
           >
-            Apellido
+            Apellidos
             {isEditing && <span className="required-asterisk">*</span>}
           </label>
           <input
-            id="apellido"
-            name="apellido"
+            id="apellidos"
+            name="apellidos"
             type="text"
             className={`perfil-input ${
               isEditing
-                ? errors.apellido
+                ? errors.apellidos
                   ? "invalid"
-                  : validFields.apellido
+                  : validFields.apellidos
                   ? "valid"
                   : ""
                 : ""
             }`}
-            value={userData.apellido}
+            value={userData.apellidos}
             onChange={handleInputChange}
             onBlur={handleFieldBlur}
             readOnly={!isEditing}
             aria-label="Apellido"
           />
-          {errors.apellido && (
-            <div className="error-message">{errors.apellido}</div>
+          {errors.apellidos && (
+            <div className="error-message">{errors.apellidos}</div>
           )}
         </div>
 
@@ -198,25 +198,67 @@ const PersonalInfoForm: React.FC<Props> = ({
             Fecha de Nacimiento
             {isEditing && <span className="required-asterisk">*</span>}
           </label>
-          <input
-            id="fechaNacimiento"
-            name="fechaNacimiento"
-            type="date"
-            className={`perfil-input ${
-              isEditing
-                ? errors.fechaNacimiento
-                  ? "invalid"
-                  : validFields.fechaNacimiento
-                  ? "valid"
+          <div className="date-input-wrapper">
+            <input
+              id="fechaNacimiento"
+              name="fechaNacimiento"
+              type="date"
+              ref={React.createRef()}
+              className={`perfil-input ${
+                isEditing
+                  ? errors.fechaNacimiento
+                    ? "invalid"
+                    : validFields.fechaNacimiento
+                    ? "valid"
+                    : ""
                   : ""
-                : ""
-            }`}
-            value={userData.fechaNacimiento}
-            onChange={handleInputChange}
-            onBlur={handleFieldBlur}
-            readOnly={!isEditing}
-            aria-label="Fecha de nacimiento"
-          />
+              }`}
+              value={userData.fechaNacimiento}
+              onChange={handleInputChange}
+              onBlur={handleFieldBlur}
+              readOnly={!isEditing}
+              aria-label="Fecha de nacimiento"
+            />
+            <button
+              type="button"
+              className="date-trigger"
+              onClick={(ev) => {
+                // Try to open native picker via showPicker or focus
+                const btn = ev.currentTarget;
+                const wrapper = btn.parentElement as HTMLElement | null;
+                if (!wrapper) return;
+                const input = wrapper.querySelector(
+                  'input[type="date"]'
+                ) as any;
+                if (!input) return;
+                if (typeof input.showPicker === "function") {
+                  try {
+                    input.showPicker();
+                    return;
+                  } catch {}
+                }
+                input.focus();
+              }}
+              aria-label="Abrir selector de fecha"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden
+              >
+                <path
+                  d="M7 3v2M17 3v2M3 7h18v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
           {errors.fechaNacimiento && (
             <div className="error-message">{errors.fechaNacimiento}</div>
           )}

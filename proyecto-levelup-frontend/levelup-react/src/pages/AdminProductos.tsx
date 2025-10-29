@@ -1,396 +1,495 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/admin.css';
+import React, { useMemo, useState } from "react";
+import {
+  AdminSidebar,
+  AdminTable as AdminTableComp,
+  Modal as AdminModal,
+} from "../components/Admin";
+import { InputField } from "../components/common";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { Producto, categorias, subcategorias } from "../data/catalogo";
+import "../styles/admin.css";
 
-type Producto = {
-  codigo: string;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  stock: number;
-  stockCritico: number | null;
-  categoria: string;
-  imagen: string;
+type ProductForm = Omit<
+  Partial<Producto>,
+  "precio" | "stock" | "descuento" | "rating"
+> & {
+  imagenFile?: File | null;
+  categoriaId?: string;
+  subcategoriaNombre?: string;
+  subcategoriaId?: string;
+  // during editing we keep number-like fields as strings to avoid caret issues
+  precio?: string | number;
+  stock?: string | number;
+  descuento?: string | number;
+  rating?: string | number;
 };
 
-type FormErrors = {
-  codigo?: string;
-  nombre?: string;
-  precio?: string;
-  stock?: string;
-  categoria?: string;
-};
-
-const AdminProductos = () => {
-  // estado para productos
-  const [productos, setProductos] = useState<Producto[]>([]);
-  
-  // estado para el formulario
-  const [formData, setFormData] = useState({
-    codigo: '',
-    nombre: '',
-    descripcion: '',
-    precio: '',
-    stock: '',
-    stockCritico: '',
-    categoria: '',
-    imagen: ''
-  });
-
-  // estado para errores
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  // estado para edicion
-  const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
-
-  // clave de storage
-  const STORAGE_KEY = 'admin_productos';
-
-  // funciones de storage
-  const guardar = (lista: Producto[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-  };
-
-  const cargar = (): Producto[] => {
+const AdminProductos: React.FC = () => {
+  // try to initialize from 'lvup_products' else from 'catalogo-base'
+  const initialProducts = useMemo(() => {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const raw =
+        localStorage.getItem("lvup_products") ||
+        localStorage.getItem("catalogo-base") ||
+        "[]";
+      return JSON.parse(raw) as Producto[];
     } catch {
       return [];
     }
-  };
-
-  // cargar productos al montar componente
-  useEffect(() => {
-    const productosGuardados = cargar();
-    setProductos(productosGuardados);
   }, []);
 
-  // manejar cambios en el formulario
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
-    
-    // limpiar error del campo cuando el usuario empieza a escribir
-    if (errors[id as keyof FormErrors]) {
-      setErrors(prev => ({
-        ...prev,
-        [id]: ''
+  const [products, setProducts] = useLocalStorage<Producto[]>(
+    "lvup_products",
+    initialProducts
+  );
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const [editing, setEditing] = useState<ProductForm | null>(null);
+  const [selected, setSelected] = useState<Producto | null>(null);
+
+  // helpers for CRUD actions
+  const handleEdit = (p: Producto) => {
+    setEditing({ ...p });
+    setModalOpen(true);
+  };
+
+  const handleView = (p: Producto) => {
+    setSelected(p);
+    setViewOpen(true);
+  };
+
+  const handleDelete = (p: Producto) => {
+    setSelected(p);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!selected) return;
+    setProducts((prev) => prev.filter((x) => x.id !== selected.id));
+    setConfirmOpen(false);
+    setSelected(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files && e.target.files[0];
+    setEditing((prev) => ({ ...(prev || {}), imagenFile: f || null }));
+    if (f) {
+      const fr = new FileReader();
+      fr.onload = () =>
+        setEditing((prev) => ({
+          ...(prev || {}),
+          imagenUrl: String(fr.result),
+          imagenesUrls: [String(fr.result)],
+        }));
+      fr.readAsDataURL(f);
+    } else {
+      setEditing((prev) => ({
+        ...(prev || {}),
+        imagenUrl: "",
+        imagenesUrls: [],
       }));
     }
   };
 
-  // validar formulario
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const columns = [
+    { key: "id", label: "ID" },
+    { key: "nombre", label: "Nombre" },
+    {
+      key: "precio",
+      label: "Precio",
+      render: (r: Producto) => `$ ${r.precio}`,
+    },
+    { key: "stock", label: "Stock" },
+    {
+      key: "disponible",
+      label: "Disponible",
+      render: (r: Producto) => (r.disponible ? "Sí" : "No"),
+    },
+  ];
 
-    // validar codigo
-    if (!formData.codigo.trim()) {
-      newErrors.codigo = 'El código es requerido';
-    } else if (formData.codigo.trim().length < 3) {
-      newErrors.codigo = 'El código debe tener al menos 3 caracteres';
-    } else if (!editingProduct && productos.find(p => p.codigo === formData.codigo.trim())) {
-      newErrors.codigo = 'Ya existe un producto con este código';
-    }
+  const dataWithActions = products.map((p) => ({
+    ...p,
+    __actions: (
+      <>
+        <button className="btn-view" onClick={() => handleView(p)}>
+          Ver
+        </button>
+        <button className="btn-edit" onClick={() => handleEdit(p)}>
+          Editar
+        </button>
+        <button className="btn-delete" onClick={() => handleDelete(p)}>
+          Eliminar
+        </button>
+      </>
+    ),
+  }));
 
-    // validar nombre
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
-    } else if (formData.nombre.trim().length > 100) {
-      newErrors.nombre = 'El nombre no puede tener más de 100 caracteres';
-    }
-
-    // validar precio
-    if (!formData.precio) {
-      newErrors.precio = 'El precio es requerido';
-    } else if (Number(formData.precio) < 0) {
-      newErrors.precio = 'El precio debe ser mayor o igual a 0';
-    }
-
-    // validar stock
-    if (!formData.stock) {
-      newErrors.stock = 'El stock es requerido';
-    } else if (Number(formData.stock) < 0) {
-      newErrors.stock = 'El stock debe ser mayor o igual a 0';
-    }
-
-    // validar categoria
-    if (!formData.categoria) {
-      newErrors.categoria = 'La categoría es requerida';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const openAdd = () => {
+    setEditing({});
+    setModalOpen(true);
   };
 
-  // manejar submit del formulario
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
+  const handleSave = async () => {
+    if (!editing) return;
+
+    // basic validation
+    if (!editing.nombre || !editing.precio) {
+      alert("Nombre y precio son requeridos");
       return;
     }
 
-    const producto: Producto = {
-      codigo: formData.codigo.trim(),
-      nombre: formData.nombre.trim(),
-      descripcion: formData.descripcion.trim(),
-      precio: Number(formData.precio),
-      stock: Number(formData.stock),
-      stockCritico: formData.stockCritico ? Number(formData.stockCritico) : null,
-      categoria: formData.categoria,
-      imagen: formData.imagen.trim()
+    const nowId = editing.id || `${Date.now()}`;
+
+    const categoriaObj =
+      (editing.categoriaId &&
+        categorias.find((c) => c.id === editing.categoriaId)) ||
+      categorias[0];
+
+    const newProd: Producto = {
+      id: nowId,
+      nombre: String(editing.nombre),
+      descripcion: String(editing.descripcion || ""),
+      precio: Number(editing.precio) || 0,
+      imagenUrl: String(editing.imagenUrl || ""),
+      categoria: categoriaObj,
+      subcategoria: editing.subcategoriaId
+        ? subcategorias.find((s) => s.id === editing.subcategoriaId)
+        : (editing.subcategoria as any) || undefined,
+      rating: editing.rating ? Number(editing.rating) : 0,
+      disponible: editing.disponible ?? true,
+      destacado: editing.destacado ?? false,
+      stock: editing.stock ? Number(editing.stock) : 0,
+      imagenesUrls:
+        editing.imagenesUrls && editing.imagenesUrls.length
+          ? editing.imagenesUrls
+          : editing.imagenUrl
+          ? [String(editing.imagenUrl)]
+          : [],
+      fabricante: editing.fabricante,
+      distribuidor: editing.distribuidor,
+      descuento: editing.descuento ? Number(editing.descuento) : undefined,
+      reviews: editing.reviews || [],
+      productosRelacionados: editing.productosRelacionados || [],
+      precioConDescuento: editing.descuento
+        ? Number(editing.precio) * (1 - Number(editing.descuento) / 100)
+        : undefined,
+      ratingPromedio: editing.rating ? Number(editing.rating) : 0,
     };
 
-    let nuevaLista;
-    if (editingProduct) {
-      // editar producto existente
-      nuevaLista = productos.map(p => 
-        p.codigo === editingProduct.codigo ? producto : p
-      );
-    } else {
-      // agregar nuevo producto
-      nuevaLista = [...productos, producto];
+    // handle image file -> dataURL
+    if (editing.imagenFile) {
+      const file = editing.imagenFile;
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(String(fr.result));
+        fr.onerror = reject;
+        fr.readAsDataURL(file);
+      });
+      newProd.imagenUrl = dataUrl;
+      newProd.imagenesUrls = [dataUrl];
     }
 
-    setProductos(nuevaLista);
-    guardar(nuevaLista);
-    handleReset();
-  };
-
-  // limpiar formulario
-  const handleReset = () => {
-    setFormData({
-      codigo: '',
-      nombre: '',
-      descripcion: '',
-      precio: '',
-      stock: '',
-      stockCritico: '',
-      categoria: '',
-      imagen: ''
+    setProducts((prev) => {
+      const exists = prev.find((p) => p.id === newProd.id);
+      if (exists) return prev.map((p) => (p.id === newProd.id ? newProd : p));
+      return [newProd, ...prev];
     });
-    setErrors({});
-    setEditingProduct(null);
-  };
 
-  // editar producto
-  const handleEdit = (producto: Producto) => {
-    setFormData({
-      codigo: producto.codigo,
-      nombre: producto.nombre,
-      descripcion: producto.descripcion || '',
-      precio: producto.precio.toString(),
-      stock: producto.stock.toString(),
-      stockCritico: producto.stockCritico ? producto.stockCritico.toString() : '',
-      categoria: producto.categoria,
-      imagen: producto.imagen || ''
-    });
-    setEditingProduct(producto);
-    setErrors({});
-  };
-
-  // eliminar producto
-  const handleDelete = (codigo: string) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-      const nuevaLista = productos.filter(p => p.codigo !== codigo);
-      setProductos(nuevaLista);
-      guardar(nuevaLista);
-    }
+    setModalOpen(false);
+    setEditing(null);
   };
 
   return (
-    <div className="wrapper">
-      <main>
-        <div className="admin-layout">
-          <aside className="sidebar">
-            <h2>Admin</h2>
-            <ul>
-              <li>
-                <Link to="/admin/usuarios">
-                  <i className="bi bi-people-fill"></i> Usuarios
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/productos">
-                  <i className="bi bi-controller"></i> Productos
-                </Link>
-              </li>
-            </ul>
-          </aside>
+    <div className="admin-page">
+      <AdminSidebar />
 
-          <main className="admin-content">
-            <h1>Productos</h1>
-            
-            <section>
-              <h2>Crear / Editar producto</h2>
-              <form id="form-producto" onSubmit={handleSubmit} noValidate>
-                <div>
-                  <label htmlFor="codigo">Código</label>
-                  <input 
-                    type="text" 
-                    id="codigo" 
-                    minLength={3} 
-                    required 
-                    value={formData.codigo}
-                    onChange={handleInputChange}
-                    disabled={!!editingProduct}
-                  />
-                  <small className="error" id="e-codigo">{errors.codigo}</small>
-                </div>
-                
-                <div>
-                  <label htmlFor="nombre">Nombre</label>
-                  <input 
-                    type="text" 
-                    id="nombre" 
-                    maxLength={100} 
-                    required 
-                    value={formData.nombre}
-                    onChange={handleInputChange}
-                  />
-                  <small className="error" id="e-nombre">{errors.nombre}</small>
-                </div>
-                
-                <div>
-                  <label htmlFor="descripcion">Descripción</label>
-                  <textarea 
-                    id="descripcion" 
-                    maxLength={500}
-                    value={formData.descripcion}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="precio">Precio</label>
-                  <input 
-                    type="number" 
-                    id="precio" 
-                    min="0" 
-                    step="0.01" 
-                    required 
-                    value={formData.precio}
-                    onChange={handleInputChange}
-                  />
-                  <small className="error" id="e-precio">{errors.precio}</small>
-                </div>
-                
-                <div>
-                  <label htmlFor="stock">Stock</label>
-                  <input 
-                    type="number" 
-                    id="stock" 
-                    min="0" 
-                    step="1" 
-                    required 
-                    value={formData.stock}
-                    onChange={handleInputChange}
-                  />
-                  <small className="error" id="e-stock">{errors.stock}</small>
-                </div>
-                
-                <div>
-                  <label htmlFor="stockCritico">Stock Crítico (opcional)</label>
-                  <input 
-                    type="number" 
-                    id="stockCritico" 
-                    min="0" 
-                    step="1" 
-                    value={formData.stockCritico}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="categoria">Categoría</label>
-                  <select 
-                    id="categoria" 
-                    required 
-                    value={formData.categoria}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Seleccione</option>
-                    <option value="Juegos de Mesa">Juegos de Mesa</option>
-                    <option value="Accesorios">Accesorios</option>
-                    <option value="Consolas">Consolas</option>
-                    <option value="Computadores Gamers">Computadores Gamers</option>
-                    <option value="Sillas Gamers">Sillas Gamers</option>
-                    <option value="Mouse">Mouse</option>
-                    <option value="Mousepad">Mousepad</option>
-                    <option value="Poleras Personalizadas">Poleras Personalizadas</option>
-                    <option value="Polerones Gamers Personalizados">Polerones Gamers Personalizados</option>
-                    <option value="Contacto Soporte">🎧 Soporte</option>
-                  </select>
-                  <small className="error" id="e-categoria">{errors.categoria}</small>
-                </div>
-                
-                <div>
-                  <label htmlFor="imagen">Imagen (URL opcional)</label>
-                  <input 
-                    type="url" 
-                    id="imagen" 
-                    value={formData.imagen}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <button type="submit">
-                    {editingProduct ? 'Actualizar' : 'Guardar'}
-                  </button>
-                  <button type="button" id="btn-reset" onClick={handleReset}>
-                    Limpiar
-                  </button>
-                </div>
-              </form>
-            </section>
-
-            <section>
-              <h2>Listado</h2>
-              <table id="tabla-productos">
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {productos.map(producto => (
-                    <tr key={producto.codigo}>
-                      <td>{producto.codigo}</td>
-                      <td>{producto.nombre}</td>
-                      <td>{producto.categoria}</td>
-                      <td>${Number(producto.precio).toLocaleString('es-CL')}</td>
-                      <td>{producto.stock}</td>
-                      <td>
-                        <button 
-                          className="btn-editar" 
-                          onClick={() => handleEdit(producto)}
-                        >
-                          Editar
-                        </button>
-                        <button 
-                          className="btn-eliminar" 
-                          onClick={() => handleDelete(producto.codigo)}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
-          </main>
+      <section className="admin-main">
+        <div className="admin-actions">
+          <h2>Productos</h2>
+          <div>
+            <button onClick={openAdd} className="btn-primary">
+              Añadir Producto
+            </button>
+          </div>
         </div>
-      </main>
+
+        <AdminTableComp
+          columns={columns as any}
+          data={dataWithActions as any}
+        />
+      </section>
+
+      <AdminModal
+        visible={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editing?.id ? "Editar Producto" : "Añadir Producto"}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "0.75rem",
+          }}
+        >
+          <InputField
+            label="Nombre"
+            name="nombre"
+            value={editing?.nombre || ""}
+            onChange={(
+              e: React.ChangeEvent<
+                HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+              >
+            ) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                nombre: e.target.value,
+              }))
+            }
+            required
+          />
+          <InputField
+            label="Precio"
+            name="precio"
+            type="number"
+            value={editing?.precio ?? ""}
+            onChange={(
+              e: React.ChangeEvent<
+                HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+              >
+            ) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                // keep as string while editing to avoid numeric coercion issues
+                precio: (e.target as HTMLInputElement).value,
+              }))
+            }
+            required
+          />
+          <InputField
+            label="Stock"
+            name="stock"
+            type="number"
+            value={editing?.stock ?? ""}
+            onChange={(
+              e: React.ChangeEvent<
+                HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+              >
+            ) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                stock: (e.target as HTMLInputElement).value,
+              }))
+            }
+          />
+          <InputField
+            label="Fabricante"
+            name="fabricante"
+            value={editing?.fabricante || ""}
+            onChange={(
+              e: React.ChangeEvent<
+                HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+              >
+            ) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                fabricante: e.target.value,
+              }))
+            }
+          />
+          <InputField
+            label="Categoría"
+            name="categoria"
+            as="select"
+            value={
+              editing?.categoriaId ||
+              (editing?.categoria && editing.categoria.id) ||
+              ""
+            }
+            options={categorias.map((c) => ({ value: c.id, label: c.nombre }))}
+            onChange={(e) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                categoriaId: e.target.value,
+                subcategoriaId: undefined,
+              }))
+            }
+            required
+          />
+          <InputField
+            label="Subcategoría"
+            name="subcategoria"
+            as="select"
+            value={
+              editing?.subcategoriaId ||
+              (editing?.subcategoria && editing.subcategoria.id) ||
+              ""
+            }
+            options={subcategorias
+              .filter(
+                (s) =>
+                  s.categoria.id ===
+                  (editing?.categoriaId || editing?.categoria?.id)
+              )
+              .map((s) => ({ value: s.id, label: s.nombre }))}
+            onChange={(e) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                subcategoriaId: e.target.value,
+              }))
+            }
+          />
+          <InputField
+            label="Distribuidor"
+            name="distribuidor"
+            value={editing?.distribuidor || ""}
+            onChange={(e) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                distribuidor: e.target.value,
+              }))
+            }
+          />
+          <InputField
+            label="Destacado"
+            name="destacado"
+            as="select"
+            value={editing?.destacado ? "si" : "no"}
+            options={[
+              { value: "si", label: "Sí" },
+              { value: "no", label: "No" },
+            ]}
+            onChange={(e) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                destacado: e.target.value === "si",
+              }))
+            }
+          />
+          <InputField
+            label="Descuento (%)"
+            name="descuento"
+            type="number"
+            value={editing?.descuento ?? ""}
+            onChange={(e) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                descuento: (e.target as HTMLInputElement).value,
+              }))
+            }
+          />
+          <InputField
+            label="Descripción"
+            name="descripcion"
+            as="textarea"
+            value={editing?.descripcion || ""}
+            onChange={(e) =>
+              setEditing((prev) => ({
+                ...(prev || {}),
+                descripcion: e.target.value,
+              }))
+            }
+          />
+
+          <div>
+            <label>Imagen</label>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            {editing?.imagenUrl && (
+              <img
+                src={editing.imagenUrl}
+                alt="preview"
+                style={{
+                  width: 120,
+                  height: 80,
+                  objectFit: "cover",
+                  marginTop: 8,
+                  borderRadius: 6,
+                }}
+              />
+            )}
+            <div style={{ marginTop: 8 }}>
+              <button onClick={() => setEditing({})} className="btn-secondary">
+                Limpiar
+              </button>
+              <button
+                onClick={handleSave}
+                className="btn-primary"
+                style={{ marginLeft: 8 }}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      </AdminModal>
+
+      <AdminModal
+        visible={viewOpen}
+        onClose={() => setViewOpen(false)}
+        title="Ver Producto"
+      >
+        {selected ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "160px 1fr",
+              gap: 12,
+            }}
+          >
+            <img
+              src={
+                selected.imagenUrl
+                  ? selected.imagenUrl.startsWith("data:")
+                    ? selected.imagenUrl
+                    : selected.imagenUrl.startsWith("/")
+                    ? selected.imagenUrl
+                    : selected.imagenUrl.replace(/^\.\//, "/")
+                  : ""
+              }
+              alt={selected.nombre}
+              style={{
+                width: 160,
+                height: 120,
+                objectFit: "cover",
+                borderRadius: 6,
+              }}
+            />
+            <div>
+              <h3>{selected.nombre}</h3>
+              <p>{selected.descripcion}</p>
+              <p>
+                <strong>Precio:</strong> $ {selected.precio}
+              </p>
+              <p>
+                <strong>Stock:</strong> {selected.stock}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div>No seleccionado</div>
+        )}
+      </AdminModal>
+
+      <AdminModal
+        visible={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Confirmar eliminación"
+      >
+        <p>¿Eliminar el producto {selected?.nombre}?</p>
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <button
+            onClick={() => setConfirmOpen(false)}
+            className="btn-secondary"
+          >
+            Cancelar
+          </button>
+          <button onClick={confirmDelete} className="btn-delete">
+            Eliminar
+          </button>
+        </div>
+      </AdminModal>
     </div>
   );
 };

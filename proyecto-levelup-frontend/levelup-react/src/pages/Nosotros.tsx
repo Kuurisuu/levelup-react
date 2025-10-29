@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import '../styles/nosotros.css';
+import { useEffect } from "react";
+import "../styles/nosotros.css";
 
 const Nosotros = () => {
   // efecto para animaciones al cargar la pagina
@@ -12,7 +12,7 @@ const Nosotros = () => {
       <div id="app-header"></div>
 
       {/* contenido principal de la pagina nosotros */}
-      <main className="nosotros-main">
+      <section className="nosotros-main">
         {/* seccion hero */}
         <section className="hero-nosotros">
           <div className="container">
@@ -65,7 +65,8 @@ const Nosotros = () => {
                   recompense a nuestros clientes más fieles.
                 </p>
               </div>
-            </div> //borre esa imagen random q no salia porque no tenia una imagen
+            </div>{" "}
+            //borre esa imagen random q no salia porque no tenia una imagen
           </div>
         </section>
 
@@ -136,7 +137,6 @@ const Nosotros = () => {
             </div>
           </div>
         </section>
-
 
         {/* seccion equipo: presentacion del equipo de level-up gamer */}
         <section className="equipo-desarrolladores">
@@ -212,8 +212,7 @@ const Nosotros = () => {
             </div>
           </div>
         </section>
-
-      </main>
+      </section>
 
       <div id="app-footer"></div>
     </div>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import '../styles/login.css';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/login.css";
 
 interface FormData {
   emailOrName: string;
@@ -32,11 +32,11 @@ interface UserSession {
 
 const Login: React.FC = (): React.JSX.Element => {
   const navigate = useNavigate();
-  
+
   // estado para los datos del formulario
   const [formData, setFormData] = useState<FormData>({
-    emailOrName: '',
-    password: ''
+    emailOrName: "",
+    password: "",
   });
 
   // estado para errores de validacion
@@ -51,7 +51,7 @@ const Login: React.FC = (): React.JSX.Element => {
   // Funciones auxiliares para manejo de usuarios
   const readUsers = (): User[] => {
     try {
-      return JSON.parse(localStorage.getItem('lvup_users') || '[]');
+      return JSON.parse(localStorage.getItem("lvup_users") || "[]");
     } catch {
       return [];
     }
@@ -59,37 +59,40 @@ const Login: React.FC = (): React.JSX.Element => {
 
   const findUser = (emailOrName: string, password: string): User | null => {
     const users = readUsers();
-    return users.find(user => 
-      (user.email === emailOrName || user.nombre === emailOrName) && 
-      user.password === password
-    ) || null;
+    return (
+      users.find(
+        (user) =>
+          (user.email === emailOrName || user.nombre === emailOrName) &&
+          user.password === password
+      ) || null
+    );
   };
 
   const saveUserSession = (user: User): void => {
     // Extraer solo el primer nombre
-    const firstName = user.nombre.split(' ')[0];
+    const firstName = user.nombre.split(" ")[0];
     const session: UserSession = {
       displayName: firstName,
       loginAt: Date.now(),
       userId: user.id,
-      role: 'cliente' // Por defecto cliente, podría extenderse para roles admin/vendedor
+      role: "cliente", // Por defecto cliente, podría extenderse para roles admin/vendedor
     };
-    localStorage.setItem('lvup_user_session', JSON.stringify(session));
+    localStorage.setItem("lvup_user_session", JSON.stringify(session));
   };
 
   // manejar cambios en los inputs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // limpiar errores al escribir
     if (errors[name as keyof Errors]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
@@ -99,13 +102,13 @@ const Login: React.FC = (): React.JSX.Element => {
     const newErrors: Errors = {};
 
     if (!formData.emailOrName.trim()) {
-      newErrors.emailOrName = 'El nombre o email es requerido';
+      newErrors.emailOrName = "El nombre o email es requerido";
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = 'La contraseña es requerida';
+      newErrors.password = "La contraseña es requerida";
     } else if (formData.password.length < 4 || formData.password.length > 10) {
-      newErrors.password = 'La contraseña debe tener entre 4 y 10 caracteres';
+      newErrors.password = "La contraseña debe tener entre 4 y 10 caracteres";
     }
 
     setErrors(newErrors);
@@ -113,51 +116,54 @@ const Login: React.FC = (): React.JSX.Element => {
   };
 
   // manejar envio del formulario
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       // simular delay de red
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       // Buscar usuario en localStorage
       const user = findUser(formData.emailOrName.trim(), formData.password);
-      
+
       if (user) {
         // Usuario encontrado - guardar sesión
         saveUserSession(user);
-        
+
         // Mensaje de éxito
-        alert(`¡Bienvenido, ${user.nombre.split(' ')[0]}! Inicio de sesión exitoso.`);
-        
+        alert(
+          `¡Bienvenido, ${user.nombre.split(" ")[0]}! Inicio de sesión exitoso.`
+        );
+
         // Limpiar formulario
         setFormData({
-          emailOrName: '',
-          password: ''
+          emailOrName: "",
+          password: "",
         });
-        
+
         // Redirigir al home
-        navigate('/');
-        
+        navigate("/");
+
         // Forzar recarga para actualizar header
         window.location.reload();
-        
       } else {
         // Usuario no encontrado o contraseña incorrecta
-        setErrors({ 
-          general: 'Email/Usuario o contraseña incorrectos. Verifica tus credenciales.' 
+        setErrors({
+          general:
+            "Email/Usuario o contraseña incorrectos. Verifica tus credenciales.",
         });
       }
-      
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      setErrors({ general: 'Error al iniciar sesión. Inténtalo de nuevo.' });
+      console.error("Error al iniciar sesión:", error);
+      setErrors({ general: "Error al iniciar sesión. Inténtalo de nuevo." });
     } finally {
       setIsLoading(false);
     }
@@ -171,7 +177,7 @@ const Login: React.FC = (): React.JSX.Element => {
   return (
     <div className="wrapper">
       {/* contenido principal: formulario de inicio de sesion */}
-      <main>
+      <section>
         {/* contenedor principal del formulario de login */}
         <div className="login-container">
           {/* cabecera del formulario con logo y títulos */}
@@ -196,7 +202,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 placeholder="Nombre o Correo Electrónico"
                 value={formData.emailOrName}
                 onChange={handleInputChange}
-                className={errors.emailOrName ? 'error' : ''}
+                className={errors.emailOrName ? "error" : ""}
                 required
               />
               {/* contenedor para mostrar errores de validacion */}
@@ -208,20 +214,20 @@ const Login: React.FC = (): React.JSX.Element => {
             {/* campo de entrada para contraseña con opcion de mostrar/ocultar */}
             <div className="form-group password-group">
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 placeholder="Contraseña (4-10 caracteres)"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={errors.password ? 'error' : ''}
+                className={errors.password ? "error" : ""}
                 required
               />
               {/* icono para alternar visibilidad de la contraseña */}
-              <i 
-                className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'}`}
+              <i
+                className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"}`}
                 onClick={togglePasswordVisibility}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               />
               {/* contenedor para mostrar errores de validacion */}
               {errors.password && (
@@ -231,13 +237,15 @@ const Login: React.FC = (): React.JSX.Element => {
 
             {/* mostrar error general si existe */}
             {errors.general && (
-              <div className="error-message general-error">{errors.general}</div>
+              <div className="error-message general-error">
+                {errors.general}
+              </div>
             )}
 
             {/* boton de envio del formulario */}
-            <button 
-              type="submit" 
-              className={`btn-login ${isLoading ? 'loading' : ''}`}
+            <button
+              type="submit"
+              className={`btn-login ${isLoading ? "loading" : ""}`}
               disabled={isLoading}
             >
               {isLoading ? (
@@ -246,7 +254,7 @@ const Login: React.FC = (): React.JSX.Element => {
                   Ingresando...
                 </>
               ) : (
-                'Ingresar'
+                "Ingresar"
               )}
             </button>
           </form>
@@ -256,7 +264,7 @@ const Login: React.FC = (): React.JSX.Element => {
             ¿No tienes una cuenta? <Link to="/register">Regístrate</Link>
           </p>
         </div>
-      </main>
+      </section>
     </div>
   );
 };
