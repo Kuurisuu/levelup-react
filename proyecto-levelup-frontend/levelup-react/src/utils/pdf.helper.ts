@@ -177,12 +177,12 @@ function generarHTMLBoleta(orden: OrdenCompra): string {
           </thead>
           <tbody>
             ${orden.productos.map(producto => `
-              <tr>
-                <td>
-                  <img src="${producto.imagen || '/img/otros/placeholder.png'}" alt="${producto.titulo}" class="producto-imagen" 
-                       onerror="this.src='/img/otros/placeholder.png'">
-                </td>
-                <td>${producto.titulo}</td>
+                <tr>
+                  <td>
+           <img src="${producto.imagenUrl ? (producto.imagenUrl.startsWith('data:') ? producto.imagenUrl : producto.imagenUrl.startsWith('/') ? producto.imagenUrl : producto.imagenUrl.replace(/^\.\//, '/')) : (producto.imagen || '/img/otros/placeholder.png')}" alt="${producto.titulo || producto.nombre || 'Producto'}" class="producto-imagen" 
+             onerror="this.src='/img/otros/placeholder.png'">
+                  </td>
+                  <td>${producto.titulo || producto.nombre || 'Sin nombre'}</td>
                 <td>${formatCLP(producto.precio)}</td>
                 <td>${producto.cantidad}</td>
                 <td>${formatCLP(producto.precio * producto.cantidad)}</td>
@@ -270,7 +270,7 @@ function generarEmailBody(orden: OrdenCompra): string {
     <h3>Productos comprados:</h3>
     <ul>
       ${orden.productos.map(producto => 
-        `<li>${producto.titulo} - ${producto.cantidad} unidad(es) - ${formatCLP(producto.precio * producto.cantidad)}</li>`
+        `<li>${producto.titulo || producto.nombre || 'Sin nombre'} - ${producto.cantidad} unidad(es) - ${formatCLP(producto.precio * producto.cantidad)}</li>`
       ).join('')}
     </ul>
     

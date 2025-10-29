@@ -14,8 +14,8 @@ interface User {
   apellidos: string;
   email: string;
   password: string;
-  telefono?: string; // optional
-  direccion?: string; // optional
+  telefono?: string;
+  direccion?: string;
   role?: string;
   avatar?: string;
   fechaNacimiento: string;
@@ -63,7 +63,6 @@ const AdminUsuarios: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  // Validators copied from Register logic for realtime validation
   const validateNombre = (v: any) => {
     const s = String(v || "").trim();
     if (!s) return "El nombre es requerido";
@@ -160,7 +159,6 @@ const AdminUsuarios: React.FC = () => {
   const handleSave = () => {
     if (!editing) return;
 
-    // validations similar to Register
     const email = String(editing.email || "").trim();
     const nombre = String(editing.nombre || "").trim();
     const apellidos = String(editing.apellidos || "").trim();
@@ -182,21 +180,19 @@ const AdminUsuarios: React.FC = () => {
       return;
     }
 
-    // Evitar duplicados de email: si estamos creando un usuario nuevo y el
-    // email ya existe, o si estamos editando y el email pertenece a otro
-    // usuario, impedir la operación.
+    // Evitar duplicados de email, si el email ya existe en otro usuario alertar
     const emailLower = email.toLowerCase();
     const conflict = users.find(
       (u) => u.email && u.email.toLowerCase() === emailLower
     );
     if (editing?.id) {
-      // editing existing user: conflict is only an issue if it belongs to a different id
+      // Conflicto si existe otro usuario con el mismo email
       if (conflict && conflict.id !== editing.id) {
         alert("El email ya está registrado en otra cuenta");
         return;
       }
     } else {
-      // creating new user: any existing with same email is a conflict
+      // Nuevo usuario, conflicto si existe cualquiera con el mismo email
       if (conflict) {
         alert("El email ya está registrado");
         return;
@@ -221,7 +217,7 @@ const AdminUsuarios: React.FC = () => {
       }
     }
 
-    // teléfono opcional with format
+    // Telefono opcional con validacion de formato
     if (
       editing.telefono &&
       !/^\+?[0-9\s-()]+$/.test(String(editing.telefono))
