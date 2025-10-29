@@ -5,7 +5,7 @@ exports[`Login > Debería hacer match con el snapshot 1`] = `
   <div
     class="wrapper"
   >
-    <main>
+    <section>
       <div
         class="login-container"
       >
@@ -74,7 +74,7 @@ exports[`Login > Debería hacer match con el snapshot 1`] = `
           </a>
         </p>
       </div>
-    </main>
+    </section>
   </div>
 </div>
 `;

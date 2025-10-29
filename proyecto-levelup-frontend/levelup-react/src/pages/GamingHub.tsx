@@ -105,7 +105,7 @@ const GamingHub = () => {
         {/* seccion hero */}
         <section className="hero-blogs">
           <div className="container">
-            <h1>Blogs</h1> //le cambie el nombre na mas
+            <h1>Blogs</h1>
             <p>Tu portal de noticias y guías de videojuegos</p>
           </div>
         </section>

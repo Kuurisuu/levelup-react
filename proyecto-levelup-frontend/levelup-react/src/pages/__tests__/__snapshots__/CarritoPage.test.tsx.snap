@@ -5,7 +5,7 @@ exports[`Carrito Page > Debería hacer match con el snapshot cuando está vacío
   <div
     class="wrapper"
   >
-    <main
+    <section
       class="main-carrito"
     >
       <h2
@@ -37,7 +37,7 @@ exports[`Carrito Page > Debería hacer match con el snapshot cuando está vacío
           </p>
         </div>
       </div>
-    </main>
+    </section>
   </div>
 </div>
 `;
@@ -47,7 +47,7 @@ exports[`Carrito Page > Debería hacer match con el snapshot cuando tiene produc
   <div
     class="wrapper"
   >
-    <main
+    <section
       class="main-carrito"
     >
       <h2
@@ -79,7 +79,7 @@ exports[`Carrito Page > Debería hacer match con el snapshot cuando tiene produc
           </p>
         </div>
       </div>
-    </main>
+    </section>
   </div>
 </div>
 `;

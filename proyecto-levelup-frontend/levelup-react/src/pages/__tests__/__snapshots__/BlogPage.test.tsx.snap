@@ -5,7 +5,7 @@ exports[`BlogPage > Debería hacer match con el snapshot con blogs cargados 1`] 
   <div
     class="wrapper"
   >
-    <main>
+    <section>
       <section
         class="hero-blogs"
       >
@@ -420,7 +420,7 @@ exports[`BlogPage > Debería hacer match con el snapshot con blogs cargados 1`] 
           </div>
         </div>
       </section>
-    </main>
+    </section>
   </div>
 </div>
 `;

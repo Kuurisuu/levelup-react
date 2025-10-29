@@ -11,7 +11,7 @@ interface ProductoDetalleVisualProps {
   producto: Producto;
 }
 
-//al final tODO ESTO ES PARA EL ZOOM DE LA IMAGEN PRINCIPAL DEL PRODUCTO
+//se agrega el estado del zoom a nivel de szoom
 const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
   galeriaImgs,
   mainImg,
@@ -263,10 +263,10 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
         {isZoomed && (
           <div className="zoom-status"> 
             <div className="zoom-status-text">
-              {isMoving ? 'Moviendo' : 'Fijo'} - {zoomLevel.toFixed(1)}x //se agrega el estado del zoom y el nivel de zoom
+              {isMoving ? 'Moviendo' : 'Fijo'} - {zoomLevel.toFixed(1)}x 
             </div>
             <div className="zoom-scroll-hint">
-              <i className="bi bi-mouse"></i> Scroll para zoom //se agrega el icono de mouse y el texto de scroll para zoom
+              <i className="bi bi-mouse"></i> Scroll para zoom 
             </div>
           </div>
         )}

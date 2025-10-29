@@ -2,7 +2,7 @@
 
 exports[`HomePage > Debería hacer match con el snapshot 1`] = `
 <DocumentFragment>
-  <main
+  <section
     class="main-home"
   >
     <section
@@ -1483,6 +1483,6 @@ exports[`HomePage > Debería hacer match con el snapshot 1`] = `
         Mostrar más
       </button>
     </div>
-  </main>
+  </section>
 </DocumentFragment>
 `;

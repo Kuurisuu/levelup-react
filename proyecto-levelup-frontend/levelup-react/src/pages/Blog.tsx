@@ -15,7 +15,7 @@ type BlogPost = {
 };
 
 const Blog = () => {
-  // estado para los blogs
+  // Blogs
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [blogsLoading, setBlogsLoading] = useState(true);
 

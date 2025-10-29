@@ -1,5 +1,4 @@
 import React from "react";
-import "../../styles/admin-table.css";
 
 interface Column<T> {
   key: string;

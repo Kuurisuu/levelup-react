@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import "../../styles/admin-sidebar.css";
 
 const AdminSidebar: React.FC = () => {
   const [open, setOpen] = useState(true);

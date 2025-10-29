@@ -614,21 +614,6 @@ const Register: React.FC = (): React.JSX.Element => {
               )}
             </div>
 
-            {/* campo de entrada para el avatar (opcional) */}
-            <div className="form-group">
-              <input
-                type="url"
-                id="avatar"
-                name="avatar"
-                placeholder="URL del avatar (opcional)"
-                value={formData.avatar}
-                onChange={handleInputChange}
-                className={errors.avatar ? "error" : ""}
-              />
-              {errors.avatar && (
-                <div className="error-message">{errors.avatar}</div>
-              )}
-            </div>
 
             {/* checkbox para aceptar terminos y condiciones */}
             <div className="form-group checkbox-group">
