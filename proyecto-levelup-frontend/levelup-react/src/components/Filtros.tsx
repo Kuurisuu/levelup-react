@@ -23,6 +23,7 @@ export default function Filtros({
   toggleAside,
 }: FiltrosProps): React.JSX.Element {
   const [openSubcat, setOpenSubcat] = useState<string>("");
+  const [focusedCategory, setFocusedCategory] = useState<string>("");
   const handleToggleSubcat = (cat: string): void => {
     setOpenSubcat(openSubcat === cat ? "" : cat);
   };
@@ -69,9 +70,19 @@ export default function Filtros({
           <li className="categoria">
             <button
               className={`boton-categoria abrir-subcat ${
-                filtros.categoria === "todos" ? "active" : ""
-              }`} //agrege el active para que se vea el boton activo
-              onClick={() => setCategoria("todos")}
+                filtros.categoria === "todos" &&
+                openSubcat === "" &&
+                (focusedCategory === "" || focusedCategory === "todos")
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => {
+                setCategoria("todos");
+                // cerrar cualquier desplegable abierto
+                setOpenSubcat("");
+              }}
+              onFocus={() => setFocusedCategory("todos")}
+              onBlur={() => setFocusedCategory("")}
               aria-label="Mostrar todos"
             >
               Todas las categorías
@@ -80,14 +91,18 @@ export default function Filtros({
           <li className={`categoria${openSubcat === "EN" ? " open" : ""}`}>
             <button
               className={`boton-categoria abrir-subcat ${
-                openSubcat === "EN" || filtros.categoria === "EN"
+                openSubcat === "EN" ||
+                focusedCategory === "EN" ||
+                countSelected("EN") > 0
                   ? "active"
                   : ""
               }`}
               onClick={() => {
-                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
+                // Sólo expandir/colapsar; no activar el filtro automáticamente
                 handleToggleSubcat("EN");
               }}
+              onFocus={() => setFocusedCategory("EN")}
+              onBlur={() => setFocusedCategory("")}
               aria-expanded={openSubcat === "EN"}
             >
               <span className="boton-categoria-label">Entretenimiento</span>
@@ -134,14 +149,18 @@ export default function Filtros({
           <li className={`categoria${openSubcat === "CO" ? " open" : ""}`}>
             <button
               className={`boton-categoria abrir-subcat ${
-                openSubcat === "CO" || filtros.categoria === "CO"
+                openSubcat === "CO" ||
+                focusedCategory === "CO" ||
+                countSelected("CO") > 0
                   ? "active"
                   : ""
               }`}
               onClick={() => {
-                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
+                // Sólo expandir/colapsar
                 handleToggleSubcat("CO");
               }}
+              onFocus={() => setFocusedCategory("CO")}
+              onBlur={() => setFocusedCategory("")}
               aria-expanded={openSubcat === "CO"}
             >
               <span className="boton-categoria-label">Consolas</span>
@@ -211,14 +230,18 @@ export default function Filtros({
           <li className={`categoria${openSubcat === "PE" ? " open" : ""}`}>
             <button
               className={`boton-categoria abrir-subcat ${
-                openSubcat === "PE" || filtros.categoria === "PE"
+                openSubcat === "PE" ||
+                focusedCategory === "PE" ||
+                countSelected("PE") > 0
                   ? "active"
                   : ""
               }`}
               onClick={() => {
-                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
+                // Sólo expandir/colapsar
                 handleToggleSubcat("PE");
               }}
+              onFocus={() => setFocusedCategory("PE")}
+              onBlur={() => setFocusedCategory("")}
               aria-expanded={openSubcat === "PE"}
             >
               <span className="boton-categoria-label">Perifericos</span>
@@ -321,14 +344,18 @@ export default function Filtros({
           <li className={`categoria${openSubcat === "RO" ? " open" : ""}`}>
             <button
               className={`boton-categoria abrir-subcat ${
-                openSubcat === "RO" || filtros.categoria === "RO"
+                openSubcat === "RO" ||
+                focusedCategory === "RO" ||
+                countSelected("RO") > 0
                   ? "active"
                   : ""
               }`}
               onClick={() => {
-                // Solo expandir/colapsar; no disparar el filtro automáticamente al abrir
+                // Sólo expandir/colapsar
                 handleToggleSubcat("RO");
               }}
+              onFocus={() => setFocusedCategory("RO")}
+              onBlur={() => setFocusedCategory("")}
               aria-expanded={openSubcat === "RO"}
             >
               <span className="boton-categoria-label">Ropa</span>

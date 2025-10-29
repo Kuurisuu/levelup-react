@@ -1,35 +1,67 @@
-/* 
- * Admin CSS - Archivo principal que importa todos los módulos CSS
- * 
- * Este archivo organiza todos los estilos del panel de administración
- * divididos en módulos especializados para mejor mantenimiento.
- */
+/* Layout similar to product main so aside can be sticky full-height */
+.admin-page {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  align-items: flex-start;
+  min-height: calc(100vh - var(--header-height));
+}
+.admin-main {
+  flex: 1;
+  /* Match producto-detalle-info gradient border + inner background */
+  background: linear-gradient(
+        to top,
+        rgb(var(--clr-black2)),
+        rgb(var(--clr-black2))
+      )
+      padding-box,
+    linear-gradient(to top, rgb(var(--clr-blue)), rgb(var(--clr-green)))
+      border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid transparent; /* required for gradient border */
+  color: var(--clr-body-text);
+  box-shadow: 0 0px 10px rgba(var(--clr-green), 0.3);
+}
+.admin-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.btn-primary {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--clr-blue)),
+    rgb(var(--clr-green))
+  );
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--clr-body-text);
+}
+.btn-delete {
+  background: rgba(255, 0, 0, 0.06);
+  border: 1px solid rgba(255, 0, 0, 0.12);
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--clr-heading-text);
+}
 
-/* Importar todos los módulos CSS */
-@import './admin-variables.css';
-@import './admin-layout.css';
-@import './admin-forms.css';
-@import './admin-tables.css';
-@import './admin-dashboard.css';
-@import './admin-charts.css';
-@import './admin-reports.css';
-@import './admin-responsive.css';
-
-/* 
- * Estructura de archivos CSS:
- * 
- * admin-variables.css    - Variables CSS, colores, animaciones base
- * admin-layout.css      - Layout principal, sidebar, contenido
- * admin-forms.css       - Formularios, inputs, botones
- * admin-tables.css      - Tablas, componentes de datos
- * admin-dashboard.css   - Estilos específicos del dashboard
- * admin-charts.css      - Gráficos y visualizaciones
- * admin-responsive.css  - Media queries y responsive design
- * 
- * Ventajas de esta organización:
- * - Mejor mantenimiento del código
- * - Separación de responsabilidades
- * - Fácil localización de estilos específicos
- * - Reutilización de módulos
- * - Mejor rendimiento de carga
- */
+/* responsive */
+@media (max-width: 1025px) {
+  .admin-page {
+    flex-direction: column;
+  }
+}

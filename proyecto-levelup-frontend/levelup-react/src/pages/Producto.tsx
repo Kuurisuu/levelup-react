@@ -3,11 +3,15 @@ import { useLocation } from "react-router-dom";
 import { useFiltros } from "../logic/useFiltros";
 import Filtros from "../components/Filtros";
 import ListaProductos from "../components/ProductoList";
+import Pagination from "../components/Pagination";
 import type { Producto, Review } from "../data/catalogo";
 import { calcularRatingPromedio } from "../utils/ratingUtils"; //nuevo import
 
 // Funciones auxiliares para manejar los nuevos campos
-const calcularPrecioConDescuento = (precio: number, descuento?: number): number | null => {
+const calcularPrecioConDescuento = (
+  precio: number,
+  descuento?: number
+): number | null => {
   return descuento ? precio * (1 - descuento / 100.0) : null;
 };
 
@@ -64,10 +68,22 @@ export default function Producto(): React.JSX.Element {
 
   // Mostrar todos los productos filtrados
   const productosAMostrar = productosFiltrados;
-  
+
+  // pagination
+  const [page, setPage] = useState<number>(1);
+  const pageSize = 12;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(productosAMostrar.length / pageSize)
+  );
+  const paginated = productosAMostrar.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
   let titulo = "Todos los productos";
   const tieneBusqueda = filtros.texto && filtros.texto.trim() !== "";
-  
+
   if (tieneBusqueda) {
     if (productosFiltrados.length === 0) {
       titulo = `No se encontraron resultados para "${filtros.texto}"`;
@@ -85,7 +101,7 @@ export default function Producto(): React.JSX.Element {
   }
 
   return (
-    <main className="main-product">
+    <section className="main-product">
       <Filtros
         filtros={filtros}
         setCategoria={setCategoria}
@@ -109,11 +125,16 @@ export default function Producto(): React.JSX.Element {
             onClick={toggleAside}
           >
             <i className="bi bi-funnel"></i> Filtros
-          </button> 
+          </button>
         </div>
 
-        <ListaProductos productos={productosAMostrar} titulo={titulo} />
+        <ListaProductos productos={paginated} titulo={titulo} />
+        <Pagination
+          current={page}
+          total={totalPages}
+          onChange={(p) => setPage(p)}
+        />
       </section>
-    </main>
+    </section>
   );
 }

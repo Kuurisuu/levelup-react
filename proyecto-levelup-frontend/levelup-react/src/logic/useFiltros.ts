@@ -25,7 +25,9 @@ export interface UseFiltrosReturn {
   setOrden: (orden: string) => void;
   limpiarFiltros: () => void;
   productosFiltrados: Producto[];
-  actualizar: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  actualizar: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
   setFiltros: React.Dispatch<React.SetStateAction<Filtros>>;
 }
 
@@ -58,6 +60,7 @@ export function useFiltros(): UseFiltrosReturn {
         if (!prev.subcategorias.includes(id)) {
           nuevas.push(id);
         }
+        // Al seleccionar ALL-XXX solo actualizamos el conjunto de subcategorías; no tocamos 'categoria'
         return { ...prev, subcategorias: nuevas };
       } else {
         // Si se marca una subcategoría normal, quitar el ALL-XXX de esa categoría
@@ -68,6 +71,7 @@ export function useFiltros(): UseFiltrosReturn {
         } else {
           nuevas.push(id);
         }
+        // Solo actualizamos subcategorías; dejamos que el usuario controle la categoría con el botón 'Todas' si lo desea.
         return { ...prev, subcategorias: nuevas };
       }
     });
@@ -85,7 +89,7 @@ export function useFiltros(): UseFiltrosReturn {
     };
     return map[cat] && map[cat].includes(subcat);
   }
-  
+
   function getCategoryOfSubcat(subcat: string): string {
     const map: Record<string, string> = {
       JM: "EN",
@@ -104,9 +108,11 @@ export function useFiltros(): UseFiltrosReturn {
     return map[subcat] || "";
   }
 
-  const actualizar = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
+  const actualizar = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
     const { id, value, type } = e.target;
-    const checked = 'checked' in e.target ? e.target.checked : false;
+    const checked = "checked" in e.target ? e.target.checked : false;
     setFiltros((prev) => ({
       ...prev,
       [id]:
@@ -130,42 +136,71 @@ export function useFiltros(): UseFiltrosReturn {
       orden: "relevancia",
     });
 
-  const setTexto = (texto: string) => setFiltros(prev => ({ ...prev, texto }));
-  const setPrecioMin = (precioMin: string) => setFiltros(prev => ({ ...prev, precioMin }));
-  const setPrecioMax = (precioMax: string) => setFiltros(prev => ({ ...prev, precioMax }));
-  const setDisponible = (disponible: boolean) => setFiltros(prev => ({ ...prev, disponible }));
-  const setRating = (rating: number) => setFiltros(prev => ({ ...prev, rating }));
-  const setOrden = (orden: string) => setFiltros(prev => ({ ...prev, orden }));
+  const setTexto = (texto: string) =>
+    setFiltros((prev) => ({ ...prev, texto }));
+  const setPrecioMin = (precioMin: string) =>
+    setFiltros((prev) => ({ ...prev, precioMin }));
+  const setPrecioMax = (precioMax: string) =>
+    setFiltros((prev) => ({ ...prev, precioMax }));
+  const setDisponible = (disponible: boolean) =>
+    setFiltros((prev) => ({ ...prev, disponible }));
+  const setRating = (rating: number) =>
+    setFiltros((prev) => ({ ...prev, rating }));
+  const setOrden = (orden: string) =>
+    setFiltros((prev) => ({ ...prev, orden }));
 
   const productosFiltrados = useMemo(() => {
-    return productosArray
+    // combine base productosArray with any products persisted by admin in localStorage (lvup_products)
+    let persisted: Producto[] = [];
+    try {
+      const raw = localStorage.getItem("lvup_products") || "[]";
+      persisted = JSON.parse(raw) as Producto[];
+    } catch {
+      persisted = [];
+    }
+
+    // prefer persisted products first, then include base ones that aren't overridden
+    const ids = new Set(persisted.map((p) => p.id));
+    const allProducts = [
+      ...persisted,
+      ...productosArray.filter((p) => !ids.has(p.id)),
+    ];
+
+    return allProducts
       .filter((p) => {
-        // Si hay subcategorías seleccionadas, usar solo esas
+        // If subcategories are selected, they take precedence.
         if (filtros.subcategorias.length > 0) {
-          // Si hay un "Todos" de alguna categoría, incluir todos los productos de esa categoría
           const allCats = filtros.subcategorias.filter((s) =>
             s.startsWith("ALL-")
           );
+          const directSubcats = filtros.subcategorias.filter(
+            (s) => !s.startsWith("ALL-")
+          );
+
+          // If any ALL-XXX is selected, include products in those categories
           if (allCats.length > 0) {
-            // Si el producto pertenece a alguna categoría con ALL-XXX seleccionado
-            if (
-              allCats.some((all) => p.categoria.id === all.replace("ALL-", ""))
-            ) {
-              return true;
-            }
+            const cats = new Set(allCats.map((a) => a.replace("ALL-", "")));
+            if (cats.has(p.categoria.id)) return true;
           }
-          // O si pertenece a alguna subcategoría seleccionada
-          return filtros.subcategorias.includes(p.subcategoria?.id || "");
+
+          // Otherwise include only if product's subcategory id is explicitly selected
+          if (directSubcats.length > 0) {
+            return directSubcats.includes(p.subcategoria?.id || "");
+          }
+
+          // No matching subcategory nor ALL- selection -> exclude
+          return false;
         }
-        
-        // Si no hay subcategorías seleccionadas, filtrar por categoría principal
+
+        // No subcategories selected: fall back to category filter
         if (filtros.categoria === "todos") return true;
         return p.categoria.id === filtros.categoria;
       })
-      .filter((p) =>
-        filtros.texto
-          ? p.nombre.toLowerCase().includes(filtros.texto.toLowerCase()) //se leeria asi esto: "si hay texto, filtrar por el texto"
-          : true //si no hay texto, mostrar todos los productos
+      .filter(
+        (p) =>
+          filtros.texto
+            ? p.nombre.toLowerCase().includes(filtros.texto.toLowerCase()) //se leeria asi esto: "si hay texto, filtrar por el texto"
+            : true //si no hay texto, mostrar todos los productos
       )
       .filter((p) =>
         filtros.precioMin ? p.precio >= Number(filtros.precioMin) : true

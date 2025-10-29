@@ -151,22 +151,22 @@ const imagenesCarrusel: ImagenCarrusel[] = [
     imagenUrl: "carrusel",
     titulo: "¡Nuevos lanzamientos!",
     descripcion: "Descubre los últimos juegos y accesorios",
-    enlace: ""
+    enlace: "",
   },
   {
     id: 2,
     imagenUrl: "carrusel",
     titulo: "Ofertas especiales",
     descripcion: "Hasta 50% de descuento en productos seleccionados",
-    enlace: ""
+    enlace: "",
   },
   {
     id: 3,
     imagenUrl: "carrusel",
     titulo: "Setup gamer completo",
     descripcion: "Arma tu estación de juego perfecta",
-    enlace: ""
-  }
+    enlace: "",
+  },
 ];
 
 // Función helper para crear productos con la estructura correcta
@@ -190,10 +190,13 @@ function crearProducto(
   productosRelacionados: Producto[] = []
 ): Producto {
   const imagenes = imagenesUrls.length > 0 ? imagenesUrls : [imagenUrl];
-  const precioConDescuento = descuento ? precio * (1 - descuento / 100.0) : undefined;
-  const ratingPromedio = reviews.length > 0 
-    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
-    : rating;
+  const precioConDescuento = descuento
+    ? precio * (1 - descuento / 100.0)
+    : undefined;
+  const ratingPromedio =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : rating;
 
   return {
     id,
@@ -214,20 +217,30 @@ function crearProducto(
     reviews,
     productosRelacionados,
     precioConDescuento,
-    ratingPromedio
+    ratingPromedio,
   };
 }
 
 // Función para migrar datos legacy al nuevo formato
 function migrarProductoLegacy(productoLegacy: any): Producto {
-  const categoria = categorias.find(c => c.id === productoLegacy.categoriaId) || categorias[0];
-  const subcategoria = subcategorias.find(s => s.id === productoLegacy.subcategoriaId);
-  
+  const categoria =
+    categorias.find((c) => c.id === productoLegacy.categoriaId) ||
+    categorias[0];
+  const subcategoria = subcategorias.find(
+    (s) => s.id === productoLegacy.subcategoriaId
+  );
+
   const imagenes = productoLegacy.imagenes || [productoLegacy.imagen];
-  const precioConDescuento = productoLegacy.descuento ? productoLegacy.precio * (1 - productoLegacy.descuento / 100.0) : undefined;
-  const ratingPromedio = productoLegacy.reviews && productoLegacy.reviews.length > 0 
-    ? productoLegacy.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / productoLegacy.reviews.length 
-    : productoLegacy.rating;
+  const precioConDescuento = productoLegacy.descuento
+    ? productoLegacy.precio * (1 - productoLegacy.descuento / 100.0)
+    : undefined;
+  const ratingPromedio =
+    productoLegacy.reviews && productoLegacy.reviews.length > 0
+      ? productoLegacy.reviews.reduce(
+          (sum: number, review: any) => sum + review.rating,
+          0
+        ) / productoLegacy.reviews.length
+      : productoLegacy.rating;
 
   return {
     id: productoLegacy.id,
@@ -248,7 +261,7 @@ function migrarProductoLegacy(productoLegacy: any): Producto {
     reviews: productoLegacy.reviews || [],
     productosRelacionados: [],
     precioConDescuento,
-    ratingPromedio
+    ratingPromedio,
   };
 }
 
@@ -260,17 +273,23 @@ const productosLegacy = [
     categoriaId: "CO",
     subcategoriaId: "HA",
     imagen: "./img/consolas/4.png",
-    imagenes: ["./img/consolas/4.png", "./img/consolas/1.png", "./img/consolas/2.png", "./img/consolas/3.png"], //eSTE a nivel de UI serian las imagenes a la izquierda de la imagen principal  
+    imagenes: [
+      "./img/consolas/4.png",
+      "./img/consolas/1.png",
+      "./img/consolas/2.png",
+      "./img/consolas/3.png",
+    ], //eSTE a nivel de UI serian las imagenes a la izquierda de la imagen principal
     precio: 549990,
     disponible: true,
     rating: 1.7,
-    descripcion: "La consola de última generación de Sony, que ofrece gráficos impresionantes y tiempos de carga ultrarrápidos para una experiencia de juego inmersiva.",
+    descripcion:
+      "La consola de última generación de Sony, que ofrece gráficos impresionantes y tiempos de carga ultrarrápidos para una experiencia de juego inmersiva.",
     destacado: true,
     stock: 15,
     fabricante: "Sony",
     distribuidor: "Sony Chile",
     descuento: 10,
-    reviews: []
+    reviews: [],
   },
   {
     id: "CO002",
@@ -282,13 +301,14 @@ const productosLegacy = [
     precio: 179990,
     disponible: true,
     rating: 5,
-    descripcion: "Una consola versátil y compacta que sigue siendo ideal para disfrutar de un extenso catálogo de juegos con gran rendimiento y entretenimiento garantizado.",
+    descripcion:
+      "Una consola versátil y compacta que sigue siendo ideal para disfrutar de un extenso catálogo de juegos con gran rendimiento y entretenimiento garantizado.",
     destacado: true,
     stock: 12,
     fabricante: "Sony",
     distribuidor: "Sony Chile",
     descuento: 5,
-    reviews: []
+    reviews: [],
   },
   {
     id: "CO003",
@@ -300,13 +320,14 @@ const productosLegacy = [
     precio: 60000,
     disponible: true,
     rating: 4,
-    descripcion: "Control oficial de PlayStation 4 con diseño ergonómico y funciones avanzadas que ofrecen precisión y comodidad durante tus sesiones de juego.",
+    descripcion:
+      "Control oficial de PlayStation 4 con diseño ergonómico y funciones avanzadas que ofrecen precisión y comodidad durante tus sesiones de juego.",
     destacado: true,
     stock: 30,
     fabricante: "Sony",
     distribuidor: "Sony Chile",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "CO005",
@@ -318,13 +339,14 @@ const productosLegacy = [
     precio: 69990,
     disponible: true,
     rating: 4,
-    descripcion: "Control de PlayStation 5 en elegante color azul, con retroalimentación háptica y gatillos adaptativos que llevan la experiencia de juego a otro nivel.",
+    descripcion:
+      "Control de PlayStation 5 en elegante color azul, con retroalimentación háptica y gatillos adaptativos que llevan la experiencia de juego a otro nivel.",
     destacado: true,
     stock: 25,
     fabricante: "Sony",
     distribuidor: "Sony Chile",
     descuento: 15,
-    reviews: []
+    reviews: [],
   },
   {
     id: "CO006",
@@ -336,13 +358,14 @@ const productosLegacy = [
     precio: 150000,
     disponible: false,
     rating: 3,
-    descripcion: "Auriculares diseñados para PlayStation 4, con sonido envolvente y micrófono integrado para comunicación clara en partidas multijugador.",
+    descripcion:
+      "Auriculares diseñados para PlayStation 4, con sonido envolvente y micrófono integrado para comunicación clara en partidas multijugador.",
     destacado: false,
     stock: 0,
     fabricante: "Sony",
     distribuidor: "Sony Chile",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "PE001",
@@ -354,13 +377,14 @@ const productosLegacy = [
     precio: 100000,
     disponible: true,
     rating: 4,
-    descripcion: "Auriculares de alto rendimiento con gran calidad de sonido y micrófono ajustable, ideales para juegos, streaming y comunicación online.",
+    descripcion:
+      "Auriculares de alto rendimiento con gran calidad de sonido y micrófono ajustable, ideales para juegos, streaming y comunicación online.",
     destacado: true,
     stock: 20,
     fabricante: "Logitech",
     distribuidor: "Logitech Chile",
     descuento: 10,
-    reviews: []
+    reviews: [],
   },
   {
     id: "PE002",
@@ -372,13 +396,14 @@ const productosLegacy = [
     precio: 145990,
     disponible: true,
     rating: 4,
-    descripcion: "Teclado mecánico con iluminación RGB y switches de alto rendimiento, ideal para juegos y escritura intensiva.",
+    descripcion:
+      "Teclado mecánico con iluminación RGB y switches de alto rendimiento, ideal para juegos y escritura intensiva.",
     destacado: true,
     stock: 25,
     fabricante: "Redragon",
     distribuidor: "Redragon Chile",
     descuento: 20,
-    reviews: []
+    reviews: [],
   },
   {
     id: "PE003",
@@ -390,13 +415,14 @@ const productosLegacy = [
     precio: 85990,
     disponible: true,
     rating: 4,
-    descripcion: "Mouse gamer ergonómico con alta precisión y diseño personalizable, perfecto para sesiones intensas y competitivas.",
+    descripcion:
+      "Mouse gamer ergonómico con alta precisión y diseño personalizable, perfecto para sesiones intensas y competitivas.",
     destacado: false,
     stock: 30,
     fabricante: "Cougar",
     distribuidor: "Cougar Chile",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "PE004",
@@ -408,13 +434,14 @@ const productosLegacy = [
     precio: 175990,
     disponible: true,
     rating: 4,
-    descripcion: "Monitor de alto rendimiento con gran calidad de imagen y refresco rápido, ideal para disfrutar de gráficos nítidos en juegos y multimedia.",
+    descripcion:
+      "Monitor de alto rendimiento con gran calidad de imagen y refresco rápido, ideal para disfrutar de gráficos nítidos en juegos y multimedia.",
     destacado: true,
     stock: 8,
     fabricante: "ASUS",
     distribuidor: "ASUS Chile",
     descuento: 12,
-    reviews: []
+    reviews: [],
   },
   {
     id: "PE005",
@@ -426,13 +453,14 @@ const productosLegacy = [
     precio: 67990,
     disponible: true,
     rating: 4,
-    descripcion: "Webcam de alta definición con gran calidad de imagen y audio, perfecta para streaming, videollamadas y creación de contenido.",
+    descripcion:
+      "Webcam de alta definición con gran calidad de imagen y audio, perfecta para streaming, videollamadas y creación de contenido.",
     destacado: false,
     stock: 18,
     fabricante: "Logitech",
     distribuidor: "Logitech Chile",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "PE006",
@@ -444,13 +472,14 @@ const productosLegacy = [
     precio: 86990,
     disponible: true,
     rating: 4,
-    descripcion: "Micrófono de alta fidelidad con captación clara y profesional, ideal para streaming, grabaciones y comunicación en equipo.",
+    descripcion:
+      "Micrófono de alta fidelidad con captación clara y profesional, ideal para streaming, grabaciones y comunicación en equipo.",
     destacado: false,
     stock: 15,
     fabricante: "Logitech",
     distribuidor: "Logitech Chile",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "RO001",
@@ -462,13 +491,14 @@ const productosLegacy = [
     precio: 40000,
     disponible: true,
     rating: 4.5,
-    descripcion: "Polerón inspirado en StarCraft con diseño gamer único y tela cómoda, perfecto para mostrar tu pasión por el universo de Blizzard.",
+    descripcion:
+      "Polerón inspirado en StarCraft con diseño gamer único y tela cómoda, perfecto para mostrar tu pasión por el universo de Blizzard.",
     destacado: false,
     stock: 50,
     fabricante: "Blizzard",
     distribuidor: "Level-Up",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "RO002",
@@ -480,13 +510,14 @@ const productosLegacy = [
     precio: 40000,
     disponible: true,
     rating: 4.5,
-    descripcion: "Polerón divertido y cómodo diseñado para los papás que disfrutan tanto del gaming como de la familia.",
+    descripcion:
+      "Polerón divertido y cómodo diseñado para los papás que disfrutan tanto del gaming como de la familia.",
     destacado: false,
     stock: 50,
     fabricante: "Level-Up",
     distribuidor: "Level-Up",
     descuento: 10,
-    reviews: []
+    reviews: [],
   },
   {
     id: "RO003",
@@ -498,13 +529,14 @@ const productosLegacy = [
     precio: 40000,
     disponible: true,
     rating: 4.5,
-    descripcion: "Polerón con diseño inspirado en Hollow Knight, ideal para fanáticos del juego indie y su mundo misterioso.",
+    descripcion:
+      "Polerón con diseño inspirado en Hollow Knight, ideal para fanáticos del juego indie y su mundo misterioso.",
     destacado: false,
     stock: 50,
     fabricante: "Team Cherry",
     distribuidor: "Level-Up",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "RO004",
@@ -516,13 +548,14 @@ const productosLegacy = [
     precio: 40000,
     disponible: true,
     rating: 4.5,
-    descripcion: "Polerón retro en color negro con el clásico logo de PlayStation, perfecto para los nostálgicos del gaming.",
+    descripcion:
+      "Polerón retro en color negro con el clásico logo de PlayStation, perfecto para los nostálgicos del gaming.",
     destacado: false,
     stock: 50,
     fabricante: "Sony",
     distribuidor: "Level-Up",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "RO005",
@@ -534,13 +567,14 @@ const productosLegacy = [
     precio: 40000,
     disponible: true,
     rating: 4.5,
-    descripcion: "Polerón colorido y divertido inspirado en Stumble Guys, ideal para gamers que disfrutan de las partidas llenas de caos y risas.",
+    descripcion:
+      "Polerón colorido y divertido inspirado en Stumble Guys, ideal para gamers que disfrutan de las partidas llenas de caos y risas.",
     destacado: false,
     stock: 50,
     fabricante: "Kitka Games",
     distribuidor: "Level-Up",
     descuento: 5,
-    reviews: []
+    reviews: [],
   },
   {
     id: "RO006",
@@ -552,13 +586,14 @@ const productosLegacy = [
     precio: 40000,
     disponible: true,
     rating: 4.5,
-    descripcion: "Polerón con diseño de la unidad S.T.A.R.S de Resident Evil, pensado para los fanáticos del survival horror.",
+    descripcion:
+      "Polerón con diseño de la unidad S.T.A.R.S de Resident Evil, pensado para los fanáticos del survival horror.",
     destacado: false,
     stock: 50,
     fabricante: "Capcom",
     distribuidor: "Level-Up",
     descuento: undefined,
-    reviews: []
+    reviews: [],
   },
   {
     id: "EN001",
@@ -570,13 +605,14 @@ const productosLegacy = [
     precio: 29990,
     disponible: true,
     rating: 4,
-    descripcion: "Un clásico juego de estrategia donde los jugadores compiten por colonizar y expandirse en la isla de Catan. Ideal para 3-4 jugadores y perfecto para noches de juego en familia o con amigos.",
+    descripcion:
+      "Un clásico juego de estrategia donde los jugadores compiten por colonizar y expandirse en la isla de Catan. Ideal para 3-4 jugadores y perfecto para noches de juego en familia o con amigos.",
     destacado: false,
     stock: 30,
     fabricante: "KOSMOS",
     distribuidor: "Devir",
     descuento: 15,
-    reviews: []
+    reviews: [],
   },
   {
     id: "EN002",
@@ -588,14 +624,15 @@ const productosLegacy = [
     precio: 24990,
     disponible: true,
     rating: 4,
-    descripcion: "Un juego de colocación de fichas donde los jugadores construyen el paisaje alrededor de la fortaleza medieval de Carcassonne. Ideal para 2-5 jugadores y fácil de aprender.",
+    descripcion:
+      "Un juego de colocación de fichas donde los jugadores construyen el paisaje alrededor de la fortaleza medieval de Carcassonne. Ideal para 2-5 jugadores y fácil de aprender.",
     destacado: false,
     stock: 25,
     fabricante: "Hans im Glück",
     distribuidor: "Devir",
     descuento: 10,
-    reviews: []
-  }
+    reviews: [],
+  },
 ];
 
 // Convertir productos legacy al nuevo formato (se define al final del archivo)
@@ -606,16 +643,20 @@ export const obtenerProductos = (): Producto[] => {
 };
 
 export const obtenerProductosDestacados = (): Producto[] => {
-  return productosArray.filter(producto => producto.destacado);
+  return productosArray.filter((producto) => producto.destacado);
 };
 
 export const obtenerProductoPorId = (id: string): Producto | undefined => {
-  return productosArray.find(producto => producto.id === id);
+  return productosArray.find((producto) => producto.id === id);
 };
 
-export const obtenerProductosRelacionados = (producto: Producto): Producto[] => {
+export const obtenerProductosRelacionados = (
+  producto: Producto
+): Producto[] => {
   return productosArray
-    .filter(p => p.id !== producto.id && p.categoria.id === producto.categoria.id)
+    .filter(
+      (p) => p.id !== producto.id && p.categoria.id === producto.categoria.id
+    )
     .slice(0, 4);
 };
 

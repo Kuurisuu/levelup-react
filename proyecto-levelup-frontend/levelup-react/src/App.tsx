@@ -32,7 +32,8 @@ export default function App() {
           <Route path="/producto" element={<Producto />} />
           <Route path="/producto/:id" element={<ProductoDetalle />} />
           <Route path="/carrito" element={<Carrito />} />
-          <Route path="/checkout" element={<Checkout />} /> {/* simplemente se agrego esta nueva ruta */}
+          <Route path="/checkout" element={<Checkout />} />{" "}
+          {/* simplemente se agrego esta nueva ruta */}
           <Route path="/gaming-hub" element={<GamingHub />} />
           <Route path="/eventos" element={<Eventos />} />
           <Route path="/nosotros" element={<Nosotros />} />

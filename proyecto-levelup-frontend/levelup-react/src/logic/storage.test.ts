@@ -21,10 +21,10 @@ describe("Storage - LocalStorage del Carrito", () => {
     const productos: ProductoEnCarrito[] = [
       {
         id: "test-1",
-        titulo: "Producto Test",
+        nombre: "Producto Test",
         precio: 10000,
-        imagen: "test.png",
-        categoriaId: "TEST",
+        imagenUrl: "test.png",
+        categoria: { id: "TEST", nombre: "TEST" } as any,
         cantidad: 1,
       } as any,
     ];
@@ -44,18 +44,18 @@ describe("Storage - LocalStorage del Carrito", () => {
     const productos: ProductoEnCarrito[] = [
       {
         id: "test-1",
-        titulo: "Producto 1",
+        nombre: "Producto 1",
         precio: 10000,
-        imagen: "test1.png",
-        categoriaId: "TEST",
+        imagenUrl: "test1.png",
+        categoria: { id: "TEST", nombre: "TEST" } as any,
         cantidad: 1,
       } as any,
       {
         id: "test-2",
-        titulo: "Producto 2",
+        nombre: "Producto 2",
         precio: 20000,
-        imagen: "test2.png",
-        categoriaId: "TEST",
+        imagenUrl: "test2.png",
+        categoria: { id: "TEST", nombre: "TEST" } as any,
         cantidad: 2,
       } as any,
     ];
@@ -75,10 +75,10 @@ describe("Storage - LocalStorage del Carrito", () => {
     const productosIniciales: ProductoEnCarrito[] = [
       {
         id: "test-1",
-        titulo: "Producto Inicial",
+        nombre: "Producto Inicial",
         precio: 10000,
-        imagen: "test1.png",
-        categoriaId: "TEST",
+        imagenUrl: "test1.png",
+        categoria: { id: "TEST", nombre: "TEST" } as any,
         cantidad: 1,
       } as any,
     ];
@@ -86,10 +86,10 @@ describe("Storage - LocalStorage del Carrito", () => {
     const productosNuevos: ProductoEnCarrito[] = [
       {
         id: "test-2",
-        titulo: "Producto Nuevo",
+        nombre: "Producto Nuevo",
         precio: 15000,
-        imagen: "test2.png",
-        categoriaId: "TEST",
+        imagenUrl: "test2.png",
+        categoria: { id: "TEST", nombre: "TEST" } as any,
         cantidad: 3,
       } as any,
     ];
@@ -102,17 +102,17 @@ describe("Storage - LocalStorage del Carrito", () => {
     //! 3 - Assert
     expect(carritoFinal).toHaveLength(1);
     expect(carritoFinal[0].id).toBe("test-2");
-    expect(carritoFinal[0].titulo).toBe("Producto Nuevo");
+    expect(carritoFinal[0].nombre).toBe("Producto Nuevo");
   });
 
   test("Debe mantener la estructura correcta de ProductoEnCarrito", () => {
     //! 1 - Arrange
     const producto = {
       id: "ps5-001",
-      titulo: "PlayStation 5",
+      nombre: "PlayStation 5",
       precio: 499990,
-      imagen: "ps5.png",
-      categoriaId: "CO",
+      imagenUrl: "ps5.png",
+      categoria: { id: "CO", nombre: "Consola" } as any,
       cantidad: 2,
       precioCLP: "$499.990 CLP",
       subtotalCLP: "$999.980 CLP",
@@ -124,10 +124,10 @@ describe("Storage - LocalStorage del Carrito", () => {
 
     //! 3 - Assert
     expect(carritoGuardado[0]).toHaveProperty("id");
-    expect(carritoGuardado[0]).toHaveProperty("titulo");
+    expect(carritoGuardado[0]).toHaveProperty("nombre");
     expect(carritoGuardado[0]).toHaveProperty("precio");
-    expect(carritoGuardado[0]).toHaveProperty("imagen");
-    expect(carritoGuardado[0]).toHaveProperty("categoriaId");
+    expect(carritoGuardado[0]).toHaveProperty("imagenUrl");
+    expect(carritoGuardado[0]).toHaveProperty("categoria");
     expect(carritoGuardado[0]).toHaveProperty("cantidad");
     expect(carritoGuardado[0].precioCLP).toBe("$499.990 CLP");
   });

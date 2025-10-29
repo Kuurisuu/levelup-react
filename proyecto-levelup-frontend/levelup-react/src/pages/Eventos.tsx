@@ -177,7 +177,7 @@ const Eventos = () => {
   const refreshPuntos = () => {
     const u = getCurrentUser();
     const pts = u ? u.points || 0 : 0;
-    console.log('Refreshing puntos. Usuario:', u, 'Puntos:', pts);
+    console.log("Refreshing puntos. Usuario:", u, "Puntos:", pts);
     setPuntosUsuario(pts);
   };
 
@@ -288,26 +288,26 @@ const Eventos = () => {
     const code = codigoInput.trim().toUpperCase();
     setMensajeCodigo("");
 
-    console.log('Intentando canjear código:', code);
+    console.log("Intentando canjear código:", code);
 
     const u = getCurrentUser();
     if (!u) {
-      console.log('No hay usuario logueado');
+      console.log("No hay usuario logueado");
       setMensajeCodigo("Debes iniciar sesión para canjear un código.");
       return;
     }
 
-    console.log('Usuario actual:', u);
+    console.log("Usuario actual:", u);
 
     if (!code) {
       setMensajeCodigo("Ingresa un código válido.");
       return;
     }
 
-    console.log('Códigos válidos disponibles:', codigosValidos);
+    console.log("Códigos válidos disponibles:", codigosValidos);
     const pts = codigosValidos[code];
-    console.log('Puntos para código', code, ':', pts);
-    
+    console.log("Puntos para código", code, ":", pts);
+
     if (!pts) {
       setMensajeCodigo("Código inválido o expirado.");
       return;
@@ -315,8 +315,8 @@ const Eventos = () => {
 
     // evitar canje duplicado
     u.redeemedCodes = Array.isArray(u.redeemedCodes) ? u.redeemedCodes : [];
-    console.log('Códigos ya canjeados por el usuario:', u.redeemedCodes);
-    
+    console.log("Códigos ya canjeados por el usuario:", u.redeemedCodes);
+
     if (u.redeemedCodes.includes(code)) {
       setMensajeCodigo("Este código ya fue canjeado en tu cuenta.");
       return;
@@ -325,9 +325,9 @@ const Eventos = () => {
     // actualizar usuario con nuevo código y puntos
     u.redeemedCodes.push(code);
     u.points = (u.points || 0) + pts;
-    console.log('Puntos antes del canje:', (u.points || 0) - pts);
-    console.log('Puntos después del canje:', u.points);
-    
+    console.log("Puntos antes del canje:", (u.points || 0) - pts);
+    console.log("Puntos después del canje:", u.points);
+
     setCurrentUser(u);
     refreshPuntos();
     setCodigoInput("");
@@ -344,7 +344,7 @@ const Eventos = () => {
 
   return (
     <div className="wrapper">
-      <main>
+      <section>
         <section className="eventos-hero">
           <h1>Eventos Level-Up Gamer</h1>
           <p>
@@ -494,7 +494,7 @@ const Eventos = () => {
             </section>
           </div>
         </section>
-      </main>
+      </section>
     </div>
   );
 };

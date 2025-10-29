@@ -101,7 +101,7 @@ const GamingHub = () => {
 
   return (
     <div className="wrapper">
-      <main className="main-content">
+      <section className="main-content">
         {/* seccion hero */}
         <section className="hero-blogs">
           <div className="container">
@@ -208,7 +208,7 @@ const GamingHub = () => {
             </div>
           </div>
         </section>
-      </main>
+      </section>
     </div>
   );
 };

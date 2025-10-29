@@ -20,7 +20,7 @@ export default function Home(): React.JSX.Element {
   };
 
   return (
-    <main className="main-home">
+    <section className="main-home">
       {/* Carrusel */}
       <Carrusel />
 
@@ -37,7 +37,12 @@ export default function Home(): React.JSX.Element {
       {/* Botones mostrar más/menos */}
       <div
         className=""
-        style={{ display: "flex", justifyContent: "center", margin: "1rem 0", gap: "1rem" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          margin: "1rem 0",
+          gap: "1rem",
+        }}
       >
         {productos.length < productosArray.length && (
           <button
@@ -48,7 +53,7 @@ export default function Home(): React.JSX.Element {
             Mostrar más
           </button>
         )}
-        
+
         {pageHome > 1 && ( //si la pagina es mayor a 1, se muestra el boton de mostrar menos
           <button
             id="btn-mostrar-menos-home"
@@ -59,6 +64,6 @@ export default function Home(): React.JSX.Element {
           </button>
         )}
       </div>
-    </main>
+    </section>
   );
 }

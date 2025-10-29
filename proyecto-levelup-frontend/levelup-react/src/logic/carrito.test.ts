@@ -45,7 +45,7 @@ describe("Carrito - Agregar productos", () => {
       precio: 499990,
       imagen: "ps5.png",
       categoriaId: "CO",
-    } as Producto;
+    } as unknown as Producto;
 
     //! 2 - Act
     agregarAlCarrito(producto);
@@ -65,7 +65,7 @@ describe("Carrito - Agregar productos", () => {
       precio: 449990,
       imagen: "xbox.png",
       categoriaId: "CO",
-    } as Producto;
+    } as unknown as Producto;
 
     //! 2 - Act
     agregarAlCarrito(producto);
@@ -85,7 +85,7 @@ describe("Carrito - Agregar productos", () => {
       precio: 299990,
       imagen: "switch.png",
       categoriaId: "CO",
-    } as Producto;
+    } as unknown as Producto;
 
     const producto2 = {
       id: "test-004",
@@ -93,7 +93,7 @@ describe("Carrito - Agregar productos", () => {
       precio: 399990,
       imagen: "steam.png",
       categoriaId: "CO",
-    } as Producto;
+    } as unknown as Producto;
 
     //! 2 - Act
     agregarAlCarrito(producto1);
@@ -120,7 +120,7 @@ describe("Carrito - Eliminar productos", () => {
       precio: 59990,
       imagen: "control-ps5.png",
       categoriaId: "PE",
-    } as Producto;
+    } as unknown as Producto;
 
     agregarAlCarrito(producto);
 
@@ -140,7 +140,7 @@ describe("Carrito - Eliminar productos", () => {
       precio: 79990,
       imagen: "teclado.png",
       categoriaId: "PE",
-    } as Producto;
+    } as unknown as Producto;
 
     const producto2 = {
       id: "test-007",
@@ -148,7 +148,7 @@ describe("Carrito - Eliminar productos", () => {
       precio: 49990,
       imagen: "mouse.png",
       categoriaId: "PE",
-    } as Producto;
+    } as unknown as Producto;
 
     agregarAlCarrito(producto1);
     agregarAlCarrito(producto2);
@@ -176,7 +176,7 @@ describe("Carrito - Vaciar carrito", () => {
       precio: 89990,
       imagen: "audifonos.png",
       categoriaId: "PE",
-    } as Producto;
+    } as unknown as Producto;
 
     const producto2 = {
       id: "test-009",
@@ -184,7 +184,7 @@ describe("Carrito - Vaciar carrito", () => {
       precio: 69990,
       imagen: "webcam.png",
       categoriaId: "PE",
-    } as Producto;
+    } as unknown as Producto;
 
     agregarAlCarrito(producto1);
     agregarAlCarrito(producto2);

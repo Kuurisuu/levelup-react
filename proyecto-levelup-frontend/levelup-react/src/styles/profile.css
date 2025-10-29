@@ -1,6 +1,5 @@
 .main-profile {
   width: 80%;
-  margin: var(--header-height) auto;
   /* Centrar vertical y horizontalmente el contenido (tarjeta) */
   display: flex;
   align-items: center;

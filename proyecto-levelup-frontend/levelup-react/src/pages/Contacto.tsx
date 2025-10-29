@@ -125,7 +125,7 @@ const Contacto = () => {
   return (
     <div className="wrapper">
       {/* contenido principal de la pagina de contacto */}
-      <main className="contacto-main">
+      <section className="contacto-main">
         {/* seccion hero: introduccion principal de la pagina */}
         <section className="hero-contacto">
           <div className="hero-content">
@@ -161,7 +161,7 @@ const Contacto = () => {
                   <div>
                     <h3>WhatsApp</h3>
                     <p>
-                      <a 
+                      <a
                         href="https://wa.me/56912345678?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20los%20productos%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20información%20sobre%20disponibilidad%20y%20precios?"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -370,7 +370,7 @@ const Contacto = () => {
             </div>
           </div>
         </section>
-      </main>
+      </section>
     </div>
   );
 };

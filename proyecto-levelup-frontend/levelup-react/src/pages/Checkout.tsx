@@ -8,27 +8,27 @@ import CompraExitosa from "../components/Checkout/CompraExitosa";
 import CompraFallida from "../components/Checkout/CompraFallida";
 import { getCarrito, vaciarCarrito } from "../logic/carrito";
 import { ProductoEnCarrito } from "../logic/storage";
-import { 
-  DatosEnvio, 
-  OrdenCompra, 
-  crearOrdenCompra, 
-  procesarPago, 
-  guardarOrden, 
+import {
+  DatosEnvio,
+  OrdenCompra,
+  crearOrdenCompra,
+  procesarPago,
+  guardarOrden,
   actualizarEstadoOrden,
   calcularValoresOrden,
   isDuocEmail,
-  formatCLP
+  formatCLP,
 } from "../utils/orden.helper";
 import { generarPDFBoleta, enviarBoletaPorEmail } from "../utils/pdf.helper";
-import { 
-  DatosEnvio as DatosEnvioHelper, 
-  DatosTarjeta, 
-  determinarSiguientePaso, 
-  guardarDatosEnvio, 
-  guardarDatosTarjeta, 
-  obtenerDatosEnvio, 
+import {
+  DatosEnvio as DatosEnvioHelper,
+  DatosTarjeta,
+  determinarSiguientePaso,
+  guardarDatosEnvio,
+  guardarDatosTarjeta,
+  obtenerDatosEnvio,
   obtenerDatosTarjeta,
-  limpiarDatosCheckout
+  limpiarDatosCheckout,
 } from "../utils/checkout.helper";
 
 // ESTE CHECKOUT ES PARA LA PASARELA DE PAGO Y EL RESUMEN DE LA COMPRA
@@ -55,21 +55,30 @@ interface UserSession {
 }
 
 //definimos el tipo de dato que puede ser el paso del checkout para lograr un mejor control de los pasos
-type CheckoutStep = 'formulario' | 'resumen' | 'pago' | 'rapido' | 'procesando' | 'exitoso' | 'fallido';
+type CheckoutStep =
+  | "formulario"
+  | "resumen"
+  | "pago"
+  | "rapido"
+  | "procesando"
+  | "exitoso"
+  | "fallido";
 
 //definimos el componente Checkout
-const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de dato que puede ser el componente Checkout
+const Checkout: React.FC = (): React.JSX.Element => {
+  //React.FC es el tipo de dato que puede ser el componente Checkout
   const navigate = useNavigate();
-  const [step, setStep] = useState<CheckoutStep>('formulario'); //step es el paso actual del checkout osea formulacio etc 
+  const [step, setStep] = useState<CheckoutStep>("formulario"); //step es el paso actual del checkout osea formulacio etc
   const [productos, setProductos] = useState<ProductoEnCarrito[]>([]);
   const [datosEnvio, setDatosEnvio] = useState<DatosEnvio | null>(null);
   const [datosTarjeta, setDatosTarjeta] = useState<DatosTarjeta | null>(null);
   const [orden, setOrden] = useState<OrdenCompra | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<User | null>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   // Cargar datos iniciales es decir cuando se carga la pagina
-  useEffect(() => { //useEffect es un hook que se ejecuta cuando el componente se monta
+  useEffect(() => {
+    //useEffect es un hook que se ejecuta cuando el componente se monta
     cargarDatosIniciales();
   }, []); // [] es el array de dependencias y se ejecuta cuando el componente se monta osea a palabras simples si no hay dependencias se ejecuta solo una vez
 
@@ -78,7 +87,7 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
     const productosCarrito = getCarrito();
     if (productosCarrito.length === 0) {
       // Si no hay productos, redirigir al carrito
-      navigate('/carrito');
+      navigate("/carrito");
       return;
     }
     setProductos(productosCarrito);
@@ -90,19 +99,19 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
     // Verificar si el usuario está logueado
     if (!usuario) {
       // Si no está logueado, redirigir al login
-      alert('Debes iniciar sesión para proceder con la compra');
-      navigate('/login');
+      alert("Debes iniciar sesión para proceder con la compra");
+      navigate("/login");
       return;
     }
 
     // Cargar datos guardados del checkout
     const datosEnvioGuardados = obtenerDatosEnvio();
     const datosTarjetaGuardados = obtenerDatosTarjeta();
-    
+
     if (datosEnvioGuardados) {
       setDatosEnvio(datosEnvioGuardados);
     }
-    
+
     if (datosTarjetaGuardados) {
       setDatosTarjeta(datosTarjetaGuardados);
     }
@@ -110,12 +119,12 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
     // Determinar el paso inicial basado en los datos guardados
     const pasoInicial = determinarSiguientePaso();
     setStep(pasoInicial);
-    
-    console.log('Checkout inicializado:', {
+
+    console.log("Checkout inicializado:", {
       pasoInicial,
       tieneDatosEnvio: !!datosEnvioGuardados,
       tieneDatosTarjeta: !!datosTarjetaGuardados,
-      usuarioLogueado: !!usuario
+      usuarioLogueado: !!usuario,
     }); // Debug
   }
 
@@ -124,7 +133,7 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
     try {
       const session = localStorage.getItem("lvup_user_session");
       if (!session) return null;
-      
+
       const sessionData: UserSession = JSON.parse(session);
       const users = JSON.parse(localStorage.getItem("lvup_users") || "[]");
       return users.find((u: User) => u.id === sessionData.userId) || null;
@@ -134,63 +143,70 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
   }
 
   // funcion para continuar al resumen con los datos de envio
-  function handleContinuarFormulario(datos: DatosEnvio, guardarDatos: boolean = true): void {
-    console.log('Continuando al resumen con datos:', datos); // Debug
-    console.log('Guardar datos:', guardarDatos); // Debug
+  function handleContinuarFormulario(
+    datos: DatosEnvio,
+    guardarDatos: boolean = true
+  ): void {
+    console.log("Continuando al resumen con datos:", datos); // Debug
+    console.log("Guardar datos:", guardarDatos); // Debug
     setDatosEnvio(datos);
     // guardar datos de envio solo si el usuario quiere
     if (guardarDatos) {
       guardarDatosEnvio(datos); // Guardar datos de envío solo si el usuario quiere
     }
-    
-    setStep('resumen');//y pasa a la siguiente fase 
+
+    setStep("resumen"); //y pasa a la siguiente fase
   }
 
   // funcion para volver al formulario
   function handleVolverFormulario(): void {
-    setStep('formulario');
+    setStep("formulario");
   }
 
   // funcion para continuar al pago
   function handleContinuarPago(): void {
-    setStep('pago');
+    setStep("pago");
   }
 
   // funcion para procesar el pago
   function handlePagar(datosTarjetaNuevos: DatosTarjeta): void {
     if (!datosEnvio) return;
 
-    console.log('Procesando pago con datos de tarjeta:', datosTarjetaNuevos); // Debug
-    
-    // Guardar datos de tarjeta ilegal si esq solo se guarda de referencia los datos con ** de referencia de id 
+    console.log("Procesando pago con datos de tarjeta:", datosTarjetaNuevos); // Debug
+
+    // Guardar datos de tarjeta ilegal si esq solo se guarda de referencia los datos con ** de referencia de id
     setDatosTarjeta(datosTarjetaNuevos);
     guardarDatosTarjeta(datosTarjetaNuevos);
-    
-    setStep('procesando');
-    
+
+    setStep("procesando");
+
     // Crear orden
-    const aplicaDescuento = usuarioLogueado ? isDuocEmail(usuarioLogueado.email) : false;
+    const aplicaDescuento = usuarioLogueado
+      ? isDuocEmail(usuarioLogueado.email)
+      : false;
     const nuevaOrden = crearOrdenCompra(datosEnvio, productos, aplicaDescuento);
     setOrden(nuevaOrden);
     guardarOrden(nuevaOrden);
 
     // Procesar pago
     procesarPago(nuevaOrden)
-      .then(resultado => {// cuando se llama a la funcion procesarPago se ejecuta el then y se pasa el resultado a la funcion
-        if (resultado.exito) {// si el resultado es true se actualiza el estado de la orden a completada
-          actualizarEstadoOrden(nuevaOrden.codigo, 'completada');
-          setStep('exitoso');
+      .then((resultado) => {
+        // cuando se llama a la funcion procesarPago se ejecuta el then y se pasa el resultado a la funcion
+        if (resultado.exito) {
+          // si el resultado es true se actualiza el estado de la orden a completada
+          actualizarEstadoOrden(nuevaOrden.codigo, "completada");
+          setStep("exitoso");
           vaciarCarrito();
         } else {
-          actualizarEstadoOrden(nuevaOrden.codigo, 'fallida');
-          setError(resultado.error || 'Error desconocido');
-          setStep('fallido');
+          actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+          setError(resultado.error || "Error desconocido");
+          setStep("fallido");
         }
       })
-      .catch(error => {
-        console.error('Error al procesar pago:', error);
-        setError('Error al procesar el pago');
-        setStep('fallido');
+      .catch((error) => {
+        console.error("Error al procesar pago:", error);
+        setError("Error al procesar el pago");
+        setStep("fallido");
       });
   }
 
@@ -207,89 +223,93 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
       enviarBoletaPorEmail(orden);
     }
   }
-//esta se activa cuando se completa la compra exitosa y se vuelve al inicio
+  //esta se activa cuando se completa la compra exitosa y se vuelve al inicio
   function handleVolverInicio(): void {
-    navigate('/');
+    navigate("/");
   }
   // funcion para reintentar la compra si falla el pago
   function handleReintentarCompra(): void {
-    setStep('pago');
-    setError('');
+    setStep("pago");
+    setError("");
   }
 
   // funcion para volver al resumen
   function handleVolverPago(): void {
-    setStep('resumen');
+    setStep("resumen");
   }
 
   // funcion para confirmar la compra rapida
   function handleConfirmarCompraRapida(): void {
     if (!datosEnvio || !datosTarjeta) return; // si no hay datos de envio o de tarjeta se retorna
 
-    console.log('Confirmando compra rápida con datos guardados'); // Debug
-    setStep('procesando');// se pasa a la siguiente fase
-    
+    console.log("Confirmando compra rápida con datos guardados"); // Debug
+    setStep("procesando"); // se pasa a la siguiente fase
+
     // Crear orden
-    const aplicaDescuento = usuarioLogueado ? isDuocEmail(usuarioLogueado.email) : false;
+    const aplicaDescuento = usuarioLogueado
+      ? isDuocEmail(usuarioLogueado.email)
+      : false;
     const nuevaOrden = crearOrdenCompra(datosEnvio, productos, aplicaDescuento);
     setOrden(nuevaOrden);
     guardarOrden(nuevaOrden);
 
     // Procesar pago
     procesarPago(nuevaOrden)
-      .then(resultado => {
+      .then((resultado) => {
         if (resultado.exito) {
-          actualizarEstadoOrden(nuevaOrden.codigo, 'completada');
-          setStep('exitoso');
+          actualizarEstadoOrden(nuevaOrden.codigo, "completada");
+          setStep("exitoso");
           vaciarCarrito();
           limpiarDatosCheckout(); // Limpiar datos guardados después de compra exitosa
         } else {
-          actualizarEstadoOrden(nuevaOrden.codigo, 'fallida');
-          setError(resultado.error || 'Error desconocido');
-          setStep('fallido');
+          actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+          setError(resultado.error || "Error desconocido");
+          setStep("fallido");
         }
       })
-      .catch(error => {
-        console.error('Error al procesar pago:', error);
-        setError('Error al procesar el pago');
-        setStep('fallido');
+      .catch((error) => {
+        console.error("Error al procesar pago:", error);
+        setError("Error al procesar el pago");
+        setStep("fallido");
       });
   }
 
   // funcion para volver al formulario
   function handleEditarDatos(): void {
-    setStep('formulario');
+    setStep("formulario");
   }
 
-  // funcion para volver al pago 
+  // funcion para volver al pago
   function handleEditarTarjeta(): void {
-    setStep('pago');
+    setStep("pago");
   }
-  
+
   function handleVolverCarrito(): void {
-    navigate('/carrito');
+    navigate("/carrito");
   }
- 
+
   function handleContactarSoporte(): void {
-    navigate('/contacto');
+    navigate("/contacto");
   }
 
   function handleCancelar(): void {
-    navigate('/carrito');
+    navigate("/carrito");
   }
 
   // Calcular valores
-  const aplicaDescuento = usuarioLogueado ? isDuocEmail(usuarioLogueado.email) : false;
+  const aplicaDescuento = usuarioLogueado
+    ? isDuocEmail(usuarioLogueado.email)
+    : false;
   const valores = calcularValoresOrden(productos, aplicaDescuento);
 
   // retornamos el componente Checkout hacia el App.tsx
   return (
     <div className="wrapper">
-      <main className="main-checkout">
+      <section className="main-checkout">
         <h2 className="titulo-principal">Checkout</h2>
-        
+
         <div className="checkout-container">
-          {step === 'formulario' && (
+          {step === "formulario" && (
             <CheckoutFormulario
               onContinuar={handleContinuarFormulario}
               onCancelar={handleCancelar}
@@ -297,7 +317,7 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
             />
           )}
 
-          {step === 'resumen' && datosEnvio && (
+          {step === "resumen" && datosEnvio && (
             <CheckoutResumen
               productos={productos}
               datosEnvio={datosEnvio}
@@ -305,13 +325,13 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
               descuento={valores.descuento}
               iva={valores.iva}
               total={valores.total}
-              codigoOrden={orden?.codigo || 'PENDIENTE'}
+              codigoOrden={orden?.codigo || "PENDIENTE"}
               onConfirmarCompra={handleContinuarPago}
               onVolver={handleVolverFormulario}
             />
           )}
 
-          {step === 'pago' && (
+          {step === "pago" && (
             <CheckoutPago
               total={valores.total}
               datosTarjetaIniciales={datosTarjeta}
@@ -320,7 +340,7 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
             />
           )}
 
-          {step === 'rapido' && datosEnvio && datosTarjeta && (
+          {step === "rapido" && datosEnvio && datosTarjeta && (
             <CheckoutRapido
               productos={productos}
               datosEnvio={datosEnvio}
@@ -335,17 +355,19 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
             />
           )}
 
-          {step === 'procesando' && (
+          {step === "procesando" && (
             <div className="checkout-procesando">
               <div className="procesando-spinner">
                 <div className="spinner"></div>
               </div>
               <h3>Procesando tu compra...</h3>
-              <p>Por favor, no cierres esta ventana mientras procesamos tu pago.</p>
+              <p>
+                Por favor, no cierres esta ventana mientras procesamos tu pago.
+              </p>
             </div>
           )}
 
-          {step === 'exitoso' && orden && (
+          {step === "exitoso" && orden && (
             <CompraExitosa
               productos={productos}
               datosEnvio={datosEnvio!}
@@ -360,7 +382,7 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
             />
           )}
 
-          {step === 'fallido' && (
+          {step === "fallido" && (
             <CompraFallida
               error={error}
               codigoOrden={orden?.codigo}
@@ -370,7 +392,7 @@ const Checkout: React.FC = (): React.JSX.Element => { //React.FC es el tipo de d
             />
           )}
         </div>
-      </main>
+      </section>
     </div>
   );
 };

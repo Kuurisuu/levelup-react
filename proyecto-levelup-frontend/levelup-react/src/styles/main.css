@@ -139,6 +139,10 @@ button {
   padding-inline: var(--spacing);
   width: 100%;
 }
+/* make wrapper a positioning context so floating buttons can be placed relative to content */
+.wrapper {
+  position: relative;
+}
 
 .container-fluid {
   margin-inline: auto; /*Margen izquierdo y derecho*/
@@ -148,13 +152,13 @@ button {
 
 main {
   display: block;
-  margin-top: var(--header-height);
+  margin-top: 9rem;
   /* permitir que el main crezca dentro del body flex para empujar el footer abajo */
   flex: 1 0 auto;
 }
 
 section {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   margin-bottom: 2.5rem;
 }
@@ -380,6 +384,35 @@ section {
   color: var(--clr-heading-text);
   background: var(--clr-main-light);
   transform: scale(1.05);
+}
+
+/* Pagination styles matching company palette */
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 1rem;
+  align-items: center;
+}
+.pagination .page-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgb(var(--clr-main2));
+  color: var(--clr-body-text);
+  border: 1px solid rgba(var(--clr-black2), 0.4);
+  cursor: pointer;
+}
+.pagination .page-btn:hover {
+  background: rgb(var(--clr-black2));
+}
+.pagination .page-btn.active {
+  background: rgba(var(--clr-blue), 0.12);
+  border-color: rgba(var(--clr-blue), 0.6);
+  color: rgb(var(--clr-blue));
+}
+.pagination .page-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--clr-blue), 0.12);
 }
 
 /*Boton secundario*/
@@ -1909,14 +1942,56 @@ section {
   justify-content: space-between;
 }
 
-.boton-categoria.active {
-  background-color: var(--clr-blue);
-  color: var(--clr-white);
+.product-aside-filter .menu-categorias .boton-categoria:focus,
+.product-aside-filter .menu-categorias .boton-categoria:focus-visible {
+  /* Match admin active style when the button receives keyboard/mouse focus */
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--clr-heading-text);
+  padding: 0.6rem 0.6rem;
+  border-radius: 6px;
+  text-align: left;
+  position: relative;
+  transition: background 160ms ease, color 160ms ease;
+}
+.product-aside-filter .menu-categorias .boton-categoria:focus::before,
+.product-aside-filter .menu-categorias .boton-categoria:focus-visible::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
   border-radius: 4px;
-  padding: 4px 8px;
-  align-items: center;
-  width: 100%;
-  cursor: pointer;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--clr-blue)),
+    rgb(var(--clr-green))
+  );
+}
+
+/* Also keep the visual when a category is explicitly 'active' (open or "Todas") */
+.product-aside-filter .menu-categorias .boton-categoria.active {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--clr-heading-text);
+  padding: 0.6rem 0.6rem;
+  border-radius: 6px;
+  text-align: left;
+  position: relative;
+  transition: background 160ms ease, color 160ms ease;
+}
+.product-aside-filter .menu-categorias .boton-categoria.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--clr-blue)),
+    rgb(var(--clr-green))
+  );
 }
 
 .subcategorias {
@@ -2123,7 +2198,7 @@ footer {
 
   /* Ajustar espacio con main */
   main {
-    margin-top: var(--header-height);
+    margin-top: 12rem;
   }
 
   /* Carrusel */
@@ -2183,6 +2258,13 @@ footer {
   .main-product {
     flex-direction: column;
   }
+
+  /* Cuando estamos en vista móvil (botón de filtros activo) quitamos
+     el padding lateral de la sección de productos para que los grids
+     se alineen correctamente con el contenido móvil */
+  .seccion-productos {
+    padding: 0;
+  }
 }
 
 /* Espacio en móvil para barras fijas (acciones en detalle) */
@@ -2195,7 +2277,7 @@ footer {
 
 @media (max-width: 380px) {
   main {
-    margin-top: 13.9rem;
+    margin-top: 15rem;
   }
 
   .menu-celular {

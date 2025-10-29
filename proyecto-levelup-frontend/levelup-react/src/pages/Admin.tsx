@@ -1,57 +1,15 @@
-import { Link } from 'react-router-dom';
-import '../styles/admin.css';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/admin.css";
 
-const Admin = () => {
-  return (
-    <div className="wrapper">
-      <main>
-        <div className="admin-layout">
-          {/* SIDEBAR */}
-          <aside className="sidebar">
-            <h2>Admin</h2>
-            <ul>
-              <li>
-                <Link to="/admin/dashboard">
-                  <i className="bi bi-speedometer2"></i> Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/usuarios">
-                  <i className="bi bi-people-fill"></i> Usuarios
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/productos">
-                  <i className="bi bi-controller"></i> Productos
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/ordenes">
-                  <i className="bi bi-cart-check"></i> Órdenes
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/categorias">
-                  <i className="bi bi-tags"></i> Categorías
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/reportes">
-                  <i className="bi bi-graph-up"></i> Reportes
-                </Link>
-              </li>
-            </ul>
-          </aside>
+// Redirect /admin to /admin/usuarios so the admin entry point opens the Users management
+const Admin: React.FC = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate("/admin/usuarios", { replace: true });
+  }, [navigate]);
 
-          {/* CONTENIDO */}
-          <main className="admin-content">
-            <h1>Panel de Administración</h1>
-            <p>Selecciona una opción en el menú lateral.</p>
-          </main>
-        </div>
-      </main>
-    </div>
-  );
+  return null; // redirect only
 };
 
 export default Admin;

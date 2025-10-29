@@ -14,7 +14,12 @@ import {
   actualizarNumerito,
 } from "../logic/carrito";
 import { setCarritoLS, ProductoEnCarrito } from "../logic/storage";
-import { productosArray, categorias, subcategorias, Producto } from "../data/catalogo";
+import {
+  productosArray,
+  categorias,
+  subcategorias,
+  Producto,
+} from "../data/catalogo";
 import { useNavigate } from "react-router-dom";
 
 // Interfaces
@@ -88,7 +93,9 @@ const Carrito: React.FC = (): React.JSX.Element => {
   const [total, setTotal] = useState<string>("$0");
   const [aplicaDuoc, setAplicaDuoc] = useState<boolean>(false);
   const [modalAbierto, setModalAbierto] = useState<boolean>(false);
-  const [productoAEliminar, setProductoAEliminar] = useState<string | null>(null);
+  const [productoAEliminar, setProductoAEliminar] = useState<string | null>(
+    null
+  );
   const [productosSugeridos, setProductosSugeridos] = useState<Producto[]>([]);
 
   useEffect(() => {
@@ -103,8 +110,9 @@ const Carrito: React.FC = (): React.JSX.Element => {
       cargarProductosCarrito();
       cargarProductosSugeridos();
     };
-    window.addEventListener('carrito:change', handler as EventListener);
-    return () => window.removeEventListener('carrito:change', handler as EventListener);
+    window.addEventListener("carrito:change", handler as EventListener);
+    return () =>
+      window.removeEventListener("carrito:change", handler as EventListener);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -112,13 +120,17 @@ const Carrito: React.FC = (): React.JSX.Element => {
     // Obtener productos aleatorios que no estén en el carrito
     const productosEnCarrito = getCarrito();
     const idsEnCarrito = productosEnCarrito.map((p: ProductoEnCarrito) => p.id);
-    const productosDisponibles = productosArray.filter((p: Producto) => !idsEnCarrito.includes(p.id));
-    
+    const productosDisponibles = productosArray.filter(
+      (p: Producto) => !idsEnCarrito.includes(p.id)
+    );
+
     // Seleccionar 6 productos aleatorios
     const sugeridos: Producto[] = [];
     const copiaDisponibles = [...productosDisponibles];
     for (let i = 0; i < Math.min(6, copiaDisponibles.length); i++) {
-      const indiceAleatorio = Math.floor(Math.random() * copiaDisponibles.length);
+      const indiceAleatorio = Math.floor(
+        Math.random() * copiaDisponibles.length
+      );
       sugeridos.push(copiaDisponibles[indiceAleatorio]);
       copiaDisponibles.splice(indiceAleatorio, 1);
     }
@@ -137,26 +149,31 @@ const Carrito: React.FC = (): React.JSX.Element => {
       } catch (_) {
         catalogoBase = [];
       }
-      const descripciones = productosEnCarrito.map((producto: ProductoEnCarrito) => {
-        const base =
-          productosArray.find((p: Producto) => p.id === producto.id) ||
-          catalogoBase.find((p: Producto) => p.id === producto.id) ||
-          ({} as Producto);
-        const catNombre =
-          categorias.find((c) => c.id === base.categoria?.id)?.nombre || "";
-        const subNombre =
-          subcategorias.find((s) => s.id === base.subcategoria?.id)?.nombre || "";
-        return (
-          (base.descripcion && String(base.descripcion).trim()) ||
-          `${catNombre}${subNombre ? " • " + subNombre : ""}`
-        );
-      });
+      const descripciones = productosEnCarrito.map(
+        (producto: ProductoEnCarrito) => {
+          const base =
+            productosArray.find((p: Producto) => p.id === producto.id) ||
+            catalogoBase.find((p: Producto) => p.id === producto.id) ||
+            ({} as Producto);
+          const catNombre =
+            categorias.find((c) => c.id === base.categoria?.id)?.nombre || "";
+          const subNombre =
+            subcategorias.find((s) => s.id === base.subcategoria?.id)?.nombre ||
+            "";
+          return (
+            (base.descripcion && String(base.descripcion).trim()) ||
+            `${catNombre}${subNombre ? " • " + subNombre : ""}`
+          );
+        }
+      );
       // Formatear precios y subtotales
-      const productosFormateados = productosEnCarrito.map((producto: ProductoEnCarrito) => ({
-        ...producto,
-        precioCLP: formatCLP(producto.precio),
-        subtotalCLP: formatCLP(producto.precio * producto.cantidad),
-      }));
+      const productosFormateados = productosEnCarrito.map(
+        (producto: ProductoEnCarrito) => ({
+          ...producto,
+          precioCLP: formatCLP(producto.precio),
+          subtotalCLP: formatCLP(producto.precio * producto.cantidad),
+        })
+      );
       setProductos(productosFormateados);
       setDescripciones(descripciones);
       actualizarTotal();
@@ -232,8 +249,8 @@ const Carrito: React.FC = (): React.JSX.Element => {
     const session = localStorage.getItem("lvup_user_session");
 
     if (!session) {
-      alert('Debes iniciar sesión para proceder con la compra');
-      navigate('/login');
+      alert("Debes iniciar sesión para proceder con la compra");
+      navigate("/login");
       return;
     }
     // Navegar al checkout
@@ -245,13 +262,18 @@ const Carrito: React.FC = (): React.JSX.Element => {
   }
 
   // Calcular cantidad total de productos (sumando todas las cantidades)
-  const cantidadTotalProductos = productos.reduce((total, producto) => total + producto.cantidad, 0);
+  const cantidadTotalProductos = productos.reduce(
+    (total, producto) => total + producto.cantidad,
+    0
+  );
 
   return (
     <div className="wrapper">
-      <main className="main-carrito">
+      <section className="main-carrito">
         <h2 className="titulo-principal">Carrito</h2>
-        <p className="carrito-count">Tu carrito ({cantidadTotalProductos} productos)</p>
+        <p className="carrito-count">
+          Tu carrito ({cantidadTotalProductos} productos)
+        </p>
         <div className="contenedor-carrito">
           <div className="carrito-productos-seccion">
             {estado === "vacio" && <CarritoVacio />}
@@ -274,11 +296,11 @@ const Carrito: React.FC = (): React.JSX.Element => {
             />
           )}
         </div>
-        
+
         {estado === "lleno" && productosSugeridos.length > 0 && (
           <CarritoSugerencias productos={productosSugeridos} />
         )}
-      </main>
+      </section>
       <ModalConfirmacion
         isOpen={modalAbierto}
         onConfirm={confirmarEliminacion}

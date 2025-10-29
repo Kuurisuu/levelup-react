@@ -18,7 +18,7 @@ import {
   Producto,
   Review,
 } from "../data/catalogo";
-import { calcularRatingPromedio } from "../utils/ratingUtils";// nuevo import 
+import { calcularRatingPromedio } from "../utils/ratingUtils"; // nuevo import
 
 type ReviewType = {
   rating: number;
@@ -64,7 +64,10 @@ function getUserSession() {
 }
 
 // Funciones auxiliares para los nuevos campos
-function calcularPrecioConDescuento(precio: number, descuento?: number): number | null {
+function calcularPrecioConDescuento(
+  precio: number,
+  descuento?: number
+): number | null {
   return descuento ? precio * (1 - descuento / 100.0) : null;
 }
 
@@ -102,8 +105,25 @@ const ProductoDetalle: React.FC = () => {
   }, [paramId, navigate]);
 
   useEffect(() => {
+    // Merge persisted admin products (lvup_products) with the base catalog so
+    // newly created products are visible in the detail view.
+    let mergedProducts: Producto[] = productosArray.slice();
+    try {
+      const raw = localStorage.getItem("lvup_products");
+      const persisted: Producto[] = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(persisted) && persisted.length > 0) {
+        // Build map so persisted items override or extend base catalog
+        const map = new Map<string | number, Producto>();
+        productosArray.forEach((p) => map.set(String(p.id), p));
+        persisted.forEach((p) => map.set(String(p.id), p));
+        mergedProducts = Array.from(map.values());
+      }
+    } catch (e) {
+      // ignore and fall back to base catalog
+    }
+
     const prod = paramId
-      ? productosArray.find((p) => String(p.id) === String(paramId))
+      ? mergedProducts.find((p) => String(p.id) === String(paramId))
       : null;
     setProducto(prod || null);
     setCarrito(getCarrito());
@@ -143,13 +163,13 @@ const ProductoDetalle: React.FC = () => {
   // Early return if not found
   if (!producto) {
     return (
-      <main>
+      <section>
         <section className="seccion-producto-detalle">
           <div className="producto-detalle-container">
             <p>Producto no encontrado</p>
           </div>
         </section>
-      </main>
+      </section>
     );
   }
 
@@ -160,9 +180,12 @@ const ProductoDetalle: React.FC = () => {
   const stars = Array.from({ length: 5 }, (_, i) => (
     <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`}></i>
   ));
-  
+
   // Nuevos campos del modelo de datos
-  const precioConDescuento = calcularPrecioConDescuento(producto.precio, producto.descuento);
+  const precioConDescuento = calcularPrecioConDescuento(
+    producto.precio,
+    producto.descuento
+  );
   const tieneDescuento = (producto.descuento || 0) > 0;
   const stockDisponible = producto.stock || 0;
   const esDestacado = producto.destacado || false;
@@ -249,80 +272,87 @@ const ProductoDetalle: React.FC = () => {
     setReviewText("");
     setReviewMsg("Reseña enviada.");
     setTimeout(() => setReviewMsg(""), 1500);
-    
+
     // Actualizar las reseñas y recalcular el rating
     const nuevasReviews = readReviews(producto.id);
     setReviews(nuevasReviews);
-    
+
     // Actualizar el producto con las nuevas reseñas para recalcular el rating
-    setProducto(prevProducto => {
-      if (!prevProducto) return null;//si no hay producto, retornar null
+    setProducto((prevProducto) => {
+      if (!prevProducto) return null; //si no hay producto, retornar null
       return {
         ...prevProducto, //copiar el producto anterior
-        reviews: nuevasReviews.map(review => ({ // map es para crear un nuevo array con los valores de la reseña
+        reviews: nuevasReviews.map((review) => ({
+          // map es para crear un nuevo array con los valores de la reseña
           id: review.ts.toString(), //convertir el tiempo a string
           productoId: producto.id, //id del producto
           usuarioNombre: review.author, //nombre del usuario
           rating: review.rating, //rating de la reseña
           comentario: review.text, //comentario de la reseña
-          fecha: new Date(review.ts).toISOString() //fecha de la reseña
-        })) //retornar el nuevo array
+          fecha: new Date(review.ts).toISOString(), //fecha de la reseña
+        })), //retornar el nuevo array
       };
     });
   }
 
   // Función para eliminar comentario
-  function handleDeleteReview(reviewTimestamp: number) { //el tiempo q se creo la reseña
+  function handleDeleteReview(reviewTimestamp: number) {
+    //el tiempo q se creo la reseña
     const session = getUserSession(); //obtener la session del usuario para verificar si es el creador de la reseña
     if (!session) {
       alert("Debes iniciar sesión para eliminar comentarios.");
       return;
     }
-    
+
     if (!producto) return; //si no hay producto, retornar null
-    
+
     const list = readReviews(producto.id); //obtener las reseñas del producto por id
-    const reviewIndex = list.findIndex(review => review.ts === reviewTimestamp); //encontrar el indice de la reseña
-    
+    const reviewIndex = list.findIndex(
+      (review) => review.ts === reviewTimestamp
+    ); //encontrar el indice de la reseña
+
     if (reviewIndex === -1) return; //si no se encuentra la reseña, retornar null el -1 es porque no se encontro la reseña ya que es el indice de la reseña que no existe
-    
+
     const review = list[reviewIndex]; //obtener la reseña por el indice
-    
+
     // Verificar que el usuario solo puede eliminar sus propios comentarios
-    if (review.author !== session.displayName && review.author !== session.email) {
+    if (
+      review.author !== session.displayName &&
+      review.author !== session.email
+    ) {
       alert("Solo puedes eliminar tus propios comentarios.");
       return;
     }
-    
+
     // Confirmar eliminación
     if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) {
       return;
     }
-    
+
     // Eliminar el comentario
     list.splice(reviewIndex, 1); //desde el indice de la reseña, eliminar 1 reseña
     writeReviews(producto.id, list); //escribir las reseñas actualizadas
-    
+
     // Actualizar las reseñas y recalcular el rating
     const nuevasReviews = readReviews(producto.id); //obtener las reseñas actualizadas
     setReviews(nuevasReviews); //actualizar las reseñas
-    
+
     // Actualizar el producto con las nuevas reseñas para recalcular el rating
-    setProducto(prevProducto => {
+    setProducto((prevProducto) => {
       if (!prevProducto) return null; //si no hay producto, retornar null
       return {
         ...prevProducto, //copiar el producto anterior
-        reviews: nuevasReviews.map(review => ({
+        reviews: nuevasReviews.map((review) => ({
           id: review.ts.toString(),
           productoId: producto.id,
           usuarioNombre: review.author,
           rating: review.rating,
           comentario: review.text,
-          fecha: new Date(review.ts).toISOString()
-        }))
+          fecha: new Date(review.ts).toISOString(),
+        })),
       };
     });
-    
+
     alert("Comentario eliminado correctamente.");
   }
 
@@ -384,9 +414,9 @@ const ProductoDetalle: React.FC = () => {
         </li>
       );
     }
-    
-    const session = getUserSession(); //aca pq si 
-    
+
+    const session = getUserSession(); //aca pq si
+
     return reviews
       .slice()
       .reverse()
@@ -397,13 +427,12 @@ const ProductoDetalle: React.FC = () => {
             className={`bi ${i < r.rating ? "bi-star-fill" : "bi-star"}`}
           ></i>
         ));
-        
+
         // Verificar si el usuario puede eliminar este comentario
-        const canDelete = session && ( //si hay session y el nombre del usuario es el mismo que el creador de la reseña o el email del usuario es el mismo que el creador de la reseña
-          r.author === session.displayName || 
-          r.author === session.email
-        );
-        
+        const canDelete =
+          session && //si hay session y el nombre del usuario es el mismo que el creador de la reseña o el email del usuario es el mismo que el creador de la reseña
+          (r.author === session.displayName || r.author === session.email);
+
         return (
           <li className="producto-detalle-comentario" key={r.ts + idx}>
             <div className="comentario-encabezado">
@@ -414,7 +443,7 @@ const ProductoDetalle: React.FC = () => {
                 {r.title || ""}
               </h4>
               {canDelete && ( //si el usuario puede eliminar el comentario, mostrar el boton de eliminar
-                <button 
+                <button
                   className="delete-comment-btn"
                   onClick={() => handleDeleteReview(r.ts)} //eliminar la reseña
                   title="Eliminar comentario"
@@ -444,7 +473,7 @@ const ProductoDetalle: React.FC = () => {
 
   return (
     <div className="wrapper">
-      <main>
+      <section>
         <section className="seccion-producto-detalle">
           <div className="producto-detalle-container">
             <ProductoDetalleVisual
@@ -476,13 +505,35 @@ const ProductoDetalle: React.FC = () => {
           </div>
         </section>
         <ProductoDetalleRelacionados
-          productos={productosArray
-            .filter(
-              (p) =>
-                p.id !== producto.id &&
-                p.categoria.id === producto.categoria.id
-            )
-            .slice(0, 4)}
+          productos={
+            // Use merged list here as well so related items include admin-created products
+            (function getRelated() {
+              try {
+                const raw = localStorage.getItem("lvup_products");
+                const persisted: Producto[] = raw ? JSON.parse(raw) : [];
+                const map = new Map<string | number, Producto>();
+                productosArray.forEach((p) => map.set(String(p.id), p));
+                if (Array.isArray(persisted))
+                  persisted.forEach((p) => map.set(String(p.id), p));
+                const merged = Array.from(map.values());
+                return merged
+                  .filter(
+                    (p) =>
+                      p.id !== producto.id &&
+                      p.categoria.id === producto.categoria.id
+                  )
+                  .slice(0, 4);
+              } catch (e) {
+                return productosArray
+                  .filter(
+                    (p) =>
+                      p.id !== producto.id &&
+                      p.categoria.id === producto.categoria.id
+                  )
+                  .slice(0, 4);
+              }
+            })()
+          }
           onCardClick={(id) => {
             window.scrollTo(0, 0);
             navigate(`/producto/${id}`);
@@ -504,7 +555,7 @@ const ProductoDetalle: React.FC = () => {
           handleReviewSubmit={handleReviewSubmit}
           renderReviews={renderReviews}
         />
-      </main>
+      </section>
     </div>
   );
 };
