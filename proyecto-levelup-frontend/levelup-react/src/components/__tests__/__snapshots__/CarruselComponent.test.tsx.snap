@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CarruselComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <section
+    class="seccion-carrusel"
+  >
+    <div
+      class="container-carrusel"
+    >
+      <div
+        class="atras"
+      >
+        <i
+          class="bi bi-arrow-left-short"
+        />
+      </div>
+      <div
+        class="imagenes-carrusel"
+      >
+        <div
+          class="img-track"
+          id="img-carrusel"
+          style="transform: translateX(-0%);"
+        >
+          <img
+            alt="¡Bienvenido a Level-Up Gamer!"
+            class="img-carrusel"
+            loading="lazy"
+            src="/img/carrusel/1.png"
+          />
+          <img
+            alt="!Explora nuestros productos gamer de alta calidad!"
+            class="img-carrusel"
+            loading="lazy"
+            src="/img/carrusel/carruselproductos.png"
+          />
+          <img
+            alt="¡Lee desde noticias a guias del mundo gaming!"
+            class="img-carrusel"
+            loading="lazy"
+            src="/img/carrusel/carruselnoticias.png"
+          />
+        </div>
+        <div
+          class="texto-carrusel"
+          id="texto-carrusel"
+        >
+          <h3>
+            ¡Bienvenido a Level-Up Gamer!
+          </h3>
+          <p>
+            La tienda gamer lider en todo Chile
+          </p>
+        </div>
+      </div>
+      <div
+        class="adelante"
+      >
+        <i
+          class="bi bi-arrow-right-short"
+        />
+      </div>
+    </div>
+    <div
+      class="puntos"
+      id="puntos"
+    >
+      <p
+        class="bold"
+      />
+      <p
+        class=""
+      />
+      <p
+        class=""
+      />
+    </div>
+  </section>
+</div>
+`;

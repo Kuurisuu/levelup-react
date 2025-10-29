@@ -17,6 +17,6 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "vitest"]
   },
-  "include": ["src"],
+  "include": ["src", "vitest.d.ts"],
   "exclude": ["node_modules"]
 }

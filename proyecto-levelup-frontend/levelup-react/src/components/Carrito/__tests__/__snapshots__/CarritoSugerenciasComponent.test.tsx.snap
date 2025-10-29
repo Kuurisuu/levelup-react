@@ -1,0 +1,268 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CarritoSugerenciasComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="carrito-sugerencias"
+  >
+    <h3
+      class="sugerencias-titulo"
+    >
+      Podrían interesarte
+    </h3>
+    <div
+      class="sugerencias-productos"
+    >
+      <div
+        class="contenedor-productos"
+      >
+        <article
+          class="producto producto-card"
+          data-id="1"
+        >
+          <div
+            class="producto-imagen-container"
+          >
+            <div
+              class="producto-disponible-badge disponible"
+            >
+              Disponible
+            </div>
+            <div
+              class="producto-codigo-badge"
+            >
+              1
+            </div>
+            <img
+              alt="Producto 1"
+              class="producto-imagen"
+              src="/img/producto1.jpg"
+            />
+          </div>
+          <div
+            class="producto-detalles"
+          >
+            <div
+              class="producto-info-principal"
+            >
+              <div
+                class="producto-marca"
+              >
+                Sony
+              </div>
+              <h3
+                class="producto-titulo"
+              >
+                Producto 1
+              </h3>
+              <p
+                class="producto-categoria"
+              >
+                Consola
+                 
+                • Mandos
+              </p>
+              <div
+                class="producto-descripcion-container"
+              >
+                <p
+                  class="producto-descripcion"
+                >
+                  Descripción del producto 1
+                </p>
+              </div>
+            </div>
+            <div
+              class="producto-info-secundaria"
+            >
+              <div
+                class="producto-rating-container"
+              >
+                <div
+                  class="producto-rating"
+                  style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                >
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                </div>
+                <span
+                  class="producto-rating-promedio"
+                >
+                  4.5
+                </span>
+              </div>
+              <div
+                class="producto-precio-container"
+              >
+                <div
+                  class="precio-linea"
+                >
+                  <span
+                    class="precio-actual"
+                  >
+                    $50.000 CLP
+                  </span>
+                </div>
+              </div>
+              <button
+                class="producto-agregar active"
+              >
+                <i
+                  class="bi bi-cart-plus"
+                />
+                AGREGAR
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div
+        class="contenedor-productos"
+      >
+        <article
+          class="producto producto-card"
+          data-id="2"
+        >
+          <div
+            class="producto-imagen-container"
+          >
+            <div
+              class="producto-disponible-badge disponible"
+            >
+              Disponible
+            </div>
+            <div
+              class="producto-codigo-badge"
+            >
+              2
+            </div>
+            <img
+              alt="Producto 2"
+              class="producto-imagen"
+              src="/img/producto2.jpg"
+            />
+          </div>
+          <div
+            class="producto-detalles"
+          >
+            <div
+              class="producto-info-principal"
+            >
+              <div
+                class="producto-marca"
+              >
+                Sony
+              </div>
+              <h3
+                class="producto-titulo"
+              >
+                Producto 2
+              </h3>
+              <p
+                class="producto-categoria"
+              >
+                Perifericos
+                 
+                • Teclados
+              </p>
+              <div
+                class="producto-descripcion-container"
+              >
+                <p
+                  class="producto-descripcion"
+                >
+                  Descripción del producto 2
+                </p>
+              </div>
+            </div>
+            <div
+              class="producto-info-secundaria"
+            >
+              <div
+                class="producto-rating-container"
+              >
+                <div
+                  class="producto-rating"
+                  style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                >
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star-fill"
+                  />
+                  <i
+                    class="bi bi-star"
+                  />
+                </div>
+                <span
+                  class="producto-rating-promedio"
+                >
+                  4.0
+                </span>
+              </div>
+              <div
+                class="producto-precio-container"
+              >
+                <div
+                  class="precio-linea"
+                >
+                  <span
+                    class="precio-actual"
+                  >
+                    $75.000 CLP
+                  </span>
+                </div>
+              </div>
+              <button
+                class="producto-agregar active"
+              >
+                <i
+                  class="bi bi-cart-plus"
+                />
+                AGREGAR
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CarritoSugerenciasComponent > Debería hacer match con el snapshot con lista vacía 1`] = `
+<div>
+  <div
+    class="carrito-sugerencias"
+  >
+    <h3
+      class="sugerencias-titulo"
+    >
+      Podrían interesarte
+    </h3>
+    <div
+      class="sugerencias-productos"
+    />
+  </div>
+</div>
+`;

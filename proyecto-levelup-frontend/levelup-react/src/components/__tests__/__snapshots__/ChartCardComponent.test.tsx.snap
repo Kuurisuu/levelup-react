@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ChartCardComponent > Debería hacer match con el snapshot para gráfico de barras 1`] = `
+<div>
+  <div
+    class="chart-card"
+  >
+    <h3>
+      Test Chart
+    </h3>
+    <div
+      class="chart-placeholder"
+    >
+      <div
+        class="chart-mock"
+      >
+        <div
+          data-testid="chart-content"
+        >
+          Chart Content
+        </div>
+        <p>
+          📊 Gráfico de barras
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ChartCardComponent > Debería hacer match con el snapshot para gráfico de línea 1`] = `
+<div>
+  <div
+    class="chart-card"
+  >
+    <h3>
+      Test Chart
+    </h3>
+    <div
+      class="chart-placeholder"
+    >
+      <div
+        class="chart-mock"
+      >
+        <div
+          data-testid="chart-content"
+        >
+          Chart Content
+        </div>
+        <p>
+          📈 Gráfico de línea
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ChartCardComponent > Debería hacer match con el snapshot para ranking 1`] = `
+<div>
+  <div
+    class="chart-card"
+  >
+    <h3>
+      Test Chart
+    </h3>
+    <div
+      class="chart-placeholder"
+    >
+      <div
+        class="chart-mock"
+      >
+        <div
+          data-testid="chart-content"
+        >
+          Chart Content
+        </div>
+        <p>
+          🏆 Ranking de productos
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

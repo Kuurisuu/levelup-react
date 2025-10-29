@@ -1,0 +1,157 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CarritoResumenComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="carrito-resumen"
+  >
+    <div
+      class="resumen-header"
+    >
+      <h3
+        class="resumen-titulo"
+      >
+        Resumen de tu compra
+      </h3>
+      <span
+        class="resumen-productos"
+      >
+        Productos (
+        3
+        )
+      </span>
+    </div>
+    <div
+      class="resumen-total"
+    >
+      <span
+        class="resumen-total-label"
+      >
+        Total Transferencia / Débito
+      </span>
+      <span
+        class="resumen-total-valor"
+      >
+        $50,000
+      </span>
+    </div>
+    <div
+      class="resumen-despacho"
+    >
+      <i
+        class="bi bi-truck"
+      />
+      <span>
+        El valor del despacho se calculará cuando se seleccione el tipo de entrega.
+      </span>
+    </div>
+    <button
+      class="btn-pagar"
+    >
+      Pagar
+    </button>
+    <div
+      class="resumen-seguridad"
+    >
+      <div
+        class="seguridad-item"
+      >
+        <i
+          class="bi bi-lock-fill"
+        />
+        <span>
+          Pago 100% seguro
+        </span>
+      </div>
+      <div
+        class="seguridad-item"
+      >
+        <i
+          class="bi bi-shield-check"
+        />
+        <span>
+          Garantía en tus productos
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CarritoResumenComponent > Debería hacer match con el snapshot con diferentes props 1`] = `
+<div>
+  <div
+    class="carrito-resumen"
+  >
+    <div
+      class="resumen-header"
+    >
+      <h3
+        class="resumen-titulo"
+      >
+        Resumen de tu compra
+      </h3>
+      <span
+        class="resumen-productos"
+      >
+        Productos (
+        10
+        )
+      </span>
+    </div>
+    <div
+      class="resumen-total"
+    >
+      <span
+        class="resumen-total-label"
+      >
+        Total Transferencia / Débito
+      </span>
+      <span
+        class="resumen-total-valor"
+      >
+        $100,000
+      </span>
+    </div>
+    <div
+      class="resumen-despacho"
+    >
+      <i
+        class="bi bi-truck"
+      />
+      <span>
+        El valor del despacho se calculará cuando se seleccione el tipo de entrega.
+      </span>
+    </div>
+    <button
+      class="btn-pagar"
+    >
+      Pagar
+    </button>
+    <div
+      class="resumen-seguridad"
+    >
+      <div
+        class="seguridad-item"
+      >
+        <i
+          class="bi bi-lock-fill"
+        />
+        <span>
+          Pago 100% seguro
+        </span>
+      </div>
+      <div
+        class="seguridad-item"
+      >
+        <i
+          class="bi bi-shield-check"
+        />
+        <span>
+          Garantía en tus productos
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

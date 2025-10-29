@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ModalConfirmacionComponent > Debería hacer match con el snapshot con mensaje personalizado 1`] = `
+<div>
+  <div
+    class="modal-overlay"
+  >
+    <div
+      class="modal-confirmacion"
+    >
+      <div
+        class="modal-icon"
+      >
+        <i
+          class="bi bi-exclamation-triangle"
+        />
+      </div>
+      <p
+        class="modal-mensaje"
+      >
+        ¿Estás seguro de realizar esta acción irreversible?
+      </p>
+      <div
+        class="modal-botones"
+      >
+        <button
+          class="btn-cancelar"
+        >
+          Cancelar
+        </button>
+        <button
+          class="btn-eliminar"
+        >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ModalConfirmacionComponent > Debería hacer match con el snapshot cuando está abierto 1`] = `
+<div>
+  <div
+    class="modal-overlay"
+  >
+    <div
+      class="modal-confirmacion"
+    >
+      <div
+        class="modal-icon"
+      >
+        <i
+          class="bi bi-exclamation-triangle"
+        />
+      </div>
+      <p
+        class="modal-mensaje"
+      >
+        ¿Estás seguro de que quieres eliminar este elemento?
+      </p>
+      <div
+        class="modal-botones"
+      >
+        <button
+          class="btn-cancelar"
+        >
+          Cancelar
+        </button>
+        <button
+          class="btn-eliminar"
+        >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ModalConfirmacionComponent > Debería hacer match con el snapshot cuando está cerrado 1`] = `<div />`;

@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`WidgetCardComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="widget-card"
+  >
+    <h3>
+      Test Widget
+    </h3>
+    <div
+      data-testid="widget-content"
+    >
+      Widget Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`WidgetCardComponent > Debería hacer match con el snapshot con contenido complejo 1`] = `
+<div>
+  <div
+    class="widget-card"
+  >
+    <h3>
+      Test Widget
+    </h3>
+    <div>
+      <h4>
+        Complex Widget
+      </h4>
+      <p>
+        This is a complex widget with multiple elements
+      </p>
+      <button>
+        Action Button
+      </button>
+    </div>
+  </div>
+</div>
+`;
