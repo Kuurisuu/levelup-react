@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/register.css";
+import { isDuocEmail } from "../utils/orden.helper";
 
 interface RegisterFormData {
   nombre: string;
@@ -56,6 +57,7 @@ interface User {
   referredBy?: string;
   role?: string;
   avatar?: string;
+  duocMember?: boolean;
 }
 
 interface UserSession {
@@ -63,6 +65,7 @@ interface UserSession {
   loginAt: number;
   userId: string;
   role?: string;
+  duocMember?: boolean;
 }
 
 const Register: React.FC = (): React.JSX.Element => {
@@ -154,6 +157,7 @@ const Register: React.FC = (): React.JSX.Element => {
       loginAt: Date.now(),
       userId: user.id,
       role: "cliente",
+      duocMember: !!user.duocMember || isDuocEmail(user.email),
     };
     localStorage.setItem("lvup_user_session", JSON.stringify(session));
   };
@@ -351,6 +355,7 @@ const Register: React.FC = (): React.JSX.Element => {
         referredBy: referredBy || undefined,
         role: "cliente",
         avatar: formData.avatar || undefined,
+        duocMember: isDuocEmail(formData.email),
       };
 
       // Guardar usuario
@@ -360,6 +365,13 @@ const Register: React.FC = (): React.JSX.Element => {
 
       // Crear sesión automáticamente
       createUserSession(newUser);
+
+      // si es correo Duoc, avisar al usuario del beneficio
+      if (newUser.duocMember) {
+        alert(
+          "¡Felicidades! Al registrarte con un correo @duoc.cl recibirás un 20% de descuento adicional en todos los productos. Se aplicará automáticamente en tu carrito y en el checkout."
+        );
+      }
 
       // Mensaje de éxito
       const firstName = formData.nombre.split(" ")[0];

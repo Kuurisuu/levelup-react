@@ -94,7 +94,7 @@ const ProductoDetalle: React.FC = () => {
   const notaRatingRef = useRef<HTMLParagraphElement>(null);
   const notaRatingComentariosRef = useRef<HTMLParagraphElement>(null);
 
-  // Load product and gallery
+  // Cargar producto y galeria
   useEffect(() => {
     if (!paramId) {
       let fallbackId = getFallbackProductId();
@@ -105,21 +105,18 @@ const ProductoDetalle: React.FC = () => {
   }, [paramId, navigate]);
 
   useEffect(() => {
-    // Merge persisted admin products (lvup_products) with the base catalog so
-    // newly created products are visible in the detail view.
+    // Fusionar productos administrados persistidos (lvup_products) con el catálogo base para que
+    // nuevos productos creados sean visibles en la vista de detalle.
     let mergedProducts: Producto[] = productosArray.slice();
     try {
       const raw = localStorage.getItem("lvup_products");
       const persisted: Producto[] = raw ? JSON.parse(raw) : [];
       if (Array.isArray(persisted) && persisted.length > 0) {
-        // Build map so persisted items override or extend base catalog
-        const map = new Map<string | number, Producto>();
-        productosArray.forEach((p) => map.set(String(p.id), p));
-        persisted.forEach((p) => map.set(String(p.id), p));
-        mergedProducts = Array.from(map.values());
+        // El catalogo persistido es autoritativo (gestionado por admin)
+        mergedProducts = persisted;
       }
     } catch (e) {
-      // ignore and fall back to base catalog
+      // Ignorar y volver al catálogo base
     }
 
     const prod = paramId
@@ -160,7 +157,7 @@ const ProductoDetalle: React.FC = () => {
     setCantidad(item ? item.cantidad : 1);
   }, [producto]);
 
-  // Early return if not found
+  // Retorna null si no se encuentra el producto
   if (!producto) {
     return (
       <section>
@@ -173,7 +170,7 @@ const ProductoDetalle: React.FC = () => {
     );
   }
 
-  // Derived values
+  // Valores derivados
   const cat = producto.categoria.nombre;
   const sub = producto.subcategoria?.nombre || "";
   const rating = Math.max(0, Math.min(5, calcularRatingPromedio(producto)));
@@ -193,7 +190,7 @@ const ProductoDetalle: React.FC = () => {
   // Compartir
   function handleShare(kind: string) {
     if (!producto) return;
-    // Build a canonical product URL: avoid duplicating the id if it's already present
+    // Construir una URL canónica del producto: evitar duplicar el id si ya está presente
     const path = window.location.pathname.endsWith(String(producto.id))
       ? window.location.pathname
       : window.location.pathname.replace(/\/$/, "") + `/${producto.id}`;
@@ -511,12 +508,11 @@ const ProductoDetalle: React.FC = () => {
               try {
                 const raw = localStorage.getItem("lvup_products");
                 const persisted: Producto[] = raw ? JSON.parse(raw) : [];
-                const map = new Map<string | number, Producto>();
-                productosArray.forEach((p) => map.set(String(p.id), p));
-                if (Array.isArray(persisted))
-                  persisted.forEach((p) => map.set(String(p.id), p));
-                const merged = Array.from(map.values());
-                return merged
+                const catalog =
+                  Array.isArray(persisted) && persisted.length > 0
+                    ? persisted
+                    : productosArray;
+                return catalog
                   .filter(
                     (p) =>
                       p.id !== producto.id &&

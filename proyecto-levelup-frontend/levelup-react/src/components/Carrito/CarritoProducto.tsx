@@ -20,21 +20,25 @@ const CarritoProducto: React.FC<CarritoProductoProps> = ({
     <div className="carrito-producto-imagen-box">
       <img
         className="carrito-producto-imagen"
-        src={producto.imagenUrl || producto.imagen || '/img/otros/placeholder.png'}
-        alt={producto.nombre || producto.titulo || 'Producto'}
+        src={
+          producto.imagenUrl || producto.imagen || "/img/otros/placeholder.png"
+        }
+        alt={producto.nombre || producto.titulo || "Producto"}
       />
     </div>
 
     <div className="carrito-producto-info">
-        <h3 className="carrito-producto-marca">{producto.nombre || producto.titulo || 'Producto'}</h3>
-        <button
-          className="carrito-producto-eliminar sutil"
-          onClick={() => onEliminar(producto.id)}
-          aria-label="Eliminar"
-        >
-          <i className="bi bi-trash"></i>
-          <span className="eliminar-text">Eliminar</span>
-        </button>
+      <h3 className="carrito-producto-marca">
+        {producto.nombre || producto.titulo || "Producto"}
+      </h3>
+      <button
+        className="carrito-producto-eliminar sutil"
+        onClick={() => onEliminar(producto.id)}
+        aria-label="Eliminar"
+      >
+        <i className="bi bi-trash"></i>
+        <span className="eliminar-text">Eliminar</span>
+      </button>
     </div>
 
     <div className="carrito-producto-right">
@@ -57,17 +61,67 @@ const CarritoProducto: React.FC<CarritoProductoProps> = ({
           </button>
         </div>
         <div className="precios-container">
-          <div className="precio-row">
-            <span className="label">Precio</span>
-            <span className="value carrito-producto-precio">{producto.precioCLP || `$${producto.precio.toLocaleString()}`}</span>
-          </div>
-            
-          {producto.cantidad > 1 && (
-            <div className="precio-row subtotal">
-              <span className="label">Subtotal</span>
-              <span className="value carrito-producto-subtotal">{producto.subtotalCLP || `$${(producto.precio * producto.cantidad).toLocaleString()}`}</span>
-            </div>
-          )}
+          {/* si el producto tiene precio anterior, osea descuento aplicado, mostramos antes y ahora */}
+          {(() => {
+            const precioAnteriorCLP = (producto as any).precioAnteriorCLP as
+              | string
+              | undefined;
+            if (precioAnteriorCLP) {
+              return (
+                <>
+                  <div className="precio-row">
+                    <span className="label">Antes</span>
+                    <span
+                      className="value carrito-producto-precio anterior"
+                      style={{ textDecoration: "line-through" }}
+                    >
+                      {precioAnteriorCLP}
+                    </span>
+                  </div>
+                  <div className="precio-row">
+                    <span className="label">Ahora</span>
+                    <span className="value carrito-producto-precio">
+                      {producto.precioCLP ||
+                        `$${producto.precio.toLocaleString()}`}
+                    </span>
+                  </div>
+                  {producto.cantidad > 1 && (
+                    <div className="precio-row subtotal">
+                      <span className="label">Subtotal</span>
+                      <span className="value carrito-producto-subtotal">
+                        {producto.subtotalCLP ||
+                          `$${(
+                            producto.precio * producto.cantidad
+                          ).toLocaleString()}`}
+                      </span>
+                    </div>
+                  )}
+                </>
+              );
+            }
+            return (
+              <>
+                <div className="precio-row">
+                  <span className="label">Precio</span>
+                  <span className="value carrito-producto-precio">
+                    {producto.precioCLP ||
+                      `$${producto.precio.toLocaleString()}`}
+                  </span>
+                </div>
+                {producto.cantidad > 1 && (
+                  <div className="precio-row subtotal">
+                    <span className="label">Subtotal</span>
+                    <span className="value carrito-producto-subtotal">
+                      {producto.subtotalCLP ||
+                        `$${(
+                          producto.precio * producto.cantidad
+                        ).toLocaleString()}`}
+                    </span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>

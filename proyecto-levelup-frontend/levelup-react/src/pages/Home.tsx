@@ -7,16 +7,43 @@ import { productosArray, Producto } from "../data/catalogo";
 export default function Home(): React.JSX.Element {
   const PAGE_HOME = 12;
   const [pageHome, setPageHome] = useState<number>(1);
+  const [catalog, setCatalog] = useState<Producto[]>(productosArray.slice());
   const [productos, setProductos] = useState<Producto[]>([]);
   const navigate = useNavigate();
 
+  // cargar catalogo (persisted en localStorage si existe)
   useEffect(() => {
-    const end = Math.min(pageHome * PAGE_HOME, productosArray.length);
-    setProductos(productosArray.slice(0, end));
-  }, [pageHome]);
+    const computeCatalog = () => {
+      try {
+        const raw = localStorage.getItem("lvup_products") || "[]";
+        const persisted: Producto[] = JSON.parse(raw);
+        if (Array.isArray(persisted) && persisted.length > 0) {
+          setCatalog(persisted);
+        } else {
+          setCatalog(productosArray.slice());
+        }
+      } catch (e) {
+        setCatalog(productosArray.slice());
+      }
+    };
+    computeCatalog();
+    const handler = () => computeCatalog();
+    window.addEventListener("lvup:products", handler as EventListener);
+    return () =>
+      window.removeEventListener("lvup:products", handler as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // derive paginated products from catalog and pageHome
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(catalog.length / PAGE_HOME) || 1);
+    if (pageHome > maxPage) setPageHome(maxPage);
+    const end = Math.min(pageHome * PAGE_HOME, catalog.length);
+    setProductos(catalog.slice(0, end));
+  }, [pageHome, catalog]);
 
   const handleRedirect = (id: string): void => {
-    navigate(`/producto/${id}`);
+    void navigate(`/producto/${id}`);
   };
 
   return (
@@ -44,7 +71,7 @@ export default function Home(): React.JSX.Element {
           gap: "1rem",
         }}
       >
-        {productos.length < productosArray.length && (
+        {productos.length < catalog.length && (
           <button
             id="btn-mostrar-mas-home"
             className="boton-menu boton-mostrar-mas"
@@ -54,7 +81,7 @@ export default function Home(): React.JSX.Element {
           </button>
         )}
 
-        {pageHome > 1 && ( //si la pagina es mayor a 1, se muestra el boton de mostrar menos
+        {pageHome > 1 && (
           <button
             id="btn-mostrar-menos-home"
             className="boton-menu boton-mostrar-menos"

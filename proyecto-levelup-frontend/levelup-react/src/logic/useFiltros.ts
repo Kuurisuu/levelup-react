@@ -150,7 +150,7 @@ export function useFiltros(): UseFiltrosReturn {
     setFiltros((prev) => ({ ...prev, orden }));
 
   const productosFiltrados = useMemo(() => {
-    // combine base productosArray with any products persisted by admin in localStorage (lvup_products)
+    // combinar productosArray base con cualquier producto persistido por el admin en localStorage (lvup_products)
     let persisted: Producto[] = [];
     try {
       const raw = localStorage.getItem("lvup_products") || "[]";
@@ -159,12 +159,11 @@ export function useFiltros(): UseFiltrosReturn {
       persisted = [];
     }
 
-    // prefer persisted products first, then include base ones that aren't overridden
-    const ids = new Set(persisted.map((p) => p.id));
-    const allProducts = [
-      ...persisted,
-      ...productosArray.filter((p) => !ids.has(p.id)),
-    ];
+    // si hay productos persistidos, usarlos como catalogo autoritativo
+    const allProducts =
+      Array.isArray(persisted) && persisted.length > 0
+        ? persisted
+        : productosArray;
 
     return allProducts
       .filter((p) => {

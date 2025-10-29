@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
+import { isDuocEmail } from "../utils/orden.helper";
 
 interface FormData {
   emailOrName: string;
@@ -28,6 +29,7 @@ interface UserSession {
   loginAt: number;
   userId: string;
   role?: string;
+  duocMember?: boolean;
 }
 
 const Login: React.FC = (): React.JSX.Element => {
@@ -76,6 +78,7 @@ const Login: React.FC = (): React.JSX.Element => {
       loginAt: Date.now(),
       userId: user.id,
       role: "cliente", // Por defecto cliente, podría extenderse para roles admin/vendedor
+      duocMember: isDuocEmail(user.email),
     };
     localStorage.setItem("lvup_user_session", JSON.stringify(session));
   };
