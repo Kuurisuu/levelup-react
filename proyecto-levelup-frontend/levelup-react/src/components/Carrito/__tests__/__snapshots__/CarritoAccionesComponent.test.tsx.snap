@@ -1,0 +1,98 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CarritoAccionesComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="carrito-acciones"
+    id="carrito-acciones"
+  >
+    <div
+      class="carrito-acciones-izquierda"
+    >
+      <button
+        class="boton-menu carrito-acciones-vaciar"
+        id="carrito-acciones-vaciar"
+      >
+        Vaciar carrito
+      </button>
+      <button
+        class="boton-menu boton-volver-carrito"
+        id="carrito-acciones-volver"
+      >
+        Seguir comprando
+      </button>
+    </div>
+    <div
+      class="carrito-acciones-derecha"
+    >
+      <div
+        class="carrito-acciones-total"
+      >
+        <p>
+          Total:
+        </p>
+        <p
+          id="total"
+        >
+          $50,000
+        </p>
+      </div>
+      <button
+        class="carrito-acciones-comprar"
+        id="carrito-acciones-comprar"
+      >
+        PROCEDER AL PAGO
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CarritoAccionesComponent > Debería hacer match con el snapshot con descuento DUOC 1`] = `
+<div>
+  <div
+    class="carrito-acciones"
+    id="carrito-acciones"
+  >
+    <div
+      class="carrito-acciones-izquierda"
+    >
+      <button
+        class="boton-menu carrito-acciones-vaciar"
+        id="carrito-acciones-vaciar"
+      >
+        Vaciar carrito
+      </button>
+      <button
+        class="boton-menu boton-volver-carrito"
+        id="carrito-acciones-volver"
+      >
+        Seguir comprando
+      </button>
+    </div>
+    <div
+      class="carrito-acciones-derecha"
+    >
+      <div
+        class="carrito-acciones-total"
+      >
+        <p>
+          Total:
+        </p>
+        <p
+          id="total"
+          title="Descuento DUOC -20% aplicado"
+        >
+          $50,000
+        </p>
+      </div>
+      <button
+        class="carrito-acciones-comprar"
+        id="carrito-acciones-comprar"
+      >
+        PROCEDER AL PAGO
+      </button>
+    </div>
+  </div>
+</div>
+`;

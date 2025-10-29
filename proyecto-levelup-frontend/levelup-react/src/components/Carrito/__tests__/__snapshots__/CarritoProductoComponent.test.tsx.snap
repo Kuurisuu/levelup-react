@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CarritoProducto > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="carrito-producto nuevo-layout"
+  >
+    <div
+      class="carrito-producto-imagen-box"
+    >
+      <img
+        alt="PlayStation 5"
+        class="carrito-producto-imagen"
+        src="/img/ps5.jpg"
+      />
+    </div>
+    <div
+      class="carrito-producto-info"
+    >
+      <h3
+        class="carrito-producto-marca"
+      >
+        PlayStation 5
+      </h3>
+      <button
+        aria-label="Eliminar"
+        class="carrito-producto-eliminar sutil"
+      >
+        <i
+          class="bi bi-trash"
+        />
+        <span
+          class="eliminar-text"
+        >
+          Eliminar
+        </span>
+      </button>
+    </div>
+    <div
+      class="carrito-producto-right"
+    >
+      <div
+        class="carrito-producto-precio-box"
+      >
+        <div
+          class="carrito-cantidad"
+        >
+          <button
+            aria-label="Disminuir"
+            class="carrito-cantidad-disminuir"
+          >
+            -
+          </button>
+          <span
+            class="carrito-cantidad-contador"
+          >
+            2
+          </span>
+          <button
+            aria-label="Aumentar"
+            class="carrito-cantidad-aumentar"
+          >
+            +
+          </button>
+        </div>
+        <div
+          class="precios-container"
+        >
+          <div
+            class="precio-row"
+          >
+            <span
+              class="label"
+            >
+              Precio
+            </span>
+            <span
+              class="value carrito-producto-precio"
+            >
+              $500,000
+            </span>
+          </div>
+          <div
+            class="precio-row subtotal"
+          >
+            <span
+              class="label"
+            >
+              Subtotal
+            </span>
+            <span
+              class="value carrito-producto-subtotal"
+            >
+              $1,000,000
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

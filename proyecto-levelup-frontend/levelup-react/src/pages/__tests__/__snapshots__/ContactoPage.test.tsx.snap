@@ -1,0 +1,311 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContactoPage > Debería hacer match con el snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="wrapper"
+  >
+    <main
+      class="contacto-main"
+    >
+      <section
+        class="hero-contacto"
+      >
+        <div
+          class="hero-content"
+        >
+          <h1>
+            Contáctanos
+          </h1>
+          <p>
+            ¿Tienes alguna pregunta o sugerencia? Nos encantaría escucharte
+          </p>
+        </div>
+      </section>
+      <section
+        class="contacto-section"
+      >
+        <div
+          class="container"
+        >
+          <div
+            class="cuadricula-contacto"
+          >
+            <div
+              class="info-contacto"
+            >
+              <h3>
+                Información de Contacto
+              </h3>
+              <div
+                class="info-item"
+              >
+                <i
+                  class="bi bi-shop"
+                />
+                <div>
+                  <h3>
+                    Tienda Online
+                  </h3>
+                  <p>
+                    Level-Up Gamer
+                    <br />
+                    Entrega a todo Chile
+                  </p>
+                </div>
+              </div>
+              <div
+                class="info-item"
+              >
+                <i
+                  class="bi bi-whatsapp"
+                />
+                <div>
+                  <h3>
+                    WhatsApp
+                  </h3>
+                  <p>
+                    <a
+                      class="whatsapp-link"
+                      href="https://wa.me/56912345678?text=¡Hola!%20Me%20interesa%20conocer%20más%20sobre%20los%20productos%20gaming%20de%20Level-Up.%20¿Podrían%20ayudarme%20con%20información%20sobre%20disponibilidad%20y%20precios?"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      +56 9 1234 5678
+                    </a>
+                    <br />
+                    Atención personalizada
+                  </p>
+                </div>
+              </div>
+              <div
+                class="info-item"
+              >
+                <i
+                  class="bi bi-envelope-fill"
+                />
+                <div>
+                  <h3>
+                    Email
+                  </h3>
+                  <p>
+                    info@levelupgamer.cl
+                    <br />
+                    soporte@levelupgamer.cl
+                  </p>
+                </div>
+              </div>
+              <div
+                class="info-item"
+              >
+                <i
+                  class="bi bi-clock-fill"
+                />
+                <div>
+                  <h3>
+                    Horario de Atención
+                  </h3>
+                  <p>
+                    Lunes - Viernes: 9:00 AM - 7:00 PM
+                    <br />
+                    Sábados: 10:00 AM - 6:00 PM
+                    <br />
+                    Domingos: 11:00 AM - 5:00 PM
+                  </p>
+                </div>
+              </div>
+              <div
+                class="enlaces-sociales"
+              >
+                <h3>
+                  Síguenos en Redes
+                </h3>
+                <div
+                  class="social-icons"
+                >
+                  <a
+                    class="social-btn"
+                    href="#"
+                  >
+                    <i
+                      class="bi bi-facebook"
+                    />
+                  </a>
+                  <a
+                    class="social-btn"
+                    href="#"
+                  >
+                    <i
+                      class="bi bi-twitter-x"
+                    />
+                  </a>
+                  <a
+                    class="social-btn"
+                    href="#"
+                  >
+                    <i
+                      class="bi bi-instagram"
+                    />
+                  </a>
+                  <a
+                    class="social-btn"
+                    href="#"
+                  >
+                    <i
+                      class="bi bi-twitch"
+                    />
+                  </a>
+                  <a
+                    class="social-btn"
+                    href="#"
+                  >
+                    <i
+                      class="bi bi-discord"
+                    />
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div
+              class="contenedor-formulario-contacto"
+            >
+              <h2>
+                ¿Tienes alguna consulta?
+              </h2>
+              <p
+                style="color: rgb(211, 211, 211); margin-bottom: 2rem; font-family: Roboto, sans-serif;"
+              >
+                Estamos aquí para ayudarte con cualquier pregunta sobre nuestros productos gaming o tu experiencia de compra.
+              </p>
+              <form
+                class="formulario-contacto"
+                id="formularioContacto"
+              >
+                <div
+                  class="form-group"
+                >
+                  <label
+                    for="nombre"
+                  >
+                    Nombre Completo
+                  </label>
+                  <input
+                    class=""
+                    id="nombre"
+                    maxlength="100"
+                    name="nombre"
+                    placeholder="Ingresa tu nombre completo"
+                    required=""
+                    type="text"
+                    value=""
+                  />
+                </div>
+                <div
+                  class="form-group"
+                >
+                  <label
+                    for="email"
+                  >
+                    Correo Electrónico
+                  </label>
+                  <input
+                    class=""
+                    id="email"
+                    name="email"
+                    placeholder="tu@email.com"
+                    required=""
+                    type="email"
+                    value=""
+                  />
+                </div>
+                <div
+                  class="form-group"
+                >
+                  <label
+                    for="asunto"
+                  >
+                    Tipo de Consulta
+                  </label>
+                  <select
+                    class=""
+                    id="asunto"
+                    name="asunto"
+                    required=""
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; background-color: rgb(0, 0, 0); color: rgb(255, 255, 255); font-family: Roboto, sans-serif;"
+                  >
+                    <option
+                      value=""
+                    >
+                      Selecciona el tipo de consulta
+                    </option>
+                    <option
+                      value="productos"
+                    >
+                      Consulta sobre productos
+                    </option>
+                    <option
+                      value="pedido"
+                    >
+                      Estado de mi pedido
+                    </option>
+                    <option
+                      value="garantia"
+                    >
+                      Garantía y devoluciones
+                    </option>
+                    <option
+                      value="tecnico"
+                    >
+                      Soporte técnico
+                    </option>
+                    <option
+                      value="otro"
+                    >
+                      Otro
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="form-group"
+                >
+                  <label
+                    for="mensaje"
+                  >
+                    Tu Mensaje
+                  </label>
+                  <textarea
+                    class=""
+                    id="mensaje"
+                    maxlength="500"
+                    name="mensaje"
+                    placeholder="Cuéntanos en qué podemos ayudarte..."
+                    required=""
+                    rows="5"
+                  />
+                  <div
+                    class="contador-caracteres"
+                  >
+                    <span>
+                      0
+                    </span>
+                    /500 caracteres
+                  </div>
+                </div>
+                <button
+                  class="btn-enviar "
+                  type="submit"
+                >
+                  <i
+                    class="bi bi-send-fill"
+                  />
+                  Enviar Consulta
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</DocumentFragment>
+`;

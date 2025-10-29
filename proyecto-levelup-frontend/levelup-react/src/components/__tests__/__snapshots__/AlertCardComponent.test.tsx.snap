@@ -1,0 +1,62 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AlertCardComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <div
+    class="alert-card info"
+  >
+    <div
+      class="alert-icon"
+    >
+      <i
+        class="bi bi-info-circle"
+      />
+    </div>
+    <div
+      class="alert-content"
+    >
+      <h3>
+        Test Alert
+      </h3>
+      <p>
+        This is a test message
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AlertCardComponent > Debería hacer match con el snapshot con botón de acción 1`] = `
+<div>
+  <div
+    class="alert-card info"
+  >
+    <div
+      class="alert-icon"
+    >
+      <i
+        class="bi bi-info-circle"
+      />
+    </div>
+    <div
+      class="alert-content"
+    >
+      <h3>
+        Test Alert
+      </h3>
+      <p>
+        This is a test message
+      </p>
+      <div
+        class="alert-actions"
+      >
+        <button
+          class="btn-alert"
+        >
+          Action Button
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

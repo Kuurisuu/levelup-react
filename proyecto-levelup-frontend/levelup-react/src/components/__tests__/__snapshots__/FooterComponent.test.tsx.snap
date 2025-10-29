@@ -1,0 +1,187 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Footer > Debería hacer match con el snapshot 1`] = `
+<div>
+  <footer>
+    <div
+      class="footer-container"
+    >
+      <div
+        class="footer-col"
+      >
+        <p
+          class="texto-footer"
+        >
+          © 2025 A.C.A Company
+        </p>
+        <p
+          class="texto-footer"
+        >
+          Level Up — Gamer
+        </p>
+        <div
+          class="footer-social"
+        >
+          <a
+            aria-label="Instagram"
+            href="https://www.instagram.com/level_up_gamer__/"
+          >
+            <i
+              class="bi bi-instagram"
+            />
+          </a>
+          <a
+            aria-label="Whatsapp"
+            href="https://api.whatsapp.com/send?phone=56912345678&text=Hola,%20necesito%20ayuda"
+          >
+            <i
+              class="bi bi-whatsapp"
+            />
+          </a>
+        </div>
+      </div>
+      <div
+        class="footer-col"
+      >
+        <h3>
+          Enlaces
+        </h3>
+        <ul
+          class="footer-links"
+        >
+          <li>
+            <a
+              data-discover="true"
+              href="/"
+            >
+              Inicio
+            </a>
+          </li>
+          <li>
+            <a
+              data-discover="true"
+              href="/carrito"
+            >
+              Carrito
+            </a>
+          </li>
+          <li>
+            <a
+              data-discover="true"
+              href="/login"
+            >
+              Ingresar
+            </a>
+          </li>
+          <li>
+            <a
+              data-discover="true"
+              href="/register"
+            >
+              Registrarse
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="footer-col"
+      >
+        <h3>
+          Soporte
+        </h3>
+        <ul
+          class="footer-links"
+        >
+          <li>
+            <a
+              href="https://www.whatsapp.com/?lang=es_LA"
+            >
+              Preguntas frecuentes
+            </a>
+          </li>
+          <li>
+            <a
+              download=""
+              href="/docs/Política_de_Devoluciones_y_Garantía.txt"
+            >
+              Política de devoluciones
+            </a>
+          </li>
+          <li>
+            <a
+              download=""
+              href="/docs/Términos_y_Condiciones–Level-Up_Gamer.txt"
+            >
+              Términos y condiciones
+            </a>
+          </li>
+          <li>
+            <a
+              download=""
+              href="/docs/Politica_de_privacidad.docx"
+            >
+              Política de privacidad
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="footer-col"
+      >
+        <h3>
+          Contacto
+        </h3>
+        <p
+          class="texto-footer"
+        >
+          Teléfono: +56 9 1234 5678
+        </p>
+        <p
+          class="texto-footer"
+        >
+          correo@levelup.cl
+        </p>
+        <p
+          class="texto-footer"
+        >
+          Santiago, Chile
+        </p>
+        <div
+          class="footer-trust"
+        >
+          <span
+            class="trust-item"
+          >
+            <i
+              class="bi bi-shield-check"
+            />
+             Compra segura
+          </span>
+          <p />
+          <span
+            class="trust-item"
+          >
+            <i
+              class="bi bi-truck"
+            />
+             Envío a todo Chile
+          </span>
+        </div>
+      </div>
+      <div
+        class="footer-bottom"
+      >
+        <div
+          class="footer-container"
+        >
+          <p
+            class="texto-footer"
+          >
+            © 2025 Level Up — Todos los derechos reservados.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+`;

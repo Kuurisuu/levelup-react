@@ -1,0 +1,1488 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HomePage > Debería hacer match con el snapshot 1`] = `
+<DocumentFragment>
+  <main
+    class="main-home"
+  >
+    <section
+      class="seccion-carrusel"
+    >
+      <div
+        class="container-carrusel"
+      >
+        <div
+          class="atras"
+        >
+          <i
+            class="bi bi-arrow-left-short"
+          />
+        </div>
+        <div
+          class="imagenes-carrusel"
+        >
+          <div
+            class="img-track"
+            id="img-carrusel"
+            style="transform: translateX(-0%);"
+          >
+            <img
+              alt="¡Bienvenido a Level-Up Gamer!"
+              class="img-carrusel"
+              loading="lazy"
+              src="/img/carrusel/1.png"
+            />
+            <img
+              alt="!Explora nuestros productos gamer de alta calidad!"
+              class="img-carrusel"
+              loading="lazy"
+              src="/img/carrusel/carruselproductos.png"
+            />
+            <img
+              alt="¡Lee desde noticias a guias del mundo gaming!"
+              class="img-carrusel"
+              loading="lazy"
+              src="/img/carrusel/carruselnoticias.png"
+            />
+          </div>
+          <div
+            class="texto-carrusel"
+            id="texto-carrusel"
+          >
+            <h3>
+              ¡Bienvenido a Level-Up Gamer!
+            </h3>
+            <p>
+              La tienda gamer lider en todo Chile
+            </p>
+          </div>
+        </div>
+        <div
+          class="adelante"
+        >
+          <i
+            class="bi bi-arrow-right-short"
+          />
+        </div>
+      </div>
+      <div
+        class="puntos"
+        id="puntos"
+      >
+        <p
+          class="bold"
+        />
+        <p
+          class=""
+        />
+        <p
+          class=""
+        />
+      </div>
+    </section>
+    <section
+      class="seccion-destacados"
+    >
+      <h2>
+        Productos destacados
+      </h2>
+      <div
+        class="productos"
+        id="destacados"
+      >
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="1"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                1
+              </div>
+              <img
+                alt="Producto 1"
+                class="producto-imagen"
+                src="/img/producto1.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 1
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 1
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $10.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="2"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                2
+              </div>
+              <img
+                alt="Producto 2"
+                class="producto-imagen"
+                src="/img/producto2.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 2
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 2
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $11.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="3"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                3
+              </div>
+              <img
+                alt="Producto 3"
+                class="producto-imagen"
+                src="/img/producto3.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 3
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 3
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $12.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="4"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                4
+              </div>
+              <img
+                alt="Producto 4"
+                class="producto-imagen"
+                src="/img/producto4.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 4
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 4
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $13.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="5"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                5
+              </div>
+              <img
+                alt="Producto 5"
+                class="producto-imagen"
+                src="/img/producto5.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 5
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 5
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $14.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="6"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                6
+              </div>
+              <img
+                alt="Producto 6"
+                class="producto-imagen"
+                src="/img/producto6.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 6
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 6
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $15.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="7"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                7
+              </div>
+              <img
+                alt="Producto 7"
+                class="producto-imagen"
+                src="/img/producto7.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 7
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 7
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $16.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="8"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                8
+              </div>
+              <img
+                alt="Producto 8"
+                class="producto-imagen"
+                src="/img/producto8.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 8
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 8
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $17.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="9"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                9
+              </div>
+              <img
+                alt="Producto 9"
+                class="producto-imagen"
+                src="/img/producto9.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 9
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 9
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $18.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="10"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                10
+              </div>
+              <img
+                alt="Producto 10"
+                class="producto-imagen"
+                src="/img/producto10.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 10
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 10
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $19.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="11"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                11
+              </div>
+              <img
+                alt="Producto 11"
+                class="producto-imagen"
+                src="/img/producto11.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 11
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 11
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $20.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="contenedor-productos"
+        >
+          <article
+            class="producto producto-card"
+            data-id="12"
+          >
+            <div
+              class="producto-imagen-container"
+            >
+              <div
+                class="producto-disponible-badge no-disponible"
+              >
+                No Disponible
+              </div>
+              <div
+                class="producto-codigo-badge"
+              >
+                12
+              </div>
+              <img
+                alt="Producto 12"
+                class="producto-imagen"
+                src="/img/producto12.jpg"
+              />
+            </div>
+            <div
+              class="producto-detalles"
+            >
+              <div
+                class="producto-info-principal"
+              >
+                <div
+                  class="producto-marca"
+                >
+                  Sony
+                </div>
+                <h3
+                  class="producto-titulo"
+                >
+                  Producto 12
+                </h3>
+                <p
+                  class="producto-categoria"
+                >
+                   • undefined
+                </p>
+                <div
+                  class="producto-descripcion-container"
+                >
+                  <p
+                    class="producto-descripcion"
+                  >
+                    Descripción 12
+                  </p>
+                </div>
+              </div>
+              <div
+                class="producto-info-secundaria"
+              >
+                <div
+                  class="producto-rating-container"
+                >
+                  <div
+                    class="producto-rating"
+                    style="color: rgb(241, 196, 15); font-size: 0.9rem;"
+                  >
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star-fill"
+                    />
+                    <i
+                      class="bi bi-star"
+                    />
+                  </div>
+                  <span
+                    class="producto-rating-promedio"
+                  >
+                    4.0
+                  </span>
+                </div>
+                <div
+                  class="producto-precio-container"
+                >
+                  <div
+                    class="precio-linea"
+                  >
+                    <span
+                      class="precio-actual"
+                    >
+                      $21.000 CLP
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="producto-agregar "
+                  disabled=""
+                >
+                  <i
+                    class="bi bi-cart-plus"
+                  />
+                  Agotado
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <div
+      class=""
+      style="display: flex; justify-content: center; margin: 1rem 0px; gap: 1rem;"
+    >
+      <button
+        class="boton-menu boton-mostrar-mas"
+        id="btn-mostrar-mas-home"
+      >
+        Mostrar más
+      </button>
+    </div>
+  </main>
+</DocumentFragment>
+`;

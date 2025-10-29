@@ -1,0 +1,449 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FiltrosComponent > Debería hacer match con el snapshot 1`] = `
+<div>
+  <aside
+    aria-label="Filtros de productos"
+    class="product-aside-filter abierto"
+    id="filtros"
+  >
+    <div
+      class="product-aside-filter-header"
+    >
+      <h2
+        class="product-aside-title"
+      >
+        Filtrar productos
+      </h2>
+      <button
+        aria-label="Cerrar filtros"
+        class="boton-menu cerrar-filtros"
+        id="cerrar-filtros"
+        title="Cerrar filtros"
+      >
+        <i
+          class="bi bi-x-lg"
+        />
+      </button>
+    </div>
+    <div
+      class="filter"
+    >
+      <h3
+        class="filtros-section-title"
+      >
+        <i
+          class="bi bi-list-ul"
+        />
+         Categoría
+      </h3>
+      <ul
+        class="menu-categorias"
+      >
+        <li
+          class="categoria"
+        >
+          <button
+            aria-label="Mostrar todos"
+            class="boton-categoria abrir-subcat "
+          >
+            Todas las categorías
+          </button>
+        </li>
+        <li
+          class="categoria"
+        >
+          <button
+            aria-expanded="false"
+            class="boton-categoria abrir-subcat "
+          >
+            <span
+              class="boton-categoria-label"
+            >
+              Entretenimiento
+            </span>
+            <i
+              aria-hidden="true"
+              class="bi caret-icon bi-caret-down-fill"
+            />
+          </button>
+          <ul
+            class="subcategorias "
+          >
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                />
+                Todos
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                />
+                Juegos de Mesa
+              </label>
+            </li>
+          </ul>
+        </li>
+        <li
+          class="categoria"
+        >
+          <button
+            aria-expanded="false"
+            class="boton-categoria abrir-subcat active"
+          >
+            <span
+              class="boton-categoria-label"
+            >
+              Consolas
+            </span>
+            <span
+              aria-hidden="true"
+              class="filtro-badge"
+            >
+              1
+            </span>
+            <i
+              aria-hidden="true"
+              class="bi caret-icon bi-caret-down-fill"
+            />
+          </button>
+          <ul
+            class="subcategorias "
+          >
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                />
+                Todos
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  checked=""
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Mandos
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Hardware
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Accesorios
+              </label>
+            </li>
+          </ul>
+        </li>
+        <li
+          class="categoria"
+        >
+          <button
+            aria-expanded="false"
+            class="boton-categoria abrir-subcat "
+          >
+            <span
+              class="boton-categoria-label"
+            >
+              Perifericos
+            </span>
+            <i
+              aria-hidden="true"
+              class="bi caret-icon bi-caret-down-fill"
+            />
+          </button>
+          <ul
+            class="subcategorias "
+          >
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                />
+                Todos
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Mouse
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Teclado
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Auriculares
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Monitores
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Microfonos
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Camara web
+              </label>
+            </li>
+          </ul>
+        </li>
+        <li
+          class="categoria"
+        >
+          <button
+            aria-expanded="false"
+            class="boton-categoria abrir-subcat "
+          >
+            <span
+              class="boton-categoria-label"
+            >
+              Ropa
+            </span>
+            <i
+              aria-hidden="true"
+              class="bi caret-icon bi-caret-down-fill"
+            />
+          </button>
+          <ul
+            class="subcategorias "
+          >
+            <li>
+              <label>
+                <input
+                  type="checkbox"
+                />
+                Todos
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Polerones Gamers Personalizados
+              </label>
+            </li>
+            <li>
+              <label>
+                <input
+                  class="filtro-subcat"
+                  type="checkbox"
+                />
+                Poleras Personalizadas
+              </label>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <h3
+        class="mt-1 filtros-section-title"
+      >
+        <i
+          class="bi bi-search"
+        />
+         Búsqueda avanzada
+      </h3>
+      <div
+        class="advanced-filters"
+      >
+        <div>
+          <label
+            for="texto"
+          >
+            Busqueda
+          </label>
+          <input
+            class="filtros-input-text"
+            id="texto"
+            placeholder="Buscar por nombre"
+            type="text"
+            value="test"
+          />
+        </div>
+        <div
+          class="grupo-precios"
+        >
+          <div>
+            <label
+              for="precioMin"
+            >
+              Precio Min.
+            </label>
+            <input
+              id="precioMin"
+              min="0"
+              type="number"
+              value="0"
+            />
+          </div>
+          <div>
+            <label
+              for="precioMax"
+            >
+              Precio Max.
+            </label>
+            <input
+              id="precioMax"
+              min="0"
+              type="number"
+              value="100000"
+            />
+          </div>
+        </div>
+        <div
+          class="grupo-check"
+        >
+          <label>
+            <input
+              checked=""
+              id="disponible"
+              type="checkbox"
+            />
+            <span>
+              Disponible
+            </span>
+          </label>
+          <div>
+            <label
+              for="rating"
+            >
+              Rating mín.
+            </label>
+            <select
+              id="rating"
+            >
+              <option
+                value="0"
+              >
+                0
+                +
+              </option>
+              <option
+                value="1"
+              >
+                1
+                +
+              </option>
+              <option
+                value="2"
+              >
+                2
+                +
+              </option>
+              <option
+                value="3"
+              >
+                3
+                +
+              </option>
+              <option
+                value="4"
+              >
+                4
+                +
+              </option>
+              <option
+                value="5"
+              >
+                5
+                +
+              </option>
+            </select>
+          </div>
+        </div>
+        <div
+          class="filtros-orden"
+        >
+          <label
+            for="orden"
+          >
+            Ordenar por
+          </label>
+          <select
+            id="orden"
+          >
+            <option
+              value="relevancia"
+            >
+              Relevancia
+            </option>
+            <option
+              value="precio-asc"
+            >
+              Precio: menor a mayor
+            </option>
+            <option
+              value="precio-desc"
+            >
+              Precio: mayor a menor
+            </option>
+            <option
+              value="rating-desc"
+            >
+              Rating: mayor a menor
+            </option>
+          </select>
+        </div>
+        <button
+          class="boton-menu filtros-limpiar"
+        >
+          <i
+            class="bi bi-eraser"
+          />
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </aside>
+</div>
+`;

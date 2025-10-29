@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Carrito Page > Debería hacer match con el snapshot cuando está vacío 1`] = `
+<div>
+  <div
+    class="wrapper"
+  >
+    <main
+      class="main-carrito"
+    >
+      <h2
+        class="titulo-principal"
+      >
+        Carrito
+      </h2>
+      <p
+        class="carrito-count"
+      >
+        Tu carrito (
+        0
+         productos)
+      </p>
+      <div
+        class="contenedor-carrito"
+      >
+        <div
+          class="carrito-productos-seccion"
+        >
+          <p
+            class="carrito-vacio"
+            id="carrito-vacio"
+          >
+            Tu carrito esta vacío.
+            <i
+              class="bi bi-emoji-frown"
+            />
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+`;
+
+exports[`Carrito Page > Debería hacer match con el snapshot cuando tiene productos 1`] = `
+<div>
+  <div
+    class="wrapper"
+  >
+    <main
+      class="main-carrito"
+    >
+      <h2
+        class="titulo-principal"
+      >
+        Carrito
+      </h2>
+      <p
+        class="carrito-count"
+      >
+        Tu carrito (
+        0
+         productos)
+      </p>
+      <div
+        class="contenedor-carrito"
+      >
+        <div
+          class="carrito-productos-seccion"
+        >
+          <p
+            class="carrito-vacio"
+            id="carrito-vacio"
+          >
+            Tu carrito esta vacío.
+            <i
+              class="bi bi-emoji-frown"
+            />
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+`;

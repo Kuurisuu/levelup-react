@@ -1,0 +1,426 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BlogPage > Debería hacer match con el snapshot con blogs cargados 1`] = `
+<div>
+  <div
+    class="wrapper"
+  >
+    <main>
+      <section
+        class="hero-blogs"
+      >
+        <div
+          class="container"
+        >
+          <h1>
+            Blog Level-Up Gamer
+          </h1>
+          <p>
+            Mantente al día con las últimas noticias, análisis y guías del mundo gaming. Contenido creado por gamers, para gamers.
+          </p>
+        </div>
+      </section>
+      <section
+        class="blogs-container"
+      >
+        <div
+          class="container"
+        >
+          <div
+            class="cuadricula-blogs"
+          >
+            <div
+              class="blogs-grid"
+            >
+              <article
+                class="tarjeta-blog"
+              >
+                <div
+                  class="imagen-blog"
+                >
+                  <img
+                    alt="Los juegos más esperados del resto del 2025"
+                    src="/img/eventos/Los juegos más esperados del resto del 2025.jpg"
+                  />
+                  <span
+                    class="categoria-blog"
+                    style="background-color: rgb(30, 144, 255);"
+                  >
+                    Noticias
+                  </span>
+                </div>
+                <div
+                  class="contenido-blog"
+                >
+                  <div
+                    class="meta-blog"
+                  >
+                    <span>
+                      <i
+                        class="bi bi-calendar3"
+                      />
+                      15 Sep 2025
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-person"
+                      />
+                      Level-Up Team
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-clock"
+                      />
+                      5 min
+                    </span>
+                  </div>
+                  <h2
+                    class="titulo-blog"
+                  >
+                    Los juegos más esperados del resto del 2025
+                  </h2>
+                  <p
+                    class="descripcion-blog"
+                  >
+                    Descubre los títulos que marcarán el final de año en el mundo gaming. Desde secuelas épicas hasta nuevas IPs revolucionarias.
+                  </p>
+                  <a
+                    class="btn-leer-mas"
+                    data-discover="true"
+                    href="/blog/juegos-mas-esperados-2025"
+                  >
+                    Leer más
+                    <i
+                      class="bi bi-arrow-right"
+                    />
+                  </a>
+                </div>
+              </article>
+              <article
+                class="tarjeta-blog"
+              >
+                <div
+                  class="imagen-blog"
+                >
+                  <img
+                    alt="El crecimiento del gaming en Chile"
+                    src="/img/eventos/Elcrecimiento.jpg"
+                  />
+                  <span
+                    class="categoria-blog"
+                    style="background-color: rgb(57, 255, 20);"
+                  >
+                    Industria
+                  </span>
+                </div>
+                <div
+                  class="contenido-blog"
+                >
+                  <div
+                    class="meta-blog"
+                  >
+                    <span>
+                      <i
+                        class="bi bi-calendar3"
+                      />
+                      12 Sep 2025
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-person"
+                      />
+                      Alex Ampuero
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-clock"
+                      />
+                      8 min
+                    </span>
+                  </div>
+                  <h2
+                    class="titulo-blog"
+                  >
+                    El crecimiento del gaming en Chile
+                  </h2>
+                  <p
+                    class="descripcion-blog"
+                  >
+                    Análisis completo sobre cómo ha evolucionado la industria gaming en nuestro país y las oportunidades que se avecinan.
+                  </p>
+                  <a
+                    class="btn-leer-mas"
+                    data-discover="true"
+                    href="/blog/crecimiento-gaming-chile"
+                  >
+                    Leer más
+                    <i
+                      class="bi bi-arrow-right"
+                    />
+                  </a>
+                </div>
+              </article>
+              <article
+                class="tarjeta-blog"
+              >
+                <div
+                  class="imagen-blog"
+                >
+                  <img
+                    alt="Realidad Virtual: El futuro del entretenimiento"
+                    src="/img/eventos/Realidadv.jfif"
+                  />
+                  <span
+                    class="categoria-blog"
+                    style="background-color: rgb(255, 107, 53);"
+                  >
+                    Tecnología
+                  </span>
+                </div>
+                <div
+                  class="contenido-blog"
+                >
+                  <div
+                    class="meta-blog"
+                  >
+                    <span>
+                      <i
+                        class="bi bi-calendar3"
+                      />
+                      10 Sep 2025
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-person"
+                      />
+                      Christian Mesa
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-clock"
+                      />
+                      6 min
+                    </span>
+                  </div>
+                  <h2
+                    class="titulo-blog"
+                  >
+                    Realidad Virtual: El futuro del entretenimiento
+                  </h2>
+                  <p
+                    class="descripcion-blog"
+                  >
+                    Exploramos las últimas tecnologías VR y cómo están revolucionando la forma en que experimentamos los videojuegos.
+                  </p>
+                  <a
+                    class="btn-leer-mas"
+                    data-discover="true"
+                    href="/blog/realidad-virtual-futuro"
+                  >
+                    Leer más
+                    <i
+                      class="bi bi-arrow-right"
+                    />
+                  </a>
+                </div>
+              </article>
+              <article
+                class="tarjeta-blog"
+              >
+                <div
+                  class="imagen-blog"
+                >
+                  <img
+                    alt="Gaming Movement: Comunidades que transforman"
+                    src="/img/eventos/Gamingmov.jfif"
+                  />
+                  <span
+                    class="categoria-blog"
+                    style="background-color: rgb(255, 23, 68);"
+                  >
+                    Comunidad
+                  </span>
+                </div>
+                <div
+                  class="contenido-blog"
+                >
+                  <div
+                    class="meta-blog"
+                  >
+                    <span>
+                      <i
+                        class="bi bi-calendar3"
+                      />
+                      08 Sep 2025
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-person"
+                      />
+                      Level-Up Team
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-clock"
+                      />
+                      7 min
+                    </span>
+                  </div>
+                  <h2
+                    class="titulo-blog"
+                  >
+                    Gaming Movement: Comunidades que transforman
+                  </h2>
+                  <p
+                    class="descripcion-blog"
+                  >
+                    Cómo las comunidades gaming están creando espacios inclusivos y fomentando el crecimiento del ecosistema de videojuegos.
+                  </p>
+                  <a
+                    class="btn-leer-mas"
+                    data-discover="true"
+                    href="/blog/gaming-movement-comunidades"
+                  >
+                    Leer más
+                    <i
+                      class="bi bi-arrow-right"
+                    />
+                  </a>
+                </div>
+              </article>
+              <article
+                class="tarjeta-blog"
+              >
+                <div
+                  class="imagen-blog"
+                >
+                  <img
+                    alt="Guía completa para streamers principiantes"
+                    src="/img/eventos/maxresdefault.jpg"
+                  />
+                  <span
+                    class="categoria-blog"
+                    style="background-color: rgb(156, 39, 176);"
+                  >
+                    Guías
+                  </span>
+                </div>
+                <div
+                  class="contenido-blog"
+                >
+                  <div
+                    class="meta-blog"
+                  >
+                    <span>
+                      <i
+                        class="bi bi-calendar3"
+                      />
+                      05 Sep 2025
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-person"
+                      />
+                      Ariel Molina
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-clock"
+                      />
+                      10 min
+                    </span>
+                  </div>
+                  <h2
+                    class="titulo-blog"
+                  >
+                    Guía completa para streamers principiantes
+                  </h2>
+                  <p
+                    class="descripcion-blog"
+                  >
+                    Todo lo que necesitas saber para comenzar tu carrera como streamer: equipamiento, plataformas, consejos y más.
+                  </p>
+                  <a
+                    class="btn-leer-mas"
+                    data-discover="true"
+                    href="/blog/guia-streamers-principiantes"
+                  >
+                    Leer más
+                    <i
+                      class="bi bi-arrow-right"
+                    />
+                  </a>
+                </div>
+              </article>
+              <article
+                class="tarjeta-blog"
+              >
+                <div
+                  class="imagen-blog"
+                >
+                  <img
+                    alt="eSports en Chile: Presente y futuro"
+                    src="/img/eventos/hq720.jpg"
+                  />
+                  <span
+                    class="categoria-blog"
+                    style="background-color: rgb(255, 193, 7);"
+                  >
+                    eSports
+                  </span>
+                </div>
+                <div
+                  class="contenido-blog"
+                >
+                  <div
+                    class="meta-blog"
+                  >
+                    <span>
+                      <i
+                        class="bi bi-calendar3"
+                      />
+                      02 Sep 2025
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-person"
+                      />
+                      Level-Up Team
+                    </span>
+                    <span>
+                      <i
+                        class="bi bi-clock"
+                      />
+                      9 min
+                    </span>
+                  </div>
+                  <h2
+                    class="titulo-blog"
+                  >
+                    eSports en Chile: Presente y futuro
+                  </h2>
+                  <p
+                    class="descripcion-blog"
+                  >
+                    Un recorrido por el estado actual de los deportes electrónicos en Chile y las proyecciones para los próximos años.
+                  </p>
+                  <a
+                    class="btn-leer-mas"
+                    data-discover="true"
+                    href="/blog/esports-chile-presente-futuro"
+                  >
+                    Leer más
+                    <i
+                      class="bi bi-arrow-right"
+                    />
+                  </a>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+`;
