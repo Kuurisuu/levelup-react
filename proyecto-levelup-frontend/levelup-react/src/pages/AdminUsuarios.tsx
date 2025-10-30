@@ -299,17 +299,21 @@ const AdminUsuarios: React.FC = () => {
   const dataWithActions = users.map((u) => ({
     ...u,
     __actions: (
-      <>
-        <button className="btn-view" onClick={() => handleView(u)}>
-          Ver
-        </button>
-        <button className="btn-edit" onClick={() => handleEdit(u)}>
-          Editar
-        </button>
-        <button className="btn-delete" onClick={() => handleDelete(u)}>
-          Eliminar
-        </button>
-      </>
+      <div className="actions-grid">
+        <div className="actions-top">
+          <button className="btn-view" onClick={() => handleView(u)}>
+            Ver
+          </button>
+          <button className="btn-edit" onClick={() => handleEdit(u)}>
+            Editar
+          </button>
+        </div>
+        <div className="actions-bottom">
+          <button className="btn-delete" onClick={() => handleDelete(u)}>
+            Eliminar
+          </button>
+        </div>
+      </div>
     ),
   }));
 

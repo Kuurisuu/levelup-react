@@ -121,17 +121,21 @@ const AdminProductos: React.FC = () => {
   const dataWithActions = products.map((p) => ({
     ...p,
     __actions: (
-      <>
-        <button className="btn-view" onClick={() => handleView(p)}>
-          Ver
-        </button>
-        <button className="btn-edit" onClick={() => handleEdit(p)}>
-          Editar
-        </button>
-        <button className="btn-delete" onClick={() => handleDelete(p)}>
-          Eliminar
-        </button>
-      </>
+      <div className="actions-grid">
+        <div className="actions-top">
+          <button className="btn-view" onClick={() => handleView(p)}>
+            Ver
+          </button>
+          <button className="btn-edit" onClick={() => handleEdit(p)}>
+            Editar
+          </button>
+        </div>
+        <div className="actions-bottom">
+          <button className="btn-delete" onClick={() => handleDelete(p)}>
+            Eliminar
+          </button>
+        </div>
+      </div>
     ),
   }));
 
