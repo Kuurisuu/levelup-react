@@ -3,7 +3,6 @@
   color: var(--clr-heading-text);
   padding: 1rem;
   border-radius: var(--radius-size-lg);
-  /* make aside sticky and full-height between header and footer like product-aside-filter */
   display: flex;
   flex-direction: column;
   align-self: flex-start;
@@ -18,7 +17,6 @@
     rgba(var(--clr-black2), 0.98)
   );
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-  /* gradient rounded border using border-image */
   border: 1px solid transparent;
   border-image: linear-gradient(
       90deg,
@@ -42,7 +40,6 @@
   transition: background 160ms ease, color 160ms ease;
 }
 
-/* active indicator: thin left bar with gradient, keep padding consistent */
 .product-aside-filter .admin-nav .boton-categoria.active {
   background: rgba(255, 255, 255, 0.02);
   color: var(--clr-heading-text);
@@ -62,7 +59,6 @@
   );
 }
 
-/* keep the close icon style used in product-aside-filter */
 .product-aside-filter .cerrar-filtros {
   display: none;
 }

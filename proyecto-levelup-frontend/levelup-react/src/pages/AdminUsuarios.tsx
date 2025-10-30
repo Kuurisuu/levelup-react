@@ -261,8 +261,6 @@ const AdminUsuarios: React.FC = () => {
     setUsers((prev) => {
       const exists = prev.find((u) => u.id === id);
       if (exists) {
-        // merge to ensure we don't accidentally drop fields and to guarantee
-        // the updated `apellidos` is applied
         return prev.map((u) => (u.id === id ? { ...u, ...newUser } : u));
       }
       return [newUser, ...prev];
@@ -340,9 +338,7 @@ const AdminUsuarios: React.FC = () => {
         onClose={() => setModalOpen(false)}
         title={editing?.id ? "Editar Usuario" : "Añadir Usuario"}
       >
-        <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
-        >
+        <div className="product-form-grid">
           <InputField
             label="Nombre"
             name="nombre"
@@ -505,16 +501,11 @@ const AdminUsuarios: React.FC = () => {
               className="input-control"
             />
             {editing?.avatar ? (
-              <div style={{ marginTop: 8 }}>
+              <div className="avatar-preview-wrapper">
                 <img
                   src={editing.avatar}
                   alt="avatar-preview"
-                  style={{
-                    width: 80,
-                    height: 80,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
+                  className="avatar-preview"
                 />
               </div>
             ) : null}
@@ -535,12 +526,12 @@ const AdminUsuarios: React.FC = () => {
             }
           />
 
-          <div style={{ gridColumn: "1 / -1" }}>
-            <div style={{ display: "flex", gap: 8 }}>
+          <div className="full-row">
+            <div className="product-form-actions">
               <button onClick={() => setEditing({})} className="btn-secondary">
                 Limpiar
               </button>
-              <button onClick={handleSave} className="btn-primary">
+              <button onClick={handleSave} className="btn-primary btn-save">
                 Guardar
               </button>
             </div>
@@ -579,11 +570,8 @@ const AdminUsuarios: React.FC = () => {
         title="Confirmar eliminación"
       >
         <p>¿Eliminar el usuario {selected?.nombre}?</p>
-        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-          <button
-            onClick={() => setConfirmOpen(false)}
-            className="btn-secondary"
-          >
+        <div className="confirm-actions">
+          <button onClick={() => setConfirmOpen(false)} className="btn-secondary">
             Cancelar
           </button>
           <button onClick={confirmDelete} className="btn-delete">

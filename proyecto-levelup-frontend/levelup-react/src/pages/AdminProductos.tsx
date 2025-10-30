@@ -17,7 +17,6 @@ type ProductForm = Omit<
   categoriaId?: string;
   subcategoriaNombre?: string;
   subcategoriaId?: string;
-  // during editing we keep number-like fields as strings to avoid caret issues
   precio?: string | number;
   stock?: string | number;
   descuento?: string | number;
@@ -25,7 +24,6 @@ type ProductForm = Omit<
 };
 
 const AdminProductos: React.FC = () => {
-  // try to initialize from 'lvup_products' else from 'catalogo-base'
   const initialProducts = useMemo(() => {
     try {
       const raw =
@@ -50,7 +48,6 @@ const AdminProductos: React.FC = () => {
   const [editing, setEditing] = useState<ProductForm | null>(null);
   const [selected, setSelected] = useState<Producto | null>(null);
 
-  // helpers for CRUD actions
   const handleEdit = (p: Producto) => {
     setEditing({ ...p });
     setModalOpen(true);
@@ -139,7 +136,6 @@ const AdminProductos: React.FC = () => {
   const handleSave = async () => {
     if (!editing) return;
 
-    // basic validation
     if (!editing.nombre || !editing.precio) {
       alert("Nombre y precio son requeridos");
       return;
@@ -202,7 +198,6 @@ const AdminProductos: React.FC = () => {
       return [newProd, ...prev];
     });
 
-    // notify other parts of the app that products have been updated
     try {
       window.dispatchEvent(new Event("lvup:products"));
     } catch (e) {}
@@ -236,13 +231,7 @@ const AdminProductos: React.FC = () => {
         onClose={() => setModalOpen(false)}
         title={editing?.id ? "Editar Producto" : "Añadir Producto"}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "0.75rem",
-          }}
-        >
+        <div className="product-form-grid">
           <InputField
             label="Nombre"
             name="nombre"
@@ -271,7 +260,7 @@ const AdminProductos: React.FC = () => {
             ) =>
               setEditing((prev) => ({
                 ...(prev || {}),
-                // keep as string while editing to avoid numeric coercion issues
+
                 precio: (e.target as HTMLInputElement).value,
               }))
             }
@@ -409,24 +398,14 @@ const AdminProductos: React.FC = () => {
               <img
                 src={editing.imagenUrl}
                 alt="preview"
-                style={{
-                  width: 120,
-                  height: 80,
-                  objectFit: "cover",
-                  marginTop: 8,
-                  borderRadius: 6,
-                }}
+                className="product-image-preview"
               />
             )}
-            <div style={{ marginTop: 8 }}>
+            <div className="product-form-actions">
               <button onClick={() => setEditing({})} className="btn-secondary">
                 Limpiar
               </button>
-              <button
-                onClick={handleSave}
-                className="btn-primary"
-                style={{ marginLeft: 8 }}
-              >
+              <button onClick={handleSave} className="btn-primary btn-save">
                 Guardar
               </button>
             </div>
@@ -440,13 +419,7 @@ const AdminProductos: React.FC = () => {
         title="Ver Producto"
       >
         {selected ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "160px 1fr",
-              gap: 12,
-            }}
-          >
+          <div className="product-view-grid">
             <img
               src={
                 selected.imagenUrl
@@ -458,12 +431,7 @@ const AdminProductos: React.FC = () => {
                   : ""
               }
               alt={selected.nombre}
-              style={{
-                width: 160,
-                height: 120,
-                objectFit: "cover",
-                borderRadius: 6,
-              }}
+              className="product-view-image"
             />
             <div>
               <h3>{selected.nombre}</h3>
@@ -487,11 +455,8 @@ const AdminProductos: React.FC = () => {
         title="Confirmar eliminación"
       >
         <p>¿Eliminar el producto {selected?.nombre}?</p>
-        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-          <button
-            onClick={() => setConfirmOpen(false)}
-            className="btn-secondary"
-          >
+        <div className="confirm-actions">
+          <button onClick={() => setConfirmOpen(false)} className="btn-secondary">
             Cancelar
           </button>
           <button onClick={confirmDelete} className="btn-delete">

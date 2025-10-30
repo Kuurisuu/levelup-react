@@ -241,7 +241,6 @@ export default function Header(): React.JSX.Element {
       if (menu && role === "vendedor") {
         if (!document.querySelector(".vendedor-productos-link")) {
           const li = document.createElement("li");
-          // When injecting raw HTML, use `class` (not React's `className`).
           li.innerHTML = `
             <a href="./admin/productos.html"
                class="boton-submenu vendedor-productos-link">
@@ -252,10 +251,8 @@ export default function Header(): React.JSX.Element {
       }
     }
 
-    // Run once on mount
     setupAuthUI();
 
-    // Listen to login/logout events to refresh UI
     function onLogout() {
       setupAuthUI();
     }
@@ -280,8 +277,6 @@ export default function Header(): React.JSX.Element {
       "#overlay-menu"
     ) as HTMLElement | null;
 
-    let abrirMenu: (() => void) | null = null;
-    let cerrarMenu: (() => void) | null = null;
 
     let listenersAdded = false;
     if (toggleBtn && menuLateral && cerrarBtn && overlay) {
@@ -299,22 +294,18 @@ export default function Header(): React.JSX.Element {
       overlay.addEventListener("click", _cerrarMenu);
       listenersAdded = true;
 
-      // cleanup function will remove these
       const removeMenuListeners = () => {
         toggleBtn.removeEventListener("click", _abrirMenu);
         cerrarBtn.removeEventListener("click", _cerrarMenu);
         overlay.removeEventListener("click", _cerrarMenu);
       };
 
-      // store cleanup reference locally
       (window as any).__lvup_removeMenuListeners = removeMenuListeners;
     }
 
-    // cleanup listeners on unmount
     return () => {
       window.removeEventListener("lvup:logout", onLogout);
       window.removeEventListener("lvup:login", onLogin);
-      // remove menu listeners if created
       try {
         const rem = (window as any).__lvup_removeMenuListeners;
         if (typeof rem === "function") rem();

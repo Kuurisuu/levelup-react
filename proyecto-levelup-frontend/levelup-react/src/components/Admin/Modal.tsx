@@ -11,7 +11,7 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ title, visible, onClose, children }) => {
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
-  const hasAutoFocused = useRef(false); // 🟢 evita que vuelva a enfocar en cada render
+  const hasAutoFocused = useRef(false); // evita que vuelva a enfocar en cada render
 
   useEffect(() => {
     if (!visible) {

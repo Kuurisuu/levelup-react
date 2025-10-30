@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { categorias, subcategorias, Producto } from "../data/catalogo";
+import { Producto } from "../data/catalogo";
 import { agregarAlCarrito } from "../logic/carrito";
 import {
-  calcularRatingPromedio,
   obtenerEstadisticasRating,
 } from "../utils/ratingUtils"; //LO IMPORTAMOS PARA CALCULAR EL RATING
 import { formatPriceCLP } from "../utils/priceUtils"; //LO IMPORTAMOS PARA FORMATEAR EL PRECIO EN CLP

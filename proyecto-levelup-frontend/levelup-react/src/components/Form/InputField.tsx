@@ -8,7 +8,7 @@ interface InputFieldProps {
   value: any;
   placeholder?: string;
   required?: boolean;
-  validator?: (value: any) => string | null; // returns error message or null
+  validator?: (value: any) => string | null;
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -88,9 +88,7 @@ const InputField: React.FC<InputFieldProps> = ({
             </option>
           ))}
         </select>
-      ) : /* For date inputs we render a small clickable icon so users can
-           open the native picker by clicking the icon (some browsers hide
-           the native indicator). We keep the input accessible and focusable. */
+      ) : 
       type === "date" ? (
         <div className="date-input-wrapper">
           <input
@@ -108,7 +106,6 @@ const InputField: React.FC<InputFieldProps> = ({
             type="button"
             className="date-trigger"
             onClick={() => {
-              // Prefer showPicker if available, otherwise focus the input
               const el = inputRef.current as any;
               if (!el) return;
               if (typeof el.showPicker === "function") {
@@ -116,7 +113,6 @@ const InputField: React.FC<InputFieldProps> = ({
                   el.showPicker();
                   return;
                 } catch (_) {
-                  // ignore and fallback to focus
                 }
               }
               el.focus();

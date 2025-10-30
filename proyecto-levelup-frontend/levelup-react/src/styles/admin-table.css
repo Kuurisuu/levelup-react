@@ -1,7 +1,6 @@
 .admin-table-wrap {
   overflow: auto;
   border-radius: 12px;
-  /* table wrapper should not carry the gradient border anymore; moved to .admin-main */
   border: none;
 }
 .admin-table {
@@ -21,6 +20,10 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   text-align: left;
   color: var(--clr-body-text);
+}
+
+.no-records {
+  text-align: center;
 }
 .admin-table thead th {
   background: transparent;
@@ -55,7 +58,6 @@
   border-color: rgba(255, 0, 0, 0.12);
 }
 
-/* Responsive: transform table into card list on small screens for better UX */
 @media (max-width: 700px) {
   .admin-table {
     display: block;

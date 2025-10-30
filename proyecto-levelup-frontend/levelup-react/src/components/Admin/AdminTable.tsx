@@ -30,7 +30,7 @@ function AdminTable<T extends Record<string, any>>({
         <tbody>
           {data.length === 0 && (
             <tr>
-              <td colSpan={columns.length + 1} style={{ textAlign: "center" }}>
+              <td colSpan={columns.length + 1} className="no-records">
                 No hay registros
               </td>
             </tr>

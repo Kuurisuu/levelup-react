@@ -18,16 +18,12 @@ const AdminSidebar: React.FC = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // on initial mobile load keep the panel closed for better UX
   React.useEffect(() => {
     if (isMobile) setOpen(false);
-    // only run on mount/when isMobile first determined
   }, [isMobile]);
 
   return (
     <>
-      {/* Mobile open button (reuses project .boton-filtro-mobile styles) */}
-      {/* show mobile open button only on mobile */}
       {isMobile && !open && (
         <button
           className="boton-menu boton-filtro-mobile"
@@ -38,7 +34,6 @@ const AdminSidebar: React.FC = () => {
         </button>
       )}
 
-      {/* Only add "abierto" class on mobile; on desktop the aside is visible without triggering the overlay */}
       <aside
         className={`product-aside-filter ${open && isMobile ? "abierto" : ""}`}
         aria-label="Barra lateral de administración"
@@ -80,7 +75,6 @@ const AdminSidebar: React.FC = () => {
         </nav>
       </aside>
 
-      {/* overlay controlled by .product-aside-filter.abierto ~ #overlay-filtros in main.css */}
       <div id="overlay-filtros" onClick={() => setOpen(false)} />
     </>
   );
