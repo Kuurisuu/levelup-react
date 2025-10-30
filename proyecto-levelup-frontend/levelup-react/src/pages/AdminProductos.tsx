@@ -49,7 +49,14 @@ const AdminProductos: React.FC = () => {
   const [selected, setSelected] = useState<Producto | null>(null);
 
   const handleEdit = (p: Producto) => {
-    setEditing({ ...p });
+    const normalizeImageUrl = (url?: string) => {
+      if (!url) return "";
+      if (url.startsWith("data:")) return url;
+      if (url.startsWith("/")) return url;
+      return url.replace(/^\.\//, "/");
+    };
+
+    setEditing({ ...p, imagenUrl: normalizeImageUrl(p.imagenUrl) });
     setModalOpen(true);
   };
 
