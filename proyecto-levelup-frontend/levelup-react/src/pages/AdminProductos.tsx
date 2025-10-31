@@ -6,7 +6,14 @@ import {
 } from "../components/Admin";
 import { InputField } from "../components/common";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { Producto, categorias, subcategorias } from "../data/catalogo";
+import {
+  Producto,
+  obtenerProductos,
+  crearProductoApi,
+  actualizarProductoApi,
+  eliminarProductoApi,
+  obtenerCategoriasYSubcategorias,
+} from "../data/catalogo";
 import "../styles/admin.css";
 
 type ProductForm = Omit<
@@ -24,26 +31,45 @@ type ProductForm = Omit<
 };
 
 const AdminProductos: React.FC = () => {
-  const initialProducts = useMemo(() => {
-    try {
-      const raw =
-        localStorage.getItem("lvup_products") ||
-        localStorage.getItem("catalogo-base") ||
-        "[]";
-      return JSON.parse(raw) as Producto[];
-    } catch {
-      return [];
-    }
-  }, []);
+  const [products, setProducts] = useLocalStorage<Producto[]>("lvup_products", []);
 
-  const [products, setProducts] = useLocalStorage<Producto[]>(
-    "lvup_products",
-    initialProducts
-  );
+  // Cargar desde API con fallback a persisted
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const api = await obtenerProductos();
+        if (Array.isArray(api) && api.length > 0) {
+          setProducts(api);
+          return;
+        }
+      } catch {}
+      try {
+        const raw =
+          localStorage.getItem("lvup_products") ||
+          localStorage.getItem("catalogo-base") ||
+          "[]";
+        setProducts(JSON.parse(raw) as Producto[]);
+      } catch {
+        setProducts([]);
+      }
+    };
+    void load();
+  }, [setProducts]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cats, setCats] = useState<{ id: string; nombre: string }[]>([]);
+  const [subs, setSubs] = useState<{ id: string; nombre: string; categoria: { id: string; nombre: string } }[]>([]);
+
+  useEffect(() => {
+    const loadCats = async () => {
+      const { categorias, subcategorias } = await obtenerCategoriasYSubcategorias();
+      setCats(categorias);
+      setSubs(subcategorias);
+    };
+    void loadCats();
+  }, []);
 
   const [editing, setEditing] = useState<ProductForm | null>(null);
   const [selected, setSelected] = useState<Producto | null>(null);
@@ -70,13 +96,16 @@ const AdminProductos: React.FC = () => {
     setConfirmOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!selected) return;
-    setProducts((prev) => prev.filter((x) => x.id !== selected.id));
-    // Notificar a otras partes de la app que los productos han sido actualizados
     try {
+      await eliminarProductoApi(String(selected.id));
+      setProducts((prev) => prev.filter((x) => x.id !== selected.id));
       window.dispatchEvent(new Event("lvup:products"));
-    } catch (e) {}
+    } catch (e) {
+      // fallback local si falla la API
+      setProducts((prev) => prev.filter((x) => x.id !== selected.id));
+    }
     setConfirmOpen(false);
     setSelected(null);
   };
@@ -155,9 +184,8 @@ const AdminProductos: React.FC = () => {
     const nowId = editing.id || `${Date.now()}`;
 
     const categoriaObj =
-      (editing.categoriaId &&
-        categorias.find((c) => c.id === editing.categoriaId)) ||
-      categorias[0];
+      (editing.categoriaId && cats.find((c) => c.id === editing.categoriaId)) ||
+      (cats.length > 0 ? cats[0] : undefined);
 
     const newProd: Producto = {
       id: nowId,
@@ -165,9 +193,9 @@ const AdminProductos: React.FC = () => {
       descripcion: String(editing.descripcion || ""),
       precio: Number(editing.precio) || 0,
       imagenUrl: String(editing.imagenUrl || ""),
-      categoria: categoriaObj,
+      categoria: categoriaObj as any,
       subcategoria: editing.subcategoriaId
-        ? subcategorias.find((s) => s.id === editing.subcategoriaId)
+        ? subs.find((s) => s.id === editing.subcategoriaId)
         : (editing.subcategoria as any) || undefined,
       rating: editing.rating ? Number(editing.rating) : 0,
       disponible: editing.disponible ?? true,
@@ -203,15 +231,28 @@ const AdminProductos: React.FC = () => {
       newProd.imagenesUrls = [dataUrl];
     }
 
-    setProducts((prev) => {
-      const exists = prev.find((p) => p.id === newProd.id);
-      if (exists) return prev.map((p) => (p.id === newProd.id ? newProd : p));
-      return [newProd, ...prev];
-    });
-
+    // Persistir vía API (crear o actualizar)
     try {
+      let saved: Producto;
+      if (editing.id) {
+        saved = await actualizarProductoApi(String(editing.id), newProd);
+      } else {
+        saved = await crearProductoApi(newProd);
+      }
+      setProducts((prev) => {
+        const exists = prev.find((p) => p.id === saved.id);
+        if (exists) return prev.map((p) => (p.id === saved.id ? saved : p));
+        return [saved, ...prev];
+      });
       window.dispatchEvent(new Event("lvup:products"));
-    } catch (e) {}
+    } catch (e) {
+      // fallback local si la API falla
+      setProducts((prev) => {
+        const exists = prev.find((p) => p.id === newProd.id);
+        if (exists) return prev.map((p) => (p.id === newProd.id ? newProd : p));
+        return [newProd, ...prev];
+      });
+    }
 
     setModalOpen(false);
     setEditing(null);
@@ -317,7 +358,7 @@ const AdminProductos: React.FC = () => {
               (editing?.categoria && editing.categoria.id) ||
               ""
             }
-            options={categorias.map((c) => ({ value: c.id, label: c.nombre }))}
+            options={cats.map((c) => ({ value: c.id, label: c.nombre }))}
             onChange={(e) =>
               setEditing((prev) => ({
                 ...(prev || {}),
@@ -337,11 +378,7 @@ const AdminProductos: React.FC = () => {
               ""
             }
             options={subcategorias
-              .filter(
-                (s) =>
-                  s.categoria.id ===
-                  (editing?.categoriaId || editing?.categoria?.id)
-              )
+              .filter((s) => s.categoria.id === (editing?.categoriaId || editing?.categoria?.id))
               .map((s) => ({ value: s.id, label: s.nombre }))}
             onChange={(e) =>
               setEditing((prev) => ({

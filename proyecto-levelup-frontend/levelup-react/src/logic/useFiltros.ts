@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { productosArray, Producto } from "../data/catalogo";
+import { useEffect, useState } from "react";
+import { Producto, obtenerProductos, cargarProductosDesdeCache, recargarProductosDesdeBackend } from "../data/catalogo";
 
 // Definición de tipos
 export interface Filtros {
@@ -29,6 +29,13 @@ export interface UseFiltrosReturn {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
   setFiltros: React.Dispatch<React.SetStateAction<Filtros>>;
+  pagina: number;
+  totalPaginas: number;
+  totalElementos: number;
+  cargando: boolean;
+  siguientePagina: () => void;
+  anteriorPagina: () => void;
+  irAPagina: (pag: number) => void;
 }
 
 export function useFiltros(): UseFiltrosReturn {
@@ -42,6 +49,13 @@ export function useFiltros(): UseFiltrosReturn {
     rating: 0,
     orden: "relevancia",
   });
+
+  const [productosFiltrados, setProductosFiltrados] = useState<Producto[]>([]);
+  const [todosLosProductos, setTodosLosProductos] = useState<Producto[]>([]);
+  const [pagina, setPagina] = useState<number>(0);
+  const [totalPaginas, setTotalPaginas] = useState<number>(0);
+  const [totalElementos, setTotalElementos] = useState<number>(0);
+  const [cargando, setCargando] = useState<boolean>(false);
 
   const setCategoria = (id: string) =>
     setFiltros((prev) => ({ ...prev, categoria: id, subcategorias: [] }));
@@ -149,79 +163,244 @@ export function useFiltros(): UseFiltrosReturn {
   const setOrden = (orden: string) =>
     setFiltros((prev) => ({ ...prev, orden }));
 
-  const productosFiltrados = useMemo(() => {
-    // combinar productosArray base con cualquier producto persistido por el admin en localStorage (lvup_products)
-    let persisted: Producto[] = [];
-    try {
-      const raw = localStorage.getItem("lvup_products") || "[]";
-      persisted = JSON.parse(raw) as Producto[];
-    } catch {
-      persisted = [];
+  // Cargar todos los productos desde el backend (o cache) al montar el componente
+  useEffect(() => {
+    const cargarTodosLosProductos = async () => {
+      setCargando(true);
+      try {
+        // Intentar desde cache primero
+        const cached = cargarProductosDesdeCache();
+        if (cached && cached.length > 0) {
+          setTodosLosProductos(cached);
+          console.log('✅ Productos cargados desde localStorage:', cached.length);
+        } else {
+          // Cargar desde backend si no hay cache
+          console.log('📡 Cargando productos desde el backend...');
+          const productos = await obtenerProductos();
+          setTodosLosProductos(productos);
+          console.log('✅ Productos cargados desde backend:', productos.length);
+        }
+      } catch (error) {
+        console.error("❌ Error al cargar productos:", error);
+        setTodosLosProductos([]);
+      } finally {
+        setCargando(false);
+      }
+    };
+    
+    void cargarTodosLosProductos();
+  }, []); // Solo al montar el componente
+
+  // Resetear página cuando cambien los filtros (excepto cuando cambia la página misma)
+  useEffect(() => {
+    setPagina(0);
+  }, [filtros.categoria, filtros.subcategorias, filtros.texto, filtros.precioMin, filtros.precioMax, filtros.disponible, filtros.rating, filtros.orden]);
+
+  // Filtrar productos localmente desde todosLosProductos
+  useEffect(() => {
+    if (todosLosProductos.length === 0) {
+      setProductosFiltrados([]);
+      setTotalElementos(0);
+      setTotalPaginas(0);
+      return;
     }
 
-    // si hay productos persistidos, usarlos como catalogo autoritativo
-    const allProducts =
-      Array.isArray(persisted) && persisted.length > 0
-        ? persisted
-        : productosArray;
+    console.log('🔍 Aplicando filtros localmente a', todosLosProductos.length, 'productos');
+    console.log('🔍 Filtros activos:', {
+      categoria: filtros.categoria,
+      subcategorias: filtros.subcategorias,
+      texto: filtros.texto,
+      precioMin: filtros.precioMin,
+      precioMax: filtros.precioMax,
+      disponible: filtros.disponible,
+      rating: filtros.rating,
+      orden: filtros.orden
+    });
+    
+    // Debug: mostrar algunos productos de ejemplo
+    if (todosLosProductos.length > 0) {
+      const ejemplo = todosLosProductos.slice(0, 3).map(p => ({
+        nombre: p.nombre,
+        categoriaId: p.categoria?.id,
+        categoriaNombre: p.categoria?.nombre,
+        subcategoriaId: p.subcategoria?.id,
+        subcategoriaNombre: p.subcategoria?.nombre,
+        tieneSubcategoria: !!p.subcategoria
+      }));
+      console.log('🔍 Ejemplo de productos (primeros 3):', ejemplo);
+      
+      // Si hay filtros de subcategoría, mostrar más detalles
+      if (filtros.subcategorias && filtros.subcategorias.length > 0) {
+        console.log('🔍 Filtrando por subcategorías:', filtros.subcategorias);
+        console.log('🔍 Productos con subcategorías definidas:', 
+          todosLosProductos.filter(p => p.subcategoria?.id).length, 
+          'de', todosLosProductos.length);
+      }
+    }
 
-    return allProducts
-      .filter((p) => {
-        // If subcategories are selected, they take precedence.
-        if (filtros.subcategorias.length > 0) {
-          const allCats = filtros.subcategorias.filter((s) =>
-            s.startsWith("ALL-")
-          );
-          const directSubcats = filtros.subcategorias.filter(
-            (s) => !s.startsWith("ALL-")
-          );
+    // Función para mapear categoría a código
+    const getCategoriaCodigo = (categoria: string): string => {
+      if (!categoria || categoria === "todos") return "";
+      const categoriaMap: Record<string, string> = {
+        'consolas': 'CO',
+        'perifericos': 'PE',
+        'periféricos': 'PE',
+        'ropa': 'RO',
+        'entretenimiento': 'EN',
+        'CO': 'CO',
+        'PE': 'PE',
+        'RO': 'RO',
+        'EN': 'EN'
+      };
+      return categoriaMap[categoria.toLowerCase()] || categoria.toUpperCase();
+    };
 
-          // If any ALL-XXX is selected, include products in those categories
-          if (allCats.length > 0) {
-            const cats = new Set(allCats.map((a) => a.replace("ALL-", "")));
-            if (cats.has(p.categoria.id)) return true;
-          }
-
-          // Otherwise include only if product's subcategory id is explicitly selected
-          if (directSubcats.length > 0) {
-            return directSubcats.includes(p.subcategoria?.id || "");
-          }
-
-          // No matching subcategory nor ALL- selection -> exclude
+    // Aplicar filtros
+    let filtrados = todosLosProductos.filter(producto => {
+      // Filtro por categoría
+      if (filtros.categoria && filtros.categoria !== "todos") {
+        const categoriaCodigo = getCategoriaCodigo(filtros.categoria);
+        const productoCatId = producto.categoria?.id || '';
+        if (productoCatId !== categoriaCodigo) {
           return false;
         }
+      }
 
-        // No subcategories selected: fall back to category filter
-        if (filtros.categoria === "todos") return true;
-        return p.categoria.id === filtros.categoria;
-      })
-      .filter(
-        (p) =>
-          filtros.texto
-            ? p.nombre.toLowerCase().includes(filtros.texto.toLowerCase()) //se leeria asi esto: "si hay texto, filtrar por el texto"
-            : true //si no hay texto, mostrar todos los productos
-      )
-      .filter((p) =>
-        filtros.precioMin ? p.precio >= Number(filtros.precioMin) : true
-      )
-      .filter((p) =>
-        filtros.precioMax ? p.precio <= Number(filtros.precioMax) : true
-      )
-      .filter((p) => (filtros.disponible ? p.disponible : true))
-      .filter((p) => (filtros.rating ? p.rating >= filtros.rating : true))
-      .sort((a, b) => {
+      // Filtro por subcategorías
+      if (filtros.subcategorias && filtros.subcategorias.length > 0) {
+        let matchSubcat = false;
+        
+        // Normalizar el filtro de subcategorías para comparación
+        const subcategoriasFiltro = filtros.subcategorias.map(s => s.toUpperCase().trim());
+        
+        for (const subcat of subcategoriasFiltro) {
+          if (subcat.startsWith("ALL-")) {
+            // Si es "ALL-XXX", incluir todos los productos de esa categoría
+            const cat = subcat.replace("ALL-", "");
+            const catCodigo = getCategoriaCodigo(cat);
+            const productoCatId = (producto.categoria?.id || '').toUpperCase();
+            
+            if (productoCatId === catCodigo) {
+              matchSubcat = true;
+              console.log(`✅ Producto ${producto.nombre} INCLUIDO por ALL-${cat} (categoria: ${productoCatId})`);
+              break;
+            }
+          } else {
+            // Comparar subcategoría directamente
+            const productoSubcatId = producto.subcategoria?.id ? 
+              String(producto.subcategoria.id).toUpperCase().trim() : '';
+            const subcatNormalized = String(subcat).toUpperCase().trim();
+            
+            // Comparar exactamente
+            if (productoSubcatId && productoSubcatId === subcatNormalized) {
+              matchSubcat = true;
+              break;
+            }
+          }
+        }
+        
+        if (!matchSubcat) {
+          // Si no coincide con ninguna subcategoría del filtro, excluir el producto
+          return false;
+        }
+      }
+
+      // Filtro por texto (búsqueda)
+      if (filtros.texto && filtros.texto.trim() !== "") {
+        const textoLower = filtros.texto.trim().toLowerCase();
+        const tituloLower = producto.nombre?.toLowerCase() || '';
+        const descripcionLower = producto.descripcion?.toLowerCase() || '';
+        if (!tituloLower.includes(textoLower) && !descripcionLower.includes(textoLower)) {
+          return false;
+        }
+      }
+
+      // Filtro por precio mínimo
+      if (filtros.precioMin && filtros.precioMin !== "") {
+        const precioMin = Number(filtros.precioMin);
+        if (producto.precio < precioMin) {
+          return false;
+        }
+      }
+
+      // Filtro por precio máximo
+      if (filtros.precioMax && filtros.precioMax !== "") {
+        const precioMax = Number(filtros.precioMax);
+        if (producto.precio > precioMax) {
+          return false;
+        }
+      }
+
+      // Filtro por disponibilidad
+      if (filtros.disponible && !producto.disponible) {
+        return false;
+      }
+
+      // Filtro por rating
+      if (filtros.rating && filtros.rating > 0) {
+        const ratingProducto = producto.rating || 0;
+        if (ratingProducto < filtros.rating) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    // Aplicar ordenamiento
+    if (filtros.orden && filtros.orden !== "relevancia") {
+      filtrados = [...filtrados].sort((a, b) => {
         switch (filtros.orden) {
           case "precio-asc":
-            return a.precio - b.precio;
+            return (a.precio || 0) - (b.precio || 0);
           case "precio-desc":
-            return b.precio - a.precio;
+            return (b.precio || 0) - (a.precio || 0);
           case "rating-desc":
-            return b.rating - a.rating;
+            return (b.rating || 0) - (a.rating || 0);
           default:
             return 0;
         }
       });
-  }, [filtros]);
+    }
+
+    // Aplicar paginación
+    const tamanoPagina = 10;
+    const totalElementosFiltrados = filtrados.length;
+    const totalPaginasFiltradas = Math.ceil(totalElementosFiltrados / tamanoPagina);
+    const inicio = pagina * tamanoPagina;
+    const fin = inicio + tamanoPagina;
+    const productosPaginados = filtrados.slice(inicio, fin);
+
+    console.log('✅ Filtrado local completado:', {
+      totalProductos: todosLosProductos.length,
+      productosFiltrados: totalElementosFiltrados,
+      productosEnPagina: productosPaginados.length,
+      pagina: pagina + 1,
+      totalPaginas: totalPaginasFiltradas
+    });
+
+    setProductosFiltrados(productosPaginados);
+    setTotalElementos(totalElementosFiltrados);
+    setTotalPaginas(totalPaginasFiltradas);
+  }, [todosLosProductos, filtros, pagina]);
+
+  const siguientePagina = () => {
+    if (pagina < totalPaginas - 1) {
+      setPagina(pagina + 1);
+    }
+  };
+  
+  const anteriorPagina = () => {
+    if (pagina > 0) {
+      setPagina(pagina - 1);
+    }
+  };
+  
+  const irAPagina = (pag: number) => {
+    if (pag >= 0 && pag < totalPaginas) {
+      setPagina(pag);
+    }
+  };
 
   return {
     filtros,
@@ -237,5 +416,12 @@ export function useFiltros(): UseFiltrosReturn {
     productosFiltrados,
     actualizar,
     setFiltros,
+    pagina,
+    totalPaginas,
+    totalElementos,
+    cargando,
+    siguientePagina,
+    anteriorPagina,
+    irAPagina,
   };
 }

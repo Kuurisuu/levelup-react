@@ -1,6 +1,6 @@
-// Datos de productos, categorías y subcategorías
+import axiosConfig from '../config/axios';
 
-// Definición de tipos
+// Keep only the type definitions
 export interface Categoria {
   id: string;
   nombre: string;
@@ -50,626 +50,227 @@ export interface Producto {
   // Propiedades calculadas
   precioConDescuento?: number;
   ratingPromedio: number;
+  codigo?: string;
 }
 
-const categorias: Categoria[] = [
-  {
-    id: "CO",
-    nombre: "Consola",
-  },
-  {
-    id: "PE",
-    nombre: "Perifericos",
-  },
-  {
-    id: "RO",
-    nombre: "Ropa",
-  },
-  {
-    id: "EN",
-    nombre: "Entretenimiento",
-  },
-];
-
-const subcategorias: Subcategoria[] = [
-  {
-    id: "MA",
-    nombre: "Mandos",
-    categoria: categorias[0], // Consola
-  },
-  {
-    id: "AC",
-    nombre: "Accesorios",
-    categoria: categorias[0], // Consola
-  },
-  {
-    id: "HA",
-    nombre: "Hardware",
-    categoria: categorias[0], // Consola
-  },
-  {
-    id: "TE",
-    nombre: "Teclados",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "MO",
-    nombre: "Mouses",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "AU",
-    nombre: "Auriculares",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "MT",
-    nombre: "Monitores",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "MI",
-    nombre: "Microfonos",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "CW",
-    nombre: "Camaras web",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "JM",
-    nombre: "Juegos de Mesa",
-    categoria: categorias[3], // Entretenimiento
-  },
-  {
-    id: "PG",
-    nombre: "Polerones Gamers Personalizados",
-    categoria: categorias[2], // Ropa
-  },
-  {
-    id: "PR",
-    nombre: "Poleras Personalizadas",
-    categoria: categorias[2], // Ropa
-  },
-  {
-    id: "MP",
-    nombre: "Mousepad",
-    categoria: categorias[1], // Periféricos
-  },
-  {
-    id: "SI",
-    nombre: "Sillas Gamers",
-    categoria: categorias[1], // Periféricos
-  },
-];
-
-// Datos del carrusel de imágenes
-const imagenesCarrusel: ImagenCarrusel[] = [
-  {
-    id: 1,
-    imagenUrl: "carrusel",
-    titulo: "¡Nuevos lanzamientos!",
-    descripcion: "Descubre los últimos juegos y accesorios",
-    enlace: "",
-  },
-  {
-    id: 2,
-    imagenUrl: "carrusel",
-    titulo: "Ofertas especiales",
-    descripcion: "Hasta 50% de descuento en productos seleccionados",
-    enlace: "",
-  },
-  {
-    id: 3,
-    imagenUrl: "carrusel",
-    titulo: "Setup gamer completo",
-    descripcion: "Arma tu estación de juego perfecta",
-    enlace: "",
-  },
-];
-
-// Función helper para crear productos con la estructura correcta
-function crearProducto(
-  id: string,
-  nombre: string,
-  descripcion: string,
-  precio: number,
-  imagenUrl: string,
-  categoria: Categoria,
-  subcategoria: Subcategoria | undefined,
-  rating: number = 0,
-  disponible: boolean = true,
-  destacado: boolean = false,
-  stock: number = 0,
-  imagenesUrls: string[] = [],
-  fabricante?: string,
-  distribuidor?: string,
-  descuento?: number,
-  reviews: Review[] = [],
-  productosRelacionados: Producto[] = []
-): Producto {
-  const imagenes = imagenesUrls.length > 0 ? imagenesUrls : [imagenUrl];
-  const precioConDescuento = descuento
-    ? precio * (1 - descuento / 100.0)
-    : undefined;
-  const ratingPromedio =
-    reviews.length > 0
-      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
-      : rating;
-
-  return {
-    id,
-    nombre,
-    descripcion,
-    precio,
-    imagenUrl,
-    categoria,
-    subcategoria,
-    rating,
-    disponible,
-    destacado,
-    stock,
-    imagenesUrls: imagenes,
-    fabricante,
-    distribuidor,
-    descuento,
-    reviews,
-    productosRelacionados,
-    precioConDescuento,
-    ratingPromedio,
-  };
+// Mapeo desde DTO del backend al tipo local Producto
+function mapCategoria(input?: string): Categoria {
+  if (!input) return categorias[0];
+  // Buscar por id o nombre
+  const byId = categorias.find(c => c.id === input);
+  if (byId) return byId;
+  const byName = categorias.find(c => c.nombre.toLowerCase() === String(input).toLowerCase());
+  return byName || categorias[0];
 }
 
-// Función para migrar datos legacy al nuevo formato
-function migrarProductoLegacy(productoLegacy: any): Producto {
-  const categoria =
-    categorias.find((c) => c.id === productoLegacy.categoriaId) ||
-    categorias[0];
-  const subcategoria = subcategorias.find(
-    (s) => s.id === productoLegacy.subcategoriaId
-  );
-
-  const imagenes = productoLegacy.imagenes || [productoLegacy.imagen];
-  const precioConDescuento = productoLegacy.descuento
-    ? productoLegacy.precio * (1 - productoLegacy.descuento / 100.0)
-    : undefined;
-  const ratingPromedio =
-    productoLegacy.reviews && productoLegacy.reviews.length > 0
-      ? productoLegacy.reviews.reduce(
-          (sum: number, review: any) => sum + review.rating,
-          0
-        ) / productoLegacy.reviews.length
-      : productoLegacy.rating;
-
+export function mapProductoDTO(dto: any): Producto {
+  // Resolver imagenUrl desde imagen o imagenUrl del backend
+  const baseImg = (import.meta as any).env?.VITE_IMAGE_BASE_URL || 'http://localhost:8003/api/v1/img';
+  const rawImg = dto.imagenUrl || dto.imagen || '';
+  let imagenUrlResolved = '';
+  if (rawImg) {
+    if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
+      // Ya es una URL completa
+      imagenUrlResolved = rawImg;
+    } else {
+      // Limpiar ruta: quitar ./, ./ iniciales y / inicial
+      let clean = rawImg.replace(/^\./, '').replace(/^\/+/, '');
+      // Si ya empieza con img/, quitarlo para evitar duplicación (el baseImg ya incluye /img)
+      clean = clean.replace(/^img\//, '');
+      // Construir URL completa: baseImg + / + ruta limpia
+      imagenUrlResolved = baseImg.replace(/\/$/, '') + '/' + clean;
+    }
+  }
+  
+  // Mapear categoría desde categoriaId
+  const categoriaId = dto.categoriaId || dto.categoria?.id || dto.categoria || '';
+  
+  // Mapear subcategoría - puede venir como objeto o como ID
+  const subcategoriaId = dto.subcategoriaId || dto.subcategoria?.id || '';
+  const subcategoriaNombre = dto.subcategoria?.nombre || '';
+  const subcategoria = subcategoriaId ? {
+    id: subcategoriaId,
+    nombre: subcategoriaNombre,
+    categoria: mapCategoria(categoriaId)
+  } : undefined;
+  
   return {
-    id: productoLegacy.id,
-    nombre: productoLegacy.titulo,
-    descripcion: productoLegacy.descripcion,
-    precio: productoLegacy.precio,
-    imagenUrl: productoLegacy.imagen,
-    categoria,
-    subcategoria,
-    rating: productoLegacy.rating,
-    disponible: productoLegacy.disponible,
-    destacado: productoLegacy.destacado || false,
-    stock: productoLegacy.stock || 0,
-    imagenesUrls: imagenes,
-    fabricante: productoLegacy.fabricante,
-    distribuidor: productoLegacy.distribuidor,
-    descuento: productoLegacy.descuento,
-    reviews: productoLegacy.reviews || [],
+    id: String(dto.id ?? dto.idProducto ?? ''),
+    nombre: dto.nombre ?? dto.nombreProducto ?? dto.titulo ?? (dto.titulo ?? ''),
+    descripcion: dto.descripcion ?? dto.descripcionProducto ?? '',
+    precio: Number(dto.precio ?? dto.precioProducto ?? 0),
+    imagenUrl: imagenUrlResolved,
+    categoria: mapCategoria(categoriaId),
+    subcategoria: subcategoria,
+    rating: Number(dto.rating ?? dto.ratingPromedio ?? 0),
+    disponible: dto.disponible ?? dto.activo ?? true,
+    destacado: Boolean(dto.destacado ?? false),
+    stock: Number(dto.stock ?? 0),
+    imagenesUrls: Array.isArray(dto.imagenesUrls) ? dto.imagenesUrls : (dto.imagenes ? JSON.parse(dto.imagenes) : []),
+    fabricante: dto.fabricante,
+    distribuidor: dto.distribuidor,
+    descuento: typeof dto.enOferta === 'boolean' && dto.enOferta ? (dto.descuento ?? 10) : dto.descuento,
+    reviews: Array.isArray(dto.reviews) ? dto.reviews : [],
     productosRelacionados: [],
-    precioConDescuento,
-    ratingPromedio,
+    precioConDescuento: dto.precioOferta ?? dto.precioConDescuento ?? undefined,
+    ratingPromedio: Number(dto.ratingPromedio ?? dto.rating ?? 0),
   };
 }
 
-// Datos de productos en formato legacy (para compatibilidad)
-const productosLegacy = [
-  {
-    id: "CO001",
-    titulo: "PlayStation 5",
-    categoriaId: "CO",
-    subcategoriaId: "HA",
-    imagen: "./img/consolas/4.png",
-    imagenes: [
-      "./img/consolas/4.png",
-      "./img/consolas/1.png",
-      "./img/consolas/2.png",
-      "./img/consolas/3.png",
-    ], //eSTE a nivel de UI serian las imagenes a la izquierda de la imagen principal
-    precio: 549990,
-    disponible: true,
-    rating: 1.7,
-    descripcion:
-      "La consola de última generación de Sony, que ofrece gráficos impresionantes y tiempos de carga ultrarrápidos para una experiencia de juego inmersiva.",
-    destacado: true,
-    stock: 15,
-    fabricante: "Sony",
-    distribuidor: "Sony Chile",
-    descuento: 10,
-    reviews: [],
-  },
-  {
-    id: "CO002",
-    titulo: "PlayStation 4 Slim",
-    categoriaId: "CO",
-    subcategoriaId: "HA",
-    imagen: "./img/consolas/2.png",
-    imagenes: ["./img/consolas/1.png", "./img/consolas/3.png"],
-    precio: 179990,
-    disponible: true,
-    rating: 5,
-    descripcion:
-      "Una consola versátil y compacta que sigue siendo ideal para disfrutar de un extenso catálogo de juegos con gran rendimiento y entretenimiento garantizado.",
-    destacado: true,
-    stock: 12,
-    fabricante: "Sony",
-    distribuidor: "Sony Chile",
-    descuento: 5,
-    reviews: [],
-  },
-  {
-    id: "CO003",
-    titulo: "DualShock 4",
-    categoriaId: "CO",
-    subcategoriaId: "MA",
-    imagen: "./img/consolas/3.png",
-    imagenes: ["./img/consolas/3.png"],
-    precio: 60000,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Control oficial de PlayStation 4 con diseño ergonómico y funciones avanzadas que ofrecen precisión y comodidad durante tus sesiones de juego.",
-    destacado: true,
-    stock: 30,
-    fabricante: "Sony",
-    distribuidor: "Sony Chile",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "CO005",
-    titulo: "Dualsense Azul",
-    categoriaId: "CO",
-    subcategoriaId: "MA",
-    imagen: "./img/consolas/5.png",
-    imagenes: ["./img/consolas/5.png"],
-    precio: 69990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Control de PlayStation 5 en elegante color azul, con retroalimentación háptica y gatillos adaptativos que llevan la experiencia de juego a otro nivel.",
-    destacado: true,
-    stock: 25,
-    fabricante: "Sony",
-    distribuidor: "Sony Chile",
-    descuento: 15,
-    reviews: [],
-  },
-  {
-    id: "CO006",
-    titulo: "Auriculares PS4",
-    categoriaId: "CO",
-    subcategoriaId: "AC",
-    imagen: "./img/consolas/6.png",
-    imagenes: ["./img/consolas/6.png"],
-    precio: 150000,
-    disponible: false,
-    rating: 3,
-    descripcion:
-      "Auriculares diseñados para PlayStation 4, con sonido envolvente y micrófono integrado para comunicación clara en partidas multijugador.",
-    destacado: false,
-    stock: 0,
-    fabricante: "Sony",
-    distribuidor: "Sony Chile",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "PE001",
-    titulo: "Auriculares Logitech",
-    categoriaId: "PE",
-    subcategoriaId: "AU",
-    imagen: "./img/perifericos/1.png",
-    imagenes: ["./img/perifericos/1.png"],
-    precio: 100000,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Auriculares de alto rendimiento con gran calidad de sonido y micrófono ajustable, ideales para juegos, streaming y comunicación online.",
-    destacado: true,
-    stock: 20,
-    fabricante: "Logitech",
-    distribuidor: "Logitech Chile",
-    descuento: 10,
-    reviews: [],
-  },
-  {
-    id: "PE002",
-    titulo: "Teclado Redragon RGB",
-    categoriaId: "PE",
-    subcategoriaId: "TE",
-    imagen: "./img/perifericos/2.png",
-    imagenes: ["./img/perifericos/2.png"],
-    precio: 145990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Teclado mecánico con iluminación RGB y switches de alto rendimiento, ideal para juegos y escritura intensiva.",
-    destacado: true,
-    stock: 25,
-    fabricante: "Redragon",
-    distribuidor: "Redragon Chile",
-    descuento: 20,
-    reviews: [],
-  },
-  {
-    id: "PE003",
-    titulo: "Mouse Cougar",
-    categoriaId: "PE",
-    subcategoriaId: "MO",
-    imagen: "./img/perifericos/3.png",
-    imagenes: ["./img/perifericos/3.png"],
-    precio: 85990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Mouse gamer ergonómico con alta precisión y diseño personalizable, perfecto para sesiones intensas y competitivas.",
-    destacado: false,
-    stock: 30,
-    fabricante: "Cougar",
-    distribuidor: "Cougar Chile",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "PE004",
-    titulo: "Monitor ASUS",
-    categoriaId: "PE",
-    subcategoriaId: "MT",
-    imagen: "./img/perifericos/4.png",
-    imagenes: ["./img/perifericos/4.png"],
-    precio: 175990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Monitor de alto rendimiento con gran calidad de imagen y refresco rápido, ideal para disfrutar de gráficos nítidos en juegos y multimedia.",
-    destacado: true,
-    stock: 8,
-    fabricante: "ASUS",
-    distribuidor: "ASUS Chile",
-    descuento: 12,
-    reviews: [],
-  },
-  {
-    id: "PE005",
-    titulo: "Webcam Logitech",
-    categoriaId: "PE",
-    subcategoriaId: "CW",
-    imagen: "./img/perifericos/5.png",
-    imagenes: ["./img/perifericos/5.png"],
-    precio: 67990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Webcam de alta definición con gran calidad de imagen y audio, perfecta para streaming, videollamadas y creación de contenido.",
-    destacado: false,
-    stock: 18,
-    fabricante: "Logitech",
-    distribuidor: "Logitech Chile",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "PE006",
-    titulo: "Microfono Logitech",
-    categoriaId: "PE",
-    subcategoriaId: "MI",
-    imagen: "./img/perifericos/6.png",
-    imagenes: ["./img/perifericos/6.png"],
-    precio: 86990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Micrófono de alta fidelidad con captación clara y profesional, ideal para streaming, grabaciones y comunicación en equipo.",
-    destacado: false,
-    stock: 15,
-    fabricante: "Logitech",
-    distribuidor: "Logitech Chile",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "RO001",
-    titulo: "Poleron StarCraft",
-    categoriaId: "RO",
-    subcategoriaId: "PG",
-    imagen: "./img/polerones/1.png",
-    imagenes: ["./img/polerones/1.png"],
-    precio: 40000,
-    disponible: true,
-    rating: 4.5,
-    descripcion:
-      "Polerón inspirado en StarCraft con diseño gamer único y tela cómoda, perfecto para mostrar tu pasión por el universo de Blizzard.",
-    destacado: false,
-    stock: 50,
-    fabricante: "Blizzard",
-    distribuidor: "Level-Up",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "RO002",
-    titulo: "Poleron Super Papá Gamer",
-    categoriaId: "RO",
-    subcategoriaId: "PG",
-    imagen: "./img/polerones/2.png",
-    imagenes: ["./img/polerones/2.png"],
-    precio: 40000,
-    disponible: true,
-    rating: 4.5,
-    descripcion:
-      "Polerón divertido y cómodo diseñado para los papás que disfrutan tanto del gaming como de la familia.",
-    destacado: false,
-    stock: 50,
-    fabricante: "Level-Up",
-    distribuidor: "Level-Up",
-    descuento: 10,
-    reviews: [],
-  },
-  {
-    id: "RO003",
-    titulo: "Poleron Hollow Knight",
-    categoriaId: "RO",
-    subcategoriaId: "PG",
-    imagen: "./img/polerones/3.png",
-    imagenes: ["./img/polerones/3.png"],
-    precio: 40000,
-    disponible: true,
-    rating: 4.5,
-    descripcion:
-      "Polerón con diseño inspirado en Hollow Knight, ideal para fanáticos del juego indie y su mundo misterioso.",
-    destacado: false,
-    stock: 50,
-    fabricante: "Team Cherry",
-    distribuidor: "Level-Up",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "RO004",
-    titulo: "Poleron PlayStation Retro Negro",
-    categoriaId: "RO",
-    subcategoriaId: "PG",
-    imagen: "./img/polerones/4.png",
-    imagenes: ["./img/polerones/4.png"],
-    precio: 40000,
-    disponible: true,
-    rating: 4.5,
-    descripcion:
-      "Polerón retro en color negro con el clásico logo de PlayStation, perfecto para los nostálgicos del gaming.",
-    destacado: false,
-    stock: 50,
-    fabricante: "Sony",
-    distribuidor: "Level-Up",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "RO005",
-    titulo: "Poleron Stumble Guys",
-    categoriaId: "RO",
-    subcategoriaId: "PG",
-    imagen: "./img/polerones/5.png",
-    imagenes: ["./img/polerones/5.png"],
-    precio: 40000,
-    disponible: true,
-    rating: 4.5,
-    descripcion:
-      "Polerón colorido y divertido inspirado en Stumble Guys, ideal para gamers que disfrutan de las partidas llenas de caos y risas.",
-    destacado: false,
-    stock: 50,
-    fabricante: "Kitka Games",
-    distribuidor: "Level-Up",
-    descuento: 5,
-    reviews: [],
-  },
-  {
-    id: "RO006",
-    titulo: "Poleron S.T.A.R.S",
-    categoriaId: "RO",
-    subcategoriaId: "PG",
-    imagen: "./img/polerones/6.png",
-    imagenes: ["./img/polerones/6.png"],
-    precio: 40000,
-    disponible: true,
-    rating: 4.5,
-    descripcion:
-      "Polerón con diseño de la unidad S.T.A.R.S de Resident Evil, pensado para los fanáticos del survival horror.",
-    destacado: false,
-    stock: 50,
-    fabricante: "Capcom",
-    distribuidor: "Level-Up",
-    descuento: undefined,
-    reviews: [],
-  },
-  {
-    id: "EN001",
-    titulo: "Catan",
-    categoriaId: "EN",
-    subcategoriaId: "JM",
-    imagen: "./img/entretenimiento/catan.png",
-    imagenes: ["./img/entretenimiento/catan.png"],
-    precio: 29990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Un clásico juego de estrategia donde los jugadores compiten por colonizar y expandirse en la isla de Catan. Ideal para 3-4 jugadores y perfecto para noches de juego en familia o con amigos.",
-    destacado: false,
-    stock: 30,
-    fabricante: "KOSMOS",
-    distribuidor: "Devir",
-    descuento: 15,
-    reviews: [],
-  },
-  {
-    id: "EN002",
-    titulo: "Carcassonne",
-    categoriaId: "EN",
-    subcategoriaId: "JM",
-    imagen: "./img/entretenimiento/carcassone.png",
-    imagenes: ["./img/entretenimiento/carcassone.png"],
-    precio: 24990,
-    disponible: true,
-    rating: 4,
-    descripcion:
-      "Un juego de colocación de fichas donde los jugadores construyen el paisaje alrededor de la fortaleza medieval de Carcassonne. Ideal para 2-5 jugadores y fácil de aprender.",
-    destacado: false,
-    stock: 25,
-    fabricante: "Hans im Glück",
-    distribuidor: "Devir",
-    descuento: 10,
-    reviews: [],
-  },
+// Clave para almacenar productos en localStorage
+const PRODUCTOS_STORAGE_KEY = 'levelup_productos_cache';
+const PRODUCTOS_CACHE_TIMESTAMP_KEY = 'levelup_productos_cache_timestamp';
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutos
+
+// Guardar productos en localStorage
+export const guardarProductosEnCache = (productos: Producto[]): void => {
+  try {
+    localStorage.setItem(PRODUCTOS_STORAGE_KEY, JSON.stringify(productos));
+    localStorage.setItem(PRODUCTOS_CACHE_TIMESTAMP_KEY, Date.now().toString());
+    console.log('✅ Productos guardados en localStorage:', productos.length);
+  } catch (error) {
+    console.error('❌ Error al guardar productos en localStorage:', error);
+  }
+};
+
+// Cargar productos desde localStorage
+export const cargarProductosDesdeCache = (): Producto[] | null => {
+  try {
+    const cached = localStorage.getItem(PRODUCTOS_STORAGE_KEY);
+    const timestamp = localStorage.getItem(PRODUCTOS_CACHE_TIMESTAMP_KEY);
+    
+    if (!cached || !timestamp) {
+      return null;
+    }
+    
+    const cacheAge = Date.now() - parseInt(timestamp, 10);
+    if (cacheAge > CACHE_DURATION_MS) {
+      console.log('⚠️ Cache expirado, se recargará desde el backend');
+      localStorage.removeItem(PRODUCTOS_STORAGE_KEY);
+      localStorage.removeItem(PRODUCTOS_CACHE_TIMESTAMP_KEY);
+      return null;
+    }
+    
+    const productos = JSON.parse(cached) as Producto[];
+    console.log('✅ Productos cargados desde localStorage:', productos.length);
+    return productos;
+  } catch (error) {
+    console.error('❌ Error al cargar productos desde localStorage:', error);
+    return null;
+  }
+};
+
+// Obtener todos los productos: primero desde cache, si no existe o expiró, desde el backend
+export const obtenerProductos = async (): Promise<Producto[]> => {
+  // Intentar cargar desde cache primero
+  const cached = cargarProductosDesdeCache();
+  if (cached && cached.length > 0) {
+    return cached;
+  }
+  
+  // Si no hay cache válido, cargar desde el backend
+  console.log('📡 Cargando productos desde el backend...');
+  const response = await axiosConfig.get('/productos');
+  const list = Array.isArray(response.data) ? response.data : [];
+  const productos = list.map(mapProductoDTO);
+  
+  // Guardar en cache para próximas cargas
+  guardarProductosEnCache(productos);
+  
+  return productos;
+};
+
+// Forzar recarga desde el backend (ignorando cache)
+export const recargarProductosDesdeBackend = async (): Promise<Producto[]> => {
+  console.log('🔄 Forzando recarga de productos desde el backend...');
+  const response = await axiosConfig.get('/productos');
+  const list = Array.isArray(response.data) ? response.data : [];
+  const productos = list.map(mapProductoDTO);
+  
+  // Actualizar cache
+  guardarProductosEnCache(productos);
+  
+  return productos;
+};
+
+export const obtenerProductosDestacados = async (): Promise<Producto[]> => {
+  const response = await axiosConfig.get<Producto[]>('/productos/destacados');
+  return response.data;
+};
+
+export const obtenerProductoPorId = async (id: string): Promise<Producto> => {
+  const response = await axiosConfig.get(`/productos/${id}`);
+  return mapProductoDTO(response.data);
+};
+
+export const obtenerProductosRelacionados = async (producto: Producto): Promise<Producto[]> => {
+  const response = await axiosConfig.get(`/productos/${producto.id}/relacionados`);
+  const list = Array.isArray(response.data) ? response.data : [];
+  return list.map(mapProductoDTO);
+};
+
+// Helpers Admin: crear/actualizar/eliminar en backend
+function toBackendPayload(p: Partial<Producto>) {
+  return {
+    id: p.id ? Number(p.id) : undefined,
+    nombre: p.nombre,
+    descripcion: p.descripcion,
+    precio: p.precio,
+    imagenUrl: p.imagenUrl,
+    stock: p.stock,
+    disponible: p.disponible,
+    destacado: p.destacado,
+    descuento: p.descuento,
+    categoria: p.categoria ? p.categoria.id : undefined,
+    // subcategoria opcional
+  } as any;
+}
+
+export const crearProductoApi = async (p: Partial<Producto>): Promise<Producto> => {
+  const response = await axiosConfig.post('/productos', toBackendPayload(p));
+  return mapProductoDTO(response.data);
+};
+
+export const actualizarProductoApi = async (id: string, p: Partial<Producto>): Promise<Producto> => {
+  const response = await axiosConfig.put(`/productos/${id}`, toBackendPayload(p));
+  return mapProductoDTO(response.data);
+};
+
+export const eliminarProductoApi = async (id: string): Promise<void> => {
+  await axiosConfig.delete(`/productos/${id}`);
+};
+
+export const obtenerCategorias = async (): Promise<Categoria[]> => {
+  const response = await axiosConfig.get('/productos/categorias');
+  // backend entrega { categorias: [{id,nombre}], subcategorias: [...] }
+  const data = response.data || {};
+  const cats = Array.isArray(data.categorias) ? data.categorias : [];
+  return cats.map((c: any) => ({ id: c.id, nombre: c.nombre } as Categoria));
+};
+
+export const obtenerImagenesCarrusel = async (): Promise<ImagenCarrusel[]> => {
+  const response = await axiosConfig.get<ImagenCarrusel[]>('/productos/carrusel');
+  return response.data;
+};
+
+// Backwards-compatible static exports expected by legacy components
+// Categorías y subcategorías mínimas (coinciden con backend)
+export const categorias: Categoria[] = [
+  { id: 'CO', nombre: 'Consola' },
+  { id: 'PE', nombre: 'Perifericos' },
+  { id: 'RO', nombre: 'Ropa' },
+  { id: 'EN', nombre: 'Entretenimiento' },
 ];
 
-// Convertir productos legacy al nuevo formato (se define al final del archivo)
+export const subcategorias: Subcategoria[] = [];
 
-// Funciones auxiliares del repository
-export const obtenerProductos = (): Producto[] => {
-  return productosArray;
+// Catálogo base vacío para que compile; la app usa localStorage o la API
+export const productosArray: Producto[] = [];
+
+export const obtenerCategoriasYSubcategorias = async (): Promise<{ categorias: Categoria[]; subcategorias: Subcategoria[] }> => {
+  const response = await axiosConfig.get('/productos/categorias');
+  const data = response.data || {};
+  const cats = (Array.isArray(data.categorias) ? data.categorias : []).map((c: any) => ({ id: c.id, nombre: c.nombre } as Categoria));
+  const subs = (Array.isArray(data.subcategorias) ? data.subcategorias : []).map((s: any) => ({ id: s.id, nombre: s.nombre, categoria: { id: s.categoriaId, nombre: (cats.find((c: any) => c.id === s.categoriaId)?.nombre) || s.categoriaId } as Categoria } as Subcategoria));
+  return { categorias: cats, subcategorias: subs };
 };
-
-export const obtenerProductosDestacados = (): Producto[] => {
-  return productosArray.filter((producto) => producto.destacado);
-};
-
-export const obtenerProductoPorId = (id: string): Producto | undefined => {
-  return productosArray.find((producto) => producto.id === id);
-};
-
-export const obtenerProductosRelacionados = (
-  producto: Producto
-): Producto[] => {
-  return productosArray
-    .filter(
-      (p) => p.id !== producto.id && p.categoria.id === producto.categoria.id
-    )
-    .slice(0, 4);
-};
-
-export const obtenerImagenesCarrusel = (): ImagenCarrusel[] => {
-  return imagenesCarrusel;
-};
-
-// Convertir productos legacy al nuevo formato
-const productosArray: Producto[] = productosLegacy.map(migrarProductoLegacy);
-
-// Exponer catálogo base en localStorage para que producto_detalle lo pueda leer
-try {
-  localStorage.setItem("catalogo-base", JSON.stringify(productosArray));
-} catch {}
-
-export { productosArray, categorias, subcategorias, imagenesCarrusel };

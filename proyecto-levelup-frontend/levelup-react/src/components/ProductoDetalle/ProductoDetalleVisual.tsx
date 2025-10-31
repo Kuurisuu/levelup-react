@@ -177,15 +177,28 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
                 key={i}
                 onClick={() => setMainImg(img)}
               >
-                <img
-                  className="producto-detalle-img"
-                  src={
-                    img.startsWith("./")
-                      ? import.meta.env.BASE_URL + img.replace(/^\.\//, "")
-                      : img
+                {(() => {
+                  const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
+                  const raw = img || (producto as any).imagenUrl || (producto as any).imagen || "";
+                  let resolved: string | null = null;
+                  if (raw && typeof raw === "string") {
+                    if (raw.startsWith("http")) {
+                      resolved = raw;
+                    } else if (raw.startsWith("./")) {
+                      resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");
+                    } else if (raw.startsWith("/img") || raw.startsWith("img")) {
+                      const clean = raw.replace(/^\./, "");
+                      resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
+                    } else {
+                      resolved = base.replace(/\/$/, "") + "/" + raw;
+                    }
                   }
-                  alt={producto.nombre + " miniatura " + (i + 1)} //se agrega el nombre de la imagen y el numero de la imagen
-                />
+                  return (
+                    resolved && (
+                      <img className="producto-detalle-img" src={resolved} alt={producto.nombre + " miniatura " + (i + 1)} />
+                    )
+                  );
+                })()}
               </li>
             ))}
           </ul>
@@ -201,30 +214,40 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <img
-          className="producto-detalle-main-img"
-          src={
-            mainImg && mainImg.startsWith("./")
-              ? import.meta.env.BASE_URL + mainImg.replace(/^\.\//, "")
-              : mainImg ||
-                (producto.imagenUrl &&
-                  (producto.imagenUrl.startsWith("./") //si la imagen comienza con "./", se agrega el url base
-                    ? import.meta.env.BASE_URL +
-                      producto.imagenUrl.replace(/^\.\//, "") //se reemplaza el "./" por el url base
-                    : producto.imagenUrl)) 
+        {(() => {
+          const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
+          const rawMain = mainImg || (producto as any).imagenUrl || (producto as any).imagen || "";
+          let resolved: string | null = null;
+          if (rawMain && typeof rawMain === "string") {
+            if (rawMain.startsWith("http")) {
+              resolved = rawMain;
+            } else if (rawMain.startsWith("./")) {
+              resolved = import.meta.env.BASE_URL + rawMain.replace(/^\.\//, "");
+            } else if (rawMain.startsWith("/img") || rawMain.startsWith("img")) {
+              const clean = rawMain.replace(/^\./, "");
+              resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
+            } else {
+              resolved = base.replace(/\/$/, "") + "/" + rawMain;
+            }
           }
-          alt={producto.nombre} //se agrega el nombre de la imagen
-          style={{ //se agrega el estilo de la imagen
-            transform: isZoomed //si el zoom esta activo, se escala la imagen
-              ? `scale(${zoomLevel}) translate(${-zoomPosition.x + 50}%, ${-zoomPosition.y + 50}%)` //se escala la imagen a la posicion x y y
-              : 'scale(1)',
-            transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`, //se setea la posicion de la imagen
-            transition: isZoomed ? 'none' : 'transform 0.3s ease', //se setea la transicion de la imagen
-            cursor: isZoomed //si el zoom esta activo, se cambia el cursor
-              ? (isMoving ? 'move' : 'zoom-in') //si el movimiento esta activo, se cambia el cursor a move, si no, se cambia el cursor a zoom-in
-              : 'zoom-in' //si el zoom no esta activo, se cambia el cursor a zoom-in
-          }}
-        />
+          return (
+            resolved && (
+              <img
+                className="producto-detalle-main-img"
+                src={resolved}
+                alt={producto.nombre}
+                style={{
+                  transform: isZoomed
+                    ? `scale(${zoomLevel}) translate(${-zoomPosition.x + 50}%, ${-zoomPosition.y + 50}%)`
+                    : 'scale(1)',
+                  transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  transition: isZoomed ? 'none' : 'transform 0.3s ease',
+                  cursor: isZoomed ? (isMoving ? 'move' : 'zoom-in') : 'zoom-in'
+                }}
+              />
+            )
+          );
+        })()}
 
         {/* Controles de zoom */}
         {isZoomed && ( //si el zoom esta activo, se muestra el contenedor de los controles de zoom

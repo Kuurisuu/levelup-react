@@ -169,7 +169,7 @@ const Checkout: React.FC = (): React.JSX.Element => {
   }
 
   // funcion para procesar el pago
-  function handlePagar(datosTarjetaNuevos: DatosTarjeta): void {
+  async function handlePagar(datosTarjetaNuevos: DatosTarjeta): Promise<void> {
     if (!datosEnvio) return;
 
     console.log("Procesando pago con datos de tarjeta:", datosTarjetaNuevos); // Debug
@@ -186,25 +186,31 @@ const Checkout: React.FC = (): React.JSX.Element => {
       : false;
     const nuevaOrden = crearOrdenCompra(datosEnvio, productos, aplicaDescuento);
     setOrden(nuevaOrden);
-    guardarOrden(nuevaOrden);
+    
+    try {
+      await guardarOrden(nuevaOrden);
+    } catch (error) {
+      console.error("Error al guardar orden:", error);
+    }
 
     // Procesar pago
     procesarPago(nuevaOrden)
-      .then((resultado) => {
+      .then(async (resultado) => {
         // cuando se llama a la funcion procesarPago se ejecuta el then y se pasa el resultado a la funcion
         if (resultado.exito) {
           // si el resultado es true se actualiza el estado de la orden a completada
-          actualizarEstadoOrden(nuevaOrden.codigo, "completada");
+          await actualizarEstadoOrden(nuevaOrden.codigo, "completada");
           setStep("exitoso");
           vaciarCarrito();
         } else {
-          actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+          await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
           setError(resultado.error || "Error desconocido");
           setStep("fallido");
         }
       })
-      .catch((error) => {
+      .catch(async (error) => {
         console.error("Error al procesar pago:", error);
+        await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
         setError("Error al procesar el pago");
         setStep("fallido");
       });
@@ -239,7 +245,7 @@ const Checkout: React.FC = (): React.JSX.Element => {
   }
 
   // funcion para confirmar la compra rapida
-  function handleConfirmarCompraRapida(): void {
+  async function handleConfirmarCompraRapida(): Promise<void> {
     if (!datosEnvio || !datosTarjeta) return; // si no hay datos de envio o de tarjeta se retorna
 
     console.log("Confirmando compra rápida con datos guardados"); // Debug
@@ -251,24 +257,30 @@ const Checkout: React.FC = (): React.JSX.Element => {
       : false;
     const nuevaOrden = crearOrdenCompra(datosEnvio, productos, aplicaDescuento);
     setOrden(nuevaOrden);
-    guardarOrden(nuevaOrden);
+    
+    try {
+      await guardarOrden(nuevaOrden);
+    } catch (error) {
+      console.error("Error al guardar orden:", error);
+    }
 
     // Procesar pago
     procesarPago(nuevaOrden)
-      .then((resultado) => {
+      .then(async (resultado) => {
         if (resultado.exito) {
-          actualizarEstadoOrden(nuevaOrden.codigo, "completada");
+          await actualizarEstadoOrden(nuevaOrden.codigo, "completada");
           setStep("exitoso");
           vaciarCarrito();
           limpiarDatosCheckout(); // Limpiar datos guardados después de compra exitosa
         } else {
-          actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+          await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
           setError(resultado.error || "Error desconocido");
           setStep("fallido");
         }
       })
-      .catch((error) => {
+      .catch(async (error) => {
         console.error("Error al procesar pago:", error);
+        await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
         setError("Error al procesar el pago");
         setStep("fallido");
       });

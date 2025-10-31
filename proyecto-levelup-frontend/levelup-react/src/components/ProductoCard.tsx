@@ -97,16 +97,28 @@ export default function ProductoCard({
           {/* Código del producto en la esquina inferior izquierda */}
           <div className="producto-codigo-badge">{producto.id}</div>
 
-          <img
-            className="producto-imagen"
-            src={
-              producto.imagenUrl && producto.imagenUrl.startsWith("./")
-                ? import.meta.env.BASE_URL +
-                  producto.imagenUrl.replace(/^\.\//, "")
-                : producto.imagenUrl
+          {(() => {
+            const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
+            const raw = (producto as any).imagenUrl || (producto as any).imagen || "";
+            let resolved: string | null = null;
+            if (raw && typeof raw === "string") {
+              if (raw.startsWith("http")) {
+                resolved = raw;
+              } else if (raw.startsWith("./")) {
+                resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");
+              } else if (raw.startsWith("/img") || raw.startsWith("img")) {
+                const clean = raw.replace(/^\./, "");
+                resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
+              } else {
+                resolved = base.replace(/\/$/, "") + "/" + raw;
+              }
             }
-            alt={producto.nombre}
-          />
+            return (
+              resolved && (
+                <img className="producto-imagen" src={resolved} alt={producto.nombre} />
+              )
+            );
+          })()}
         </div>
 
         <div className="producto-detalles">

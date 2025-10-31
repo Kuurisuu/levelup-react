@@ -11,13 +11,8 @@ import ProductoDetalleVisual from "../components/ProductoDetalle/ProductoDetalle
 import ProductoDetalleInfo from "../components/ProductoDetalle/ProductoDetalleInfo";
 import ProductoDetalleRelacionados from "../components/ProductoDetalle/ProductoDetalleRelacionados";
 import ProductoDetalleComentarios from "../components/ProductoDetalle/ProductoDetalleComentarios";
-import {
-  categorias,
-  subcategorias,
-  productosArray,
-  Producto,
-  Review,
-} from "../data/catalogo";
+import { Producto, Review, obtenerProductoPorId, obtenerProductos } from "../data/catalogo";
+import { ReseniaService } from "../services/api/resenias";
 import { calcularRatingPromedio } from "../utils/ratingUtils"; // nuevo import
 
 type ReviewType = {
@@ -34,7 +29,7 @@ function getFallbackProductId(): string | number | null {
     const hist: any[] = raw ? JSON.parse(raw) : [];
     if (hist.length > 0) return hist[hist.length - 1].id;
   } catch {}
-  return (productosArray[0] && productosArray[0].id) || null;
+  return null;
 }
 
 function storageKeyForReviews(id: string | number): string {
@@ -105,39 +100,90 @@ const ProductoDetalle: React.FC = () => {
   }, [paramId, navigate]);
 
   useEffect(() => {
-    // Fusionar productos administrados persistidos (lvup_products) con el catálogo base para que
-    // nuevos productos creados sean visibles en la vista de detalle.
-    let mergedProducts: Producto[] = productosArray.slice();
-    try {
-      const raw = localStorage.getItem("lvup_products");
-      const persisted: Producto[] = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(persisted) && persisted.length > 0) {
-        // El catalogo persistido es autoritativo (gestionado por admin)
-        mergedProducts = persisted;
+    const load = async () => {
+      let prod: Producto | null = null;
+      // 1) Intentar API por id
+      try {
+        if (paramId) {
+          const p = await obtenerProductoPorId(paramId);
+          prod = p || null;
+        }
+      } catch (_) {}
+      // 2) Fallback: persisted/local
+      if (!prod) {
+        let mergedProducts: Producto[] = [];
+        try {
+          const raw = localStorage.getItem("lvup_products");
+          const persisted: Producto[] = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(persisted) && persisted.length > 0) {
+            mergedProducts = persisted;
+          } else {
+            // Intentar cargar un listado desde API y buscar ahí
+            try {
+              const apiList = await obtenerProductos();
+              mergedProducts = apiList.length > 0 ? apiList : [];
+            } catch {}
+          }
+        } catch {}
+        prod = paramId
+          ? mergedProducts.find((p) => String(p.id) === String(paramId)) || null
+          : null;
       }
-    } catch (e) {
-      // Ignorar y volver al catálogo base
-    }
 
-    const prod = paramId
-      ? mergedProducts.find((p) => String(p.id) === String(paramId))
-      : null;
-    setProducto(prod || null);
-    setCarrito(getCarrito());
-    if (prod) setReviews(readReviews(prod.id));
-
-    // Galería
-    if (prod) {
-      let galeria: string[] = [];
-      if (prod.imagenUrl) galeria.push(prod.imagenUrl);
-      if (Array.isArray(prod.imagenesUrls)) {
-        galeria = galeria.concat(
-          prod.imagenesUrls.filter((img: string) => img !== prod.imagenUrl)
-        );
+      setProducto(prod);
+      setCarrito(getCarrito());
+      // Cargar reseñas desde el backend
+      if (prod) {
+        try {
+          const response = await ReseniaService.getByProducto(Number(prod.id));
+          const reseniasBackend = response.data || [];
+          
+          // Mapear a formato de Review
+          const reviewsBackend: Review[] = reseniasBackend.map((r: any) => ({
+            id: r.id?.toString() || "",
+            productoId: prod.id,
+            usuarioNombre: r.usuarioNombre || "",
+            rating: r.rating || 5,
+            comentario: r.comentario || "",
+            fecha: r.fechaCreacion || new Date().toISOString()
+          }));
+          
+          // Convertir a ReviewType para el estado
+          const reviewsType = reviewsBackend.map((r) => ({
+            rating: r.rating,
+            text: r.comentario,
+            author: r.usuarioNombre,
+            title: "",
+            ts: new Date(r.fecha).getTime()
+          }));
+          
+          setReviews(reviewsType);
+          
+          // También actualizar el producto con las reseñas
+          if (prod) {
+            setProducto({ ...prod, reviews: reviewsBackend });
+          }
+        } catch (error) {
+          console.error("Error al cargar reseñas desde el backend:", error);
+          // Fallback a localStorage
+          setReviews(readReviews(prod.id));
+        }
       }
-      setMainImg(galeria.length > 0 ? galeria[0] : prod.imagenUrl || "");
-      setGaleriaImgs(galeria);
-    }
+
+      // Galería
+      if (prod) {
+        let galeria: string[] = [];
+        if (prod.imagenUrl) galeria.push(prod.imagenUrl);
+        if (Array.isArray(prod.imagenesUrls)) {
+          galeria = galeria.concat(
+            prod.imagenesUrls.filter((img: string) => img !== prod.imagenUrl)
+          );
+        }
+        setMainImg(galeria.length > 0 ? galeria[0] : prod.imagenUrl || "");
+        setGaleriaImgs(galeria);
+      }
+    };
+    void load();
   }, [paramId]);
 
   useEffect(() => {
@@ -244,7 +290,7 @@ const ProductoDetalle: React.FC = () => {
   }
 
   // Reviews
-  function handleReviewSubmit(e: React.FormEvent) {
+  async function handleReviewSubmit(e: React.FormEvent) {
     e.preventDefault();
     const session = getUserSession();
     if (!session) {
@@ -257,43 +303,75 @@ const ProductoDetalle: React.FC = () => {
     }
     if (!producto) return;
 
-    const list = readReviews(producto.id);
-    list.push({
-      rating: reviewRating,
-      text: reviewText,
-      author: session.displayName || "Usuario",
-      title: "",
-      ts: Date.now(),
-    });
-    writeReviews(producto.id, list);
-    setReviewText("");
-    setReviewMsg("Reseña enviada.");
-    setTimeout(() => setReviewMsg(""), 1500);
-
-    // Actualizar las reseñas y recalcular el rating
-    const nuevasReviews = readReviews(producto.id);
-    setReviews(nuevasReviews);
-
-    // Actualizar el producto con las nuevas reseñas para recalcular el rating
-    setProducto((prevProducto) => {
-      if (!prevProducto) return null; //si no hay producto, retornar null
-      return {
-        ...prevProducto, //copiar el producto anterior
-        reviews: nuevasReviews.map((review) => ({
-          // map es para crear un nuevo array con los valores de la reseña
-          id: review.ts.toString(), //convertir el tiempo a string
-          productoId: producto.id, //id del producto
-          usuarioNombre: review.author, //nombre del usuario
-          rating: review.rating, //rating de la reseña
-          comentario: review.text, //comentario de la reseña
-          fecha: new Date(review.ts).toISOString(), //fecha de la reseña
-        })), //retornar el nuevo array
+    try {
+      // Crear reseña en el backend
+      const idUsuario = Number(session.userId || session.id || 0);
+      const reseniaData = {
+        idProducto: Number(producto.id),
+        idUsuario: idUsuario,
+        usuarioNombre: session.displayName || session.email || "Usuario",
+        rating: reviewRating,
+        comentario: reviewText
       };
-    });
+
+      await ReseniaService.crear(Number(producto.id), reseniaData);
+      
+      setReviewText("");
+      setReviewMsg("Reseña enviada.");
+      setTimeout(() => setReviewMsg(""), 1500);
+
+      // Recargar reseñas desde el backend
+      const response = await ReseniaService.getByProducto(Number(producto.id));
+      const reseniasBackend = response.data || [];
+      
+      // Mapear a formato de Review
+      const nuevasReviews: Review[] = reseniasBackend.map((r: any) => ({
+        id: r.id?.toString() || "",
+        productoId: producto.id,
+        usuarioNombre: r.usuarioNombre || "",
+        rating: r.rating || 5,
+        comentario: r.comentario || "",
+        fecha: r.fechaCreacion || new Date().toISOString()
+      }));
+
+      setReviews(nuevasReviews.map((r, idx) => ({
+        rating: r.rating,
+        text: r.comentario,
+        author: r.usuarioNombre,
+        title: "",
+        ts: new Date(r.fecha).getTime()
+      })));
+
+      // Actualizar el producto con las nuevas reseñas
+      setProducto((prevProducto) => {
+        if (!prevProducto) return null;
+        return {
+          ...prevProducto,
+          reviews: nuevasReviews,
+        };
+      });
+    } catch (error: any) {
+      console.error("Error al guardar reseña:", error);
+      setReviewMsg("Error al enviar la reseña. Intenta nuevamente.");
+      setTimeout(() => setReviewMsg(""), 3000);
+      
+      // Fallback a localStorage si falla el backend
+      const list = readReviews(producto.id);
+      list.push({
+        rating: reviewRating,
+        text: reviewText,
+        author: session.displayName || "Usuario",
+        title: "",
+        ts: Date.now(),
+      });
+      writeReviews(producto.id, list);
+      const nuevasReviews = readReviews(producto.id);
+      setReviews(nuevasReviews);
+    }
   }
 
   // Función para eliminar comentario
-  function handleDeleteReview(reviewTimestamp: number) {
+  async function handleDeleteReview(reviewTimestamp: number) {
     //el tiempo q se creo la reseña
     const session = getUserSession(); //obtener la session del usuario para verificar si es el creador de la reseña
     if (!session) {
@@ -301,56 +379,83 @@ const ProductoDetalle: React.FC = () => {
       return;
     }
 
-    if (!producto) return; //si no hay producto, retornar null
+    if (!producto) return;
 
-    const list = readReviews(producto.id); //obtener las reseñas del producto por id
-    const reviewIndex = list.findIndex(
-      (review) => review.ts === reviewTimestamp
-    ); //encontrar el indice de la reseña
+    try {
+      // Buscar la reseña en el estado actual
+      const reviewToDelete = reviews.find((r) => r.ts === reviewTimestamp);
+      if (!reviewToDelete) {
+        alert("Reseña no encontrada.");
+        return;
+      }
 
-    if (reviewIndex === -1) return; //si no se encuentra la reseña, retornar null el -1 es porque no se encontro la reseña ya que es el indice de la reseña que no existe
+      // Verificar que el usuario solo puede eliminar sus propios comentarios
+      if (
+        reviewToDelete.author !== session.displayName &&
+        reviewToDelete.author !== session.email
+      ) {
+        alert("Solo puedes eliminar tus propios comentarios.");
+        return;
+      }
 
-    const review = list[reviewIndex]; //obtener la reseña por el indice
+      // Confirmar eliminación
+      if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) {
+        return;
+      }
 
-    // Verificar que el usuario solo puede eliminar sus propios comentarios
-    if (
-      review.author !== session.displayName &&
-      review.author !== session.email
-    ) {
-      alert("Solo puedes eliminar tus propios comentarios.");
-      return;
+      // Buscar el ID de la reseña en el producto
+      const reviewId = producto.reviews?.find(
+        (r) => r.fecha === new Date(reviewTimestamp).toISOString() || 
+               r.id === reviewTimestamp.toString()
+      )?.id;
+
+      if (reviewId) {
+        // Eliminar del backend
+        await ReseniaService.eliminar(Number(reviewId));
+      }
+
+      // Actualizar el estado local
+      const nuevasReviews = reviews.filter((r) => r.ts !== reviewTimestamp);
+      setReviews(nuevasReviews);
+
+      // Actualizar el producto
+      setProducto((prevProducto) => {
+        if (!prevProducto) return null;
+        return {
+          ...prevProducto,
+          reviews: prevProducto.reviews?.filter(
+            (r) => r.id !== reviewId?.toString() && 
+                   r.fecha !== new Date(reviewTimestamp).toISOString()
+          ) || [],
+        };
+      });
+
+      alert("Comentario eliminado correctamente.");
+    } catch (error: any) {
+      console.error("Error al eliminar reseña:", error);
+      alert("Error al eliminar el comentario. Intenta nuevamente.");
+      
+      // Fallback a localStorage
+      const list = readReviews(producto.id);
+      const reviewIndex = list.findIndex((review) => review.ts === reviewTimestamp);
+      if (reviewIndex !== -1) {
+        const review = list[reviewIndex];
+        if (
+          review.author !== session.displayName &&
+          review.author !== session.email
+        ) {
+          alert("Solo puedes eliminar tus propios comentarios.");
+          return;
+        }
+        if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) {
+          return;
+        }
+        list.splice(reviewIndex, 1);
+        writeReviews(producto.id, list);
+        const nuevasReviews = readReviews(producto.id);
+        setReviews(nuevasReviews);
+      }
     }
-
-    // Confirmar eliminación
-    if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) {
-      return;
-    }
-
-    // Eliminar el comentario
-    list.splice(reviewIndex, 1); //desde el indice de la reseña, eliminar 1 reseña
-    writeReviews(producto.id, list); //escribir las reseñas actualizadas
-
-    // Actualizar las reseñas y recalcular el rating
-    const nuevasReviews = readReviews(producto.id); //obtener las reseñas actualizadas
-    setReviews(nuevasReviews); //actualizar las reseñas
-
-    // Actualizar el producto con las nuevas reseñas para recalcular el rating
-    setProducto((prevProducto) => {
-      if (!prevProducto) return null; //si no hay producto, retornar null
-      return {
-        ...prevProducto, //copiar el producto anterior
-        reviews: nuevasReviews.map((review) => ({
-          id: review.ts.toString(),
-          productoId: producto.id,
-          usuarioNombre: review.author,
-          rating: review.rating,
-          comentario: review.text,
-          fecha: new Date(review.ts).toISOString(),
-        })),
-      };
-    });
-
-    alert("Comentario eliminado correctamente.");
   }
 
   // Carrito actions
@@ -520,13 +625,7 @@ const ProductoDetalle: React.FC = () => {
                   )
                   .slice(0, 4);
               } catch (e) {
-                return productosArray
-                  .filter(
-                    (p) =>
-                      p.id !== producto.id &&
-                      p.categoria.id === producto.categoria.id
-                  )
-                  .slice(0, 4);
+                return [];
               }
             })()
           }

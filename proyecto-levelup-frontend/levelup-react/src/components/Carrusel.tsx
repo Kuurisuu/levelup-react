@@ -7,20 +7,26 @@ interface ImagenCarrusel {
 }
 
 export default function Carrusel(): React.JSX.Element {
+  const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
+  const resolveImg = (path: string) => {
+    const clean = path.replace(/^\/img\//, "").replace(/^img\//, "");
+    return base.replace(/\/$/, "") + "/" + clean;
+  };
+  
   const imagenes: ImagenCarrusel[] = [
     {
-      url: "/img/carrusel/1.png",
+      url: resolveImg("/img/carrusel.png"),
       nombre: "¡Bienvenido a Level-Up Gamer!",
       descripcion: "La tienda gamer lider en todo Chile",
     },
     {
-      url: "/img/carrusel/carruselproductos.png",
+      url: resolveImg("/img/play5white.png"),
       nombre: "!Explora nuestros productos gamer de alta calidad!",
       descripcion:
         "Tenemos una gama alta de productos para ti y tu amor por el gaming",
     },
     {
-      url: "/img/carrusel/carruselnoticias.png",
+      url: resolveImg("/img/monitorasus.png"),
       nombre: "¡Lee desde noticias a guias del mundo gaming!",
       descripcion: "Con nuestros blogs estarás atento a todo", //cambie q diga blogs na mas para andar en onda 
     },

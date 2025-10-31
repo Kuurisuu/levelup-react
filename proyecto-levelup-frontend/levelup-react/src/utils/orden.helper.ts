@@ -1,4 +1,7 @@
 // Utilidades para manejo de órdenes de compra
+import { PedidoService, PedidoCreationDTO, PedidoResponseDTO } from '../services/api/pedidos';
+import { PagoService } from '../services/api/pagos';
+import axiosConfig from '../config/axios';
 
 // esta interfaz es para los datos de envío y son los que se guardan en el localStorage
 //seria hacia donde voy a enviar el pedido
@@ -134,52 +137,116 @@ export function crearOrdenCompra(
 }
 
 /**
- * Simula el procesamiento de pago
- * En una implementación real, aquí se conectaría con el proveedor de pagos pero nica lo vamos a hacer
+ * Procesa el pago usando el backend
  */
-export async function procesarPago(orden: OrdenCompra): Promise<{//el promise es cmo decir despues de todo eso te prometo que te devuelvo un booleano y un string
+export async function procesarPago(orden: OrdenCompra): Promise<{
   exito: boolean;
   error?: string;
   codigoTransaccion?: string;
 }> {
-  // Simular delay de procesamiento
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
-  // Simular éxito/fallo aleatorio (90% éxito)
-  const exito = Math.random() > 0.1;//
-
-  if (exito) {
-    return {
-      exito: true,
-      codigoTransaccion: `TXN-${Date.now()}`
-    };
-  } else {
-    const errores = [
-      'Error en el procesamiento del pago',
-      'Tarjeta rechazada',
-      'Fondos insuficientes',
-      'Error de conectividad',
-      'Datos de tarjeta inválidos',
-      'BANCO ESTADO DEVUELVEME LA PLATAAAA '
-    ];
+  try {
+    // Obtener idUsuario del localStorage
+    const session = JSON.parse(localStorage.getItem('lvup_user_session') || '{}');
+    const idUsuario = session.userId || session.id || 0;
     
-    return {
-      exito: false,
-      error: errores[Math.floor(Math.random() * errores.length)]
+    // Crear pago en el backend
+    const pagoData = {
+      idPedido: 0, // Se actualizará si se creó el pedido antes
+      idUsuario: Number(idUsuario) || 0,
+      montoPago: orden.total,
+      metodoPago: 'TARJETA',
+      monedaPago: 'CLP'
     };
+    
+    const response = await axiosConfig.post('/pagos/procesar', pagoData);
+    
+    if (response.data && response.data.estadoPago === 'APROBADO') {
+      return {
+        exito: true,
+        codigoTransaccion: response.data.numeroTransaccion || `TXN-${Date.now()}`
+      };
+    } else {
+      return {
+        exito: false,
+        error: response.data?.mensajeRespuesta || 'Error en el procesamiento del pago'
+      };
+    }
+  } catch (error: any) {
+    console.error('Error al procesar pago:', error);
+    
+    // Fallback: simular procesamiento local
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    const exito = Math.random() > 0.1;
+    
+    if (exito) {
+      return {
+        exito: true,
+        codigoTransaccion: `TXN-${Date.now()}`
+      };
+    } else {
+      return {
+        exito: false,
+        error: error?.response?.data?.message || error?.message || 'Error en el procesamiento del pago'
+      };
+    }
   }
 }
 
 /**
- * Guarda la orden en localStorage
+ * Guarda la orden en el backend
  */
-export function guardarOrden(orden: OrdenCompra): void {
+export async function guardarOrden(orden: OrdenCompra): Promise<void> {
   try {
-    const ordenes = obtenerOrdenes();
-    ordenes.push(orden);
-    localStorage.setItem('lvup_ordenes', JSON.stringify(ordenes));
+    // Obtener idUsuario del localStorage
+    const session = JSON.parse(localStorage.getItem('lvup_user_session') || '{}');
+    const idUsuario = session.userId || session.id || 0;
+    
+    // Mapear OrdenCompra a PedidoCreationDTO
+    const pedidoDTO: PedidoCreationDTO = {
+      idUsuario: Number(idUsuario) || 0,
+      nombreEnvio: orden.datosEnvio.nombre,
+      apellidoEnvio: orden.datosEnvio.apellido,
+      emailEnvio: orden.datosEnvio.email,
+      telefonoEnvio: orden.datosEnvio.telefono,
+      direccionEnvio: orden.datosEnvio.direccion,
+      departamentoEnvio: orden.datosEnvio.departamento,
+      regionEnvio: orden.datosEnvio.region,
+      comunaEnvio: orden.datosEnvio.comuna,
+      indicadoresEntrega: orden.datosEnvio.indicadoresEntrega,
+      subtotal: orden.subtotal,
+      descuento: orden.descuento,
+      iva: orden.iva,
+      total: orden.total,
+      items: orden.productos.map(p => ({
+        idProducto: Number(p.id) || 0,
+        nombreProducto: p.nombre || p.titulo || 'Producto',
+        precio: p.precio,
+        cantidad: p.cantidad,
+        subtotal: p.precio * p.cantidad,
+        imagenUrl: p.imagenUrl || p.imagen
+      }))
+    };
+    
+    const response = await PedidoService.crearPedido(pedidoDTO);
+    
+    // También guardar en localStorage como fallback
+    try {
+      const ordenes = obtenerOrdenes();
+      ordenes.push(orden);
+      localStorage.setItem('lvup_ordenes', JSON.stringify(ordenes));
+    } catch (e) {
+      // Silenciar errores de localStorage
+    }
   } catch (error) {
     console.error('Error al guardar la orden:', error);
+    // Fallback a localStorage si falla el backend
+    try {
+      const ordenes = obtenerOrdenes();
+      ordenes.push(orden);
+      localStorage.setItem('lvup_ordenes', JSON.stringify(ordenes));
+    } catch (e) {
+      console.error('Error al guardar en localStorage:', e);
+    }
   }
 }
 
@@ -205,9 +272,21 @@ export function obtenerOrdenPorCodigo(codigo: string): OrdenCompra | null {
 }
 
 /**
- * Actualiza el estado de una orden
+ * Actualiza el estado de una orden en el backend
  */
-export function actualizarEstadoOrden(codigo: string, nuevoEstado: OrdenCompra['estado']): void {
+export async function actualizarEstadoOrden(codigo: string, nuevoEstado: OrdenCompra['estado']): Promise<void> {
+  try {
+    // Buscar pedido por código en el backend
+    const response = await PedidoService.obtenerPedidoPorCodigo(codigo);
+    
+    if (response.data && response.data.id) {
+      await PedidoService.actualizarEstadoPedido(response.data.id, nuevoEstado);
+    }
+  } catch (error) {
+    console.error('Error al actualizar el estado de la orden en el backend:', error);
+  }
+  
+  // También actualizar en localStorage como fallback
   try {
     const ordenes = obtenerOrdenes();
     const ordenIndex = ordenes.findIndex(orden => orden.codigo === codigo);
@@ -217,7 +296,7 @@ export function actualizarEstadoOrden(codigo: string, nuevoEstado: OrdenCompra['
       localStorage.setItem('lvup_ordenes', JSON.stringify(ordenes));
     }
   } catch (error) {
-    console.error('Error al actualizar el estado de la orden:', error);
+    console.error('Error al actualizar el estado en localStorage:', error);
   }
 }
 

@@ -27,20 +27,31 @@ export default function Producto(): React.JSX.Element {
     limpiarFiltros,
     productosFiltrados,
     setFiltros,
+    pagina,
+    totalPaginas,
+    totalElementos,
+    cargando,
+    siguientePagina,
+    anteriorPagina,
+    irAPagina,
   } = useFiltros();
+  
   // Sincronizar filtro de texto con query param 'q'
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q") || "";
-    if (q && filtros.texto !== q) {
+    // Solo actualizar si el query param es diferente al estado actual
+    if (q !== filtros.texto) {
       setFiltros((prev) => ({ ...prev, texto: q }));
     }
-    if (!q && filtros.texto) {
+    // Si no hay query param y el filtro tiene texto, limpiar solo si viene de navegación (sin q=)
+    if (!q && filtros.texto && filtros.texto.trim() !== "") {
+      // Limpiar solo si realmente no hay query param
       setFiltros((prev) => ({ ...prev, texto: "" }));
     }
-  }, [location.search]);
+  }, [location.search, filtros.texto]);
 
-  const [asideAbierto, setAsideAbierto] = useState<boolean>(false); //estado para abrir y cerrar el aside
+  const [asideAbierto, setAsideAbierto] = useState<boolean>(false);
   const toggleAside = (): void => setAsideAbierto(!asideAbierto);
 
   // Diccionario para mostrar nombres legibles
@@ -66,20 +77,12 @@ export default function Producto(): React.JSX.Element {
     PR: "Poleras Personalizadas",
   };
 
-  // Mostrar todos los productos filtrados
+  // Usar productos filtrados del backend (ya paginados)
   const productosAMostrar = productosFiltrados;
-
-  // pagination
-  const [page, setPage] = useState<number>(1);
-  const pageSize = 12;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(productosAMostrar.length / pageSize)
-  );
-  const paginated = productosAMostrar.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  );
+  
+  // Usar paginación del backend
+  const page = pagina + 1; // Convertir de índice 0-based a 1-based para el componente
+  const totalPages = totalPaginas;
 
   let titulo = "Todos los productos";
   const tieneBusqueda = filtros.texto && filtros.texto.trim() !== "";
@@ -128,12 +131,22 @@ export default function Producto(): React.JSX.Element {
           </button>
         </div>
 
-        <ListaProductos productos={paginated} titulo={titulo} />
-        <Pagination
-          current={page}
-          total={totalPages}
-          onChange={(p) => setPage(p)}
-        />
+        {cargando ? (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <p>Cargando productos...</p>
+          </div>
+        ) : (
+          <>
+            <ListaProductos productos={productosAMostrar} titulo={titulo} />
+            {totalPages > 1 && (
+              <Pagination
+                current={page}
+                total={totalPages}
+                onChange={(p) => irAPagina(p - 1)} // Convertir de 1-based a 0-based
+              />
+            )}
+          </>
+        )}
       </section>
     </section>
   );

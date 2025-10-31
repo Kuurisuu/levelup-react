@@ -14,12 +14,7 @@ import {
   actualizarNumerito,
 } from "../logic/carrito";
 import { setCarritoLS, ProductoEnCarrito } from "../logic/storage";
-import {
-  productosArray,
-  categorias,
-  subcategorias,
-  Producto,
-} from "../data/catalogo";
+import { Producto, obtenerProductos, obtenerCategoriasYSubcategorias } from "../data/catalogo";
 import { useNavigate } from "react-router-dom";
 
 // Interfaces
@@ -97,6 +92,19 @@ const Carrito: React.FC = (): React.JSX.Element => {
     null
   );
   const [productosSugeridos, setProductosSugeridos] = useState<Producto[]>([]);
+  const [cats, setCats] = useState<{ id: string; nombre: string }[]>([]);
+  const [subs, setSubs] = useState<{ id: string; nombre: string; categoria: { id: string; nombre: string } }[]>([]);
+
+  useEffect(() => {
+    const loadCats = async () => {
+      try {
+        const { categorias, subcategorias } = await obtenerCategoriasYSubcategorias();
+        setCats(categorias);
+        setSubs(subcategorias);
+      } catch {}
+    };
+    void loadCats();
+  }, []);
 
   useEffect(() => {
     cargarProductosCarrito();
@@ -119,26 +127,25 @@ const Carrito: React.FC = (): React.JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function cargarProductosSugeridos(): void {
+  async function cargarProductosSugeridos(): Promise<void> {
     // Obtener productos aleatorios que no estén en el carrito
     const productosEnCarrito = getCarrito();
     const idsEnCarrito = productosEnCarrito.map((p: ProductoEnCarrito) => p.id);
 
-    // Fusionar productos administrados persistidos (lvup_products) con el catálogo base para que
-    // nuevos productos creados sean visibles en las sugerencias.
-    let merged: Producto[] = productosArray.slice();
+    // Obtener catálogo desde API con fallback a persistido/local
+    let merged: Producto[] = [];
     try {
-      const raw = localStorage.getItem("lvup_products") || "[]";
-      const persisted: Producto[] = JSON.parse(raw);
-      if (Array.isArray(persisted) && persisted.length > 0) {
-        const ids = new Set(persisted.map((p) => p.id));
-        merged = [
-          ...persisted,
-          ...productosArray.filter((p) => !ids.has(p.id)),
-        ];
-      }
-    } catch (e) {
-      merged = productosArray.slice();
+      const api = await obtenerProductos();
+      merged = Array.isArray(api) ? api : [];
+    } catch {}
+    if (merged.length === 0) {
+      try {
+        const raw = localStorage.getItem("lvup_products") || "[]";
+        const persisted: Producto[] = JSON.parse(raw);
+        if (Array.isArray(persisted) && persisted.length > 0) {
+          merged = persisted;
+        }
+      } catch {}
     }
 
     const productosDisponibles = merged.filter(
@@ -158,7 +165,7 @@ const Carrito: React.FC = (): React.JSX.Element => {
     setProductosSugeridos(sugeridos);
   }
 
-  function cargarProductosCarrito(): void {
+  async function cargarProductosCarrito(): Promise<void> {
     const productosEnCarrito = getCarrito();
     if (productosEnCarrito.length > 0) {
       setEstado("lleno");
@@ -171,16 +178,21 @@ const Carrito: React.FC = (): React.JSX.Element => {
         catalogoBase = [];
       }
       // Merge persisted admin products so cart resolution honors admin deletions/edits
-      let merged: Producto[] = productosArray.slice();
+      let merged: Producto[] = [];
       try {
-        const raw = localStorage.getItem("lvup_products") || "[]";
-        const persisted: Producto[] = JSON.parse(raw);
-        if (Array.isArray(persisted) && persisted.length > 0) {
-          // persisted catalog is authoritative
-          merged = persisted;
+        const api = await obtenerProductos();
+        merged = Array.isArray(api) ? api : [];
+      } catch {}
+      if (merged.length === 0) {
+        try {
+          const raw = localStorage.getItem("lvup_products") || "[]";
+          const persisted: Producto[] = JSON.parse(raw);
+          if (Array.isArray(persisted) && persisted.length > 0) {
+            merged = persisted;
+          }
+        } catch {
+          merged = catalogoBase.slice();
         }
-      } catch (e) {
-        merged = productosArray.slice();
       }
 
       const descripciones = productosEnCarrito.map(
@@ -188,14 +200,10 @@ const Carrito: React.FC = (): React.JSX.Element => {
           const base =
             // Prefer persisted catalog first, then the imported catalog, then the saved catalogo-base fallback
             merged.find((p: Producto) => p.id === producto.id) ||
-            productosArray.find((p: Producto) => p.id === producto.id) ||
             catalogoBase.find((p: Producto) => p.id === producto.id) ||
             ({} as Producto);
-          const catNombre =
-            categorias.find((c) => c.id === base.categoria?.id)?.nombre || "";
-          const subNombre =
-            subcategorias.find((s) => s.id === base.subcategoria?.id)?.nombre ||
-            "";
+          const catNombre = cats.find((c) => c.id === base.categoria?.id)?.nombre || "";
+          const subNombre = subs.find((s) => s.id === base.subcategoria?.id)?.nombre || "";
           return (
             (base.descripcion && String(base.descripcion).trim()) ||
             `${catNombre}${subNombre ? " • " + subNombre : ""}`
@@ -212,7 +220,6 @@ const Carrito: React.FC = (): React.JSX.Element => {
           // resolver base product again to get original discount
           const base =
             merged.find((p: Producto) => p.id === producto.id) ||
-            productosArray.find((p: Producto) => p.id === producto.id) ||
             catalogoBase.find((p: Producto) => p.id === producto.id) ||
             ({} as Producto);
 

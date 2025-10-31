@@ -322,10 +322,12 @@ export default function Header(): React.JSX.Element {
               <i className="bi bi-list"></i>
             </button>
             <Link to="/" className="logo">
-              <img
-                src={import.meta.env.BASE_URL + "img/otros/logo.png"}
-                alt="Logo Level Up"
-              />
+              {(() => {
+                const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
+                const logoPath = "logo.png";
+                const resolved = base.replace(/\/$/, "") + "/" + logoPath;
+                return resolved && <img src={resolved} alt="Logo Level Up" />;
+              })()}
             </Link>
           </div>
           <div className="menu-celular">

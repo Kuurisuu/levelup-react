@@ -2,32 +2,37 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Carrusel from "../components/Carrusel";
 import ProductoCard from "../components/ProductoCard";
-import { productosArray, Producto } from "../data/catalogo";
+import { Producto, obtenerProductos } from "../data/catalogo";
 
 export default function Home(): React.JSX.Element {
   const PAGE_HOME = 12;
   const [pageHome, setPageHome] = useState<number>(1);
-  const [catalog, setCatalog] = useState<Producto[]>(productosArray.slice());
+  const [catalog, setCatalog] = useState<Producto[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const navigate = useNavigate();
 
-  // cargar catalogo (persisted en localStorage si existe)
+  // cargar catalogo desde API con fallback a persisted/local
   useEffect(() => {
-    const computeCatalog = () => {
+    const computeCatalog = async () => {
+      try {
+        const api = await obtenerProductos();
+        if (Array.isArray(api) && api.length > 0) {
+          setCatalog(api);
+          return;
+        }
+      } catch (_) {}
       try {
         const raw = localStorage.getItem("lvup_products") || "[]";
         const persisted: Producto[] = JSON.parse(raw);
         if (Array.isArray(persisted) && persisted.length > 0) {
           setCatalog(persisted);
-        } else {
-          setCatalog(productosArray.slice());
         }
       } catch (e) {
-        setCatalog(productosArray.slice());
+        setCatalog([]);
       }
     };
-    computeCatalog();
-    const handler = () => computeCatalog();
+    void computeCatalog();
+    const handler = () => void computeCatalog();
     window.addEventListener("lvup:products", handler as EventListener);
     return () =>
       window.removeEventListener("lvup:products", handler as EventListener);
