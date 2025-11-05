@@ -64,18 +64,25 @@ function mapCategoria(input?: string): Categoria {
 }
 
 export function mapProductoDTO(dto: any): Producto {
-  // Resolver imagenUrl desde imagen o imagenUrl del backend
+  // Priorizar imagenUrl del backend (URL completa de S3 construida)
+  // Si no existe, usar imagenS3Key (referencia S3) o imagen (compatibilidad Base64)
   const baseImg = (import.meta as any).env?.VITE_IMAGE_BASE_URL || 'http://localhost:8003/api/v1/img';
-  const rawImg = dto.imagenUrl || dto.imagen || '';
+  
+  // Priorizar imagenUrl (URL completa de S3 desde el backend)
+  const rawImg = dto.imagenUrl || dto.imagenS3Key || dto.imagen || '';
   let imagenUrlResolved = '';
+  
   if (rawImg) {
+    // Si es URL completa (S3 o HTTP), usarla directamente
+    if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
+      imagenUrlResolved = rawImg;
+    } 
     // Si es Base64 (data:image), usarlo directamente
-    if (rawImg.startsWith('data:image')) {
+    else if (rawImg.startsWith('data:image')) {
       imagenUrlResolved = rawImg;
-    } else if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
-      // Ya es una URL completa
-      imagenUrlResolved = rawImg;
-    } else {
+    } 
+    // Si es una referencia S3 (key) o ruta local, construir URL completa
+    else {
       // Limpiar ruta: quitar ./, ./ iniciales y / inicial
       let clean = rawImg.replace(/^\./, '').replace(/^\/+/, '');
       // Si ya empieza con img/, quitarlo para evitar duplicación (el baseImg ya incluye /img)
@@ -111,17 +118,47 @@ export function mapProductoDTO(dto: any): Producto {
     stock: Number(dto.stock ?? 0),
     imagenesUrls: (() => {
       let urls: string[] = [];
+      
+      // Priorizar imagenesUrls (URLs completas de S3 desde el backend)
       if (Array.isArray(dto.imagenesUrls)) {
         urls = dto.imagenesUrls;
-      } else if (dto.imagenes) {
+      } 
+      // Si no, intentar parsear imagenesUrls (JSON string de URLs completas de S3)
+      else if (typeof dto.imagenesUrls === 'string' && dto.imagenesUrls.trim()) {
+        try {
+          urls = JSON.parse(dto.imagenesUrls);
+        } catch (e) {
+          urls = [];
+        }
+      }
+      // Si no, intentar parsear imagenesS3Keys (JSON string de referencias S3)
+      else if (typeof dto.imagenesS3Keys === 'string' && dto.imagenesS3Keys.trim()) {
+        try {
+          const keys = JSON.parse(dto.imagenesS3Keys);
+          // Construir URLs de S3 desde las keys
+          urls = keys.map((key: string) => {
+            if (key.startsWith('http://') || key.startsWith('https://')) {
+              return key; // Ya es URL completa
+            }
+            // Construir URL desde la key
+            const clean = key.replace(/^\./, '').replace(/^\/+/, '').replace(/^img\//, '');
+            return baseImg.replace(/\/$/, '') + '/' + clean;
+          });
+        } catch (e) {
+          urls = [];
+        }
+      }
+      // Si no, intentar parsear imagenes (JSON string legacy)
+      else if (dto.imagenes) {
         try {
           urls = JSON.parse(dto.imagenes);
         } catch (e) {
           urls = [];
         }
       }
-      // Las URLs ya están en Base64 o como rutas, no necesitan procesamiento adicional
-      return urls;
+      
+      // Si no hay URLs, usar solo la imagen principal
+      return urls.length > 0 ? urls : [imagenUrlResolved];
     })(),
     fabricante: dto.fabricante,
     distribuidor: dto.distribuidor,

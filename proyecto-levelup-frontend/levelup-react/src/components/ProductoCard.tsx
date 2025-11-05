@@ -98,27 +98,39 @@ export default function ProductoCard({
           <div className="producto-codigo-badge">{producto.id}</div>
 
           {(() => {
-            const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
             const raw = (producto as any).imagenUrl || (producto as any).imagen || "";
             let resolved: string | null = null;
+            
             if (raw && typeof raw === "string") {
+              // Si es URL completa (S3 o HTTP), usarla directamente
+              if (raw.startsWith("http://") || raw.startsWith("https://")) {
+                resolved = raw;
+              } 
               // Si es Base64 (data:image), usarlo directamente
-              if (raw.startsWith("data:image")) {
+              else if (raw.startsWith("data:image")) {
                 resolved = raw;
-              } else if (raw.startsWith("http")) {
-                resolved = raw;
-              } else if (raw.startsWith("./")) {
-                resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");
-              } else if (raw.startsWith("/img") || raw.startsWith("img")) {
-                const clean = raw.replace(/^\./, "");
-                resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
-              } else {
-                resolved = base.replace(/\/$/, "") + "/" + raw;
+              } 
+              // Si es ruta local, construir URL completa (fallback para compatibilidad)
+              else {
+                const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
+                if (raw.startsWith("./")) {
+                  resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");
+                } else if (raw.startsWith("/img") || raw.startsWith("img")) {
+                  const clean = raw.replace(/^\./, "");
+                  resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
+                } else {
+                  resolved = base.replace(/\/$/, "") + "/" + raw;
+                }
               }
             }
+            
             return (
-              resolved && (
+              resolved ? (
                 <img className="producto-imagen" src={resolved} alt={producto.nombre} />
+              ) : (
+                <div className="producto-imagen-placeholder">
+                  <span>Sin imagen</span>
+                </div>
               )
             );
           })()}
