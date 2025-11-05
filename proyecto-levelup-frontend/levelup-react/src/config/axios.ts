@@ -9,8 +9,8 @@ const MICROSERVICE_URLS = {
   carrito: 'http://localhost:8008/api/v1',
   pedidos: 'http://localhost:8085/api/v1',
   pagos: 'http://localhost:8011/api/v1',
-  eventos: 'http://localhost:8085/api/v1',
-  contenido: 'http://localhost:8086/api/v1',
+  eventos: 'http://localhost:8092',
+  contenido: 'http://localhost:8093',
   resenia: 'http://localhost:8010/api/v1',
   promociones: 'http://localhost:8091/api/v1',
   referidos: 'http://localhost:8005/api/v1',
@@ -51,6 +51,8 @@ axiosConfig.interceptors.request.use(async config => {
     'referidos': MICROSERVICE_URLS.referidos,
     'puntos': MICROSERVICE_URLS.referidos,
     'gateway': MICROSERVICE_URLS.gateway,
+    'eventos': MICROSERVICE_URLS.eventos,
+    'contenido': MICROSERVICE_URLS.contenido,
   };
   
   const targetUrl = serviceMap[service] || MICROSERVICE_URLS.productos;
@@ -69,6 +71,13 @@ axiosConfig.interceptors.request.use(async config => {
 // Interceptor para agregar headers de autenticación
 axiosConfig.interceptors.request.use(
   (config) => {
+    // Agregar API Key (requerido para todas las peticiones)
+    const apiKey = import.meta.env.VITE_API_KEY || 'levelup-2024-secret-api-key-change-in-production';
+    if (apiKey) {
+      config.headers['X-API-Key'] = apiKey;
+    }
+    
+    // Agregar JWT Token (si existe, para autenticación de usuario)
     const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

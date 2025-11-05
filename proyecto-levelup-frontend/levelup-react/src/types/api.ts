@@ -104,6 +104,18 @@ export interface Review {
   fecha: string;
 }
 
+export interface Resenia {
+  id?: number;
+  idProducto: number;
+  idUsuario: number;
+  usuarioNombre: string;
+  rating: number;
+  comentario: string;
+  fechaCreacion?: string;
+  fechaActualizacion?: string;
+  activo?: boolean;
+}
+
 // Tipos para pedidos
 export interface Pedido {
   id: number;
@@ -148,4 +160,40 @@ export interface ReferidoStats {
   totalReferidos: number;
   recompensasPendientes: number;
   puntosAcumulados: number;
+}
+
+// Tipos para autenticación
+export interface UsuarioInfo {
+  id: number;
+  nombre: string;
+  apellidos: string;
+  correo: string;
+  tipoUsuario: string;
+  descuentoDuoc?: boolean;
+  region?: string;
+  comuna?: string;
+}
+
+export interface TokenInfo {
+  tokenType: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  usuario: UsuarioInfo;
+}
+
+export interface Usuario {
+  id?: number;
+  nombre: string;
+  apellidos: string;
+  correo: string;
+  password?: string;
+  telefono?: string;
+  fechaNacimiento?: string;
+  region?: string;
+  comuna?: string;
+  direccion?: string;
+  codigoReferido?: string;
+  tipoUsuario?: string;
+  descuentoDuoc?: boolean;
 }

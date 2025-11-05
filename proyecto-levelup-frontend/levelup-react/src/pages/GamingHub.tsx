@@ -1,92 +1,106 @@
 import { useState, useEffect } from "react";
+import axiosConfig from "../config/axios";
 import "../styles/blog.css";
+
+type Article = {
+  id: number;
+  category: string;
+  image: string;
+  alt: string;
+  categoryLabel: string;
+  date: string;
+  author: string;
+  title: string;
+  description: string;
+  link: string;
+};
+
+// Mapear categorías del backend a categorías del frontend
+const mapearCategoria = (categoriaBackend: string): { category: string; categoryLabel: string } => {
+  const mapa: { [key: string]: { category: string; categoryLabel: string } } = {
+    "NOTICIAS": { category: "noticias", categoryLabel: "Noticias" },
+    "INDUSTRIA": { category: "noticias", categoryLabel: "Industria" },
+    "TECNOLOGIA": { category: "noticias", categoryLabel: "Tecnología" },
+    "COMUNIDAD": { category: "comunidad", categoryLabel: "Comunidad" },
+    "GUIAS": { category: "guias", categoryLabel: "Guías" },
+    "ESPORTS": { category: "comunidad", categoryLabel: "eSports" },
+    "LANZAMIENTOS": { category: "noticias", categoryLabel: "Lanzamientos" },
+    "REVIEWS": { category: "guias", categoryLabel: "Reviews" },
+    "HARDWARE": { category: "guias", categoryLabel: "Hardware" },
+    "SOFTWARE": { category: "noticias", categoryLabel: "Software" },
+    "STREAMING": { category: "comunidad", categoryLabel: "Streaming" },
+    "RETRO": { category: "noticias", categoryLabel: "Retro" },
+  };
+  return mapa[categoriaBackend] || { category: "noticias", categoryLabel: categoriaBackend };
+};
+
+// Formatear fecha
+const formatearFecha = (fecha: string): string => {
+  try {
+    const date = new Date(fecha);
+    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const dia = date.getDate();
+    const mes = meses[date.getMonth()];
+    const año = date.getFullYear();
+    return `${dia} ${mes} ${año}`;
+  } catch {
+    return fecha;
+  }
+};
 
 const GamingHub = () => {
   // estado para filtro activo
   const [activeFilter, setActiveFilter] = useState("todas");
+  const [articlesData, setArticlesData] = useState<Article[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // datos de articulos exactos del html original
-  const articlesData = [
-    {
-      id: 1,
-      category: "noticias",
-      image: "/img/eventos/maxresdefault.jpg",
-      alt: "PlayStation 5 Pro",
-      categoryLabel: "Consolas",
-      date: "15 Dic 2024",
-      author: "Miguel Torres",
-      title: "PlayStation 5 Pro: Todo lo que necesitas saber",
-      description:
-        "Sony anuncia oficialmente la PlayStation 5 Pro con mejoras significativas en rendimiento y gráficos. Descubre todas las características y fecha de lanzamiento.",
-      link: "https://www.playstation.com/es-cl/ps5/ps5-pro/",
-    },
-    {
-      id: 2,
-      category: "guias",
-      image: "/img/eventos/hq720.jpg",
-      alt: "Gaming Setup 2025",
-      categoryLabel: "Setup Gaming",
-      date: "22 Dic 2024",
-      author: "Ana López",
-      title: "Guía completa para armar tu setup gaming perfecto en 2025",
-      description:
-        "¿Quieres crear el setup gaming definitivo? Te mostramos los componentes esenciales, periféricos recomendados y tips de configuración para que tengas la mejor experiencia de juego posible. Desde monitores hasta sillas gaming, aquí encontrarás todo lo que necesitas.",
-      link: "https://www.youtube.com/watch?v=5neU9AevyTY",
-    },
-    {
-      id: 3,
-      category: "comunidad",
-      image: "/img/eventos/Elcrecimiento.jpg",
-      alt: "Esports Chile",
-      categoryLabel: "Esports",
-      date: "28 Dic 2024",
-      author: "Carlos Mendoza",
-      title:
-        "El crecimiento de los esports en Chile: Una industria en expansión",
-      description:
-        "Los deportes electrónicos han experimentado un crecimiento exponencial en Chile durante los últimos años. Desde torneos locales hasta competencias internacionales, el país se posiciona como un referente en la región. Conoce los equipos más destacados y las oportunidades que ofrece esta industria.",
-      link: "https://esports.eldesconcierto.cl/", //link de la pagina de esports
-    },
-    {
-      id: 4,
-      category: "noticias",
-      image: "/img/eventos/Gamingmov.jfif",
-      alt: "Gaming Movement",
-      categoryLabel: "Industria",
-      date: "2 Ene 2025",
-      author: "Sofia Ramirez",
-      title: "Gaming Movement: La revolución de los videojuegos independientes",
-      description:
-        "El movimiento de desarrolladores independientes está transformando la industria gaming. Pequeños estudios crean experiencias únicas que compiten con grandes producciones. Descubre los juegos indie más prometedores del año.",
-      link: "#",
-    },
-    {
-      id: 5,
-      category: "guias",
-      image: "/img/eventos/Realidadv.jfif",
-      alt: "Realidad Virtual",
-      categoryLabel: "VR Gaming",
-      date: "8 Ene 2025",
-      author: "Diego Silva",
-      title: "Realidad Virtual en 2025: Guía para principiantes",
-      description:
-        "La realidad virtual ha llegado para quedarse. Con nuevos dispositivos más accesibles y una biblioteca de juegos en constante crecimiento, nunca ha sido mejor momento para adentrarse en el mundo VR.",
-      link: "#",
-    },
-    {
-      id: 6,
-      category: "comunidad",
-      image: "/img/eventos/Los juegos más esperados del resto del 2025.jpg",
-      alt: "Juegos 2025",
-      categoryLabel: "Lanzamientos",
-      date: "15 Ene 2025",
-      author: "Maria Gonzalez",
-      title: "Los juegos más esperados del resto del 2025",
-      description:
-        "El año gaming está lleno de sorpresas. Desde secuelas muy esperadas hasta nuevas IPs revolucionarias, te mostramos los títulos que marcarán el resto del año.",
-      link: "#",
-    },
-  ];
+  // Cargar artículos desde el backend
+  useEffect(() => {
+    const cargarArticulos = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axiosConfig.get<any[]>('/contenido/articulos/publicados');
+        
+        if (response.data && response.data.length > 0) {
+          const articulosMapeados: Article[] = response.data.map((articulo: any) => {
+            const imagenArticulo = articulo.imagenArticulo || articulo.imagen || "";
+            // Verificar si la imagen es Base64 y usarla directamente
+            const imagenFinal = imagenArticulo && imagenArticulo.startsWith("data:image")
+              ? imagenArticulo
+              : imagenArticulo;
+            
+            const categoriaMapeada = mapearCategoria(articulo.categoriaArticulo || articulo.categoria || "NOTICIAS");
+            
+            return {
+              id: articulo.idArticulo || articulo.id || 0,
+              category: categoriaMapeada.category,
+              image: imagenFinal,
+              alt: articulo.tituloArticulo || articulo.titulo || "Imagen del artículo",
+              categoryLabel: categoriaMapeada.categoryLabel,
+              date: formatearFecha(articulo.fechaPublicacion || articulo.fecha || new Date().toISOString()),
+              author: articulo.autorArticulo || articulo.autor || "Level-Up Team",
+              title: articulo.tituloArticulo || articulo.titulo || "",
+              description: articulo.resumenArticulo || articulo.descripcion || "",
+              link: articulo.enlaceExterno || articulo.link || "#",
+            };
+          });
+          console.log("Artículos cargados:", articulosMapeados.length, "con imágenes Base64:", articulosMapeados.filter(a => a.image && a.image.startsWith("data:image")).length);
+          setArticlesData(articulosMapeados);
+        } else {
+          // Fallback estático si no hay datos
+          setArticlesData([]);
+        }
+      } catch (error) {
+        console.error("Error al cargar artículos:", error);
+        // En caso de error, mantener array vacío
+        setArticlesData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    cargarArticulos();
+  }, []);
 
   // manejar cambio de filtro
   const handleFilterChange = (filter: string) => {
@@ -156,20 +170,49 @@ const GamingHub = () => {
               </button>
             </div>
 
-            <div className="blogs-grid">
-              {filteredArticles.map((article) => (
-                <article
-                  key={article.id}
-                  className="tarjeta-blog"
-                  data-cat={article.category}
-                >
-                  <div className="imagen-blog">
-                    <img src={article.image} alt={article.alt} loading="lazy" />
-                    {/* etiqueta de categoria del articulo */}
-                    <div className="categoria-blog">
-                      {article.categoryLabel}
-                    </div>
-                  </div>
+            {isLoading ? (
+              <div style={{ textAlign: "center", padding: "2rem" }}>
+                <p>Cargando artículos...</p>
+              </div>
+            ) : filteredArticles.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "2rem" }}>
+                <p>No hay artículos disponibles</p>
+              </div>
+            ) : (
+              <div className="blogs-grid">
+                {filteredArticles.map((article) => {
+                  // Resolver la URL de la imagen - si es Base64, usarla directamente
+                  let imagenUrl: string = article.image || "";
+                  if (imagenUrl && !imagenUrl.startsWith("data:image") && !imagenUrl.startsWith("http")) {
+                    // Si no es Base64 ni URL completa, intentar construir la ruta
+                    if (imagenUrl.startsWith("/")) {
+                      imagenUrl = imagenUrl;
+                    } else {
+                      imagenUrl = `/img/eventos/${imagenUrl}`;
+                    }
+                  }
+                  
+                  return (
+                    <article
+                      key={article.id}
+                      className="tarjeta-blog"
+                      data-cat={article.category}
+                    >
+                      <div className="imagen-blog">
+                        <img 
+                          src={imagenUrl} 
+                          alt={article.alt} 
+                          loading="lazy"
+                          onError={(e) => {
+                            // Fallback si la imagen no carga
+                            (e.target as HTMLImageElement).src = "/img/eventos/maxresdefault.jpg";
+                          }}
+                        />
+                        {/* etiqueta de categoria del articulo */}
+                        <div className="categoria-blog">
+                          {article.categoryLabel}
+                        </div>
+                      </div>
                   <div className="contenido-blog">
                     {/* metadatos del articulo: fecha y autor */}
                     <div className="meta-blog">
@@ -202,10 +245,12 @@ const GamingHub = () => {
                       Leer más
                       <i className="bi bi-arrow-right"></i>
                     </a>
-                  </div>
-                </article>
-              ))}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
+            )}
           </div>
         </section>
       </section>

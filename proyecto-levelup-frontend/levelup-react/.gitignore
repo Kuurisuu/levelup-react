@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# API Keys y Environment Variables (NUNCA commitear)
+.env
+.env.local
+.env.production
+.env.production.local
+**/*api-key*.txt
+**/*secret*.txt
+
 # Testing
 coverage
 *.lcov

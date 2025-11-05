@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/register.css";
 import { isDuocEmail } from "../utils/orden.helper";
+import { AuthService } from "../services/api/auth";
+import { saveSession } from "../logic/auth";
 
 interface RegisterFormData {
+  run: string;
   nombre: string;
   apellidos: string;
   email: string;
@@ -20,6 +23,7 @@ interface RegisterFormData {
 }
 
 interface RegisterErrors {
+  run?: string;
   nombre?: string;
   apellidos?: string;
   email?: string;
@@ -63,9 +67,11 @@ interface User {
 interface UserSession {
   displayName: string;
   loginAt: number;
-  userId: string;
+  userId: number;
+  id: number;
   role?: string;
   duocMember?: boolean;
+  email?: string;
 }
 
 const Register: React.FC = (): React.JSX.Element => {
@@ -73,6 +79,7 @@ const Register: React.FC = (): React.JSX.Element => {
 
   // estados para el formulario de registro
   const [formData, setFormData] = useState<RegisterFormData>({
+    run: "",
     nombre: "",
     apellidos: "",
     email: "",
@@ -125,57 +132,6 @@ const Register: React.FC = (): React.JSX.Element => {
     "Arica y Parinacota": ["Arica", "Putre", "Camarones"],
   };
 
-  // Funciones auxiliares para manejo de usuarios
-  const readUsers = (): User[] => {
-    try {
-      return JSON.parse(localStorage.getItem("lvup_users") || "[]");
-    } catch {
-      return [];
-    }
-  };
-
-  const writeUsers = (users: User[]): void => {
-    localStorage.setItem("lvup_users", JSON.stringify(users));
-  };
-
-  const generateUserId = (): string => {
-    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
-  };
-
-  const generateReferralCode = (nombre: string): string => {
-    const raw = nombre.replace(/\s+/g, "").toUpperCase();
-    const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-    // Usar hasta 6 caracteres del nombre + 4 aleatorios = máximo 10 caracteres
-    const namepart = raw.slice(0, 6);
-    return namepart + rand;
-  };
-
-  const createUserSession = (user: User): void => {
-    const firstName = user.nombre.split(" ")[0];
-    const session: UserSession = {
-      displayName: firstName,
-      loginAt: Date.now(),
-      userId: user.id,
-      role: "cliente",
-      duocMember: !!user.duocMember || isDuocEmail(user.email),
-    };
-    localStorage.setItem("lvup_user_session", JSON.stringify(session));
-  };
-
-  const emailExists = (email: string): boolean => {
-    const users = readUsers();
-    return users.some(
-      (user) => user.email.toLowerCase() === email.toLowerCase()
-    );
-  };
-
-  const validateReferralCode = (codigo: string): string | null => {
-    if (!codigo.trim()) return null; // Código opcional
-
-    const users = readUsers();
-    const user = users.find((u) => u.referralCode === codigo.toUpperCase());
-    return user ? user.id : null;
-  };
 
   // manejar cambios en los inputs
   const handleInputChange = (
@@ -222,18 +178,25 @@ const Register: React.FC = (): React.JSX.Element => {
   const validateForm = (): boolean => {
     const newErrors: RegisterErrors = {};
 
+    // validar RUN
+    if (!formData.run.trim()) {
+      newErrors.run = "El RUN es requerido";
+    } else if (!/^[0-9]{7,8}[0-9Kk]$/.test(formData.run.trim())) {
+      newErrors.run = "El RUN debe tener formato válido (ej: 12345678-9)";
+    }
+
     // validar nombre
     if (!formData.nombre.trim()) {
       newErrors.nombre = "El nombre es requerido";
-    } else if (formData.nombre.length < 2) {
-      newErrors.nombre = "El nombre debe tener al menos 2 caracteres";
+    } else if (formData.nombre.length < 2 || formData.nombre.length > 50) {
+      newErrors.nombre = "El nombre debe tener entre 2 y 50 caracteres";
     }
 
     // validar apellidos
     if (!formData.apellidos.trim()) {
       newErrors.apellidos = "Los apellidos son requeridos";
-    } else if (formData.apellidos.length < 2) {
-      newErrors.apellidos = "Los apellidos deben tener al menos 2 caracteres";
+    } else if (formData.apellidos.length < 2 || formData.apellidos.length > 100) {
+      newErrors.apellidos = "Los apellidos deben tener entre 2 y 100 caracteres";
     }
 
     // validar email
@@ -241,13 +204,17 @@ const Register: React.FC = (): React.JSX.Element => {
       newErrors.email = "El email es requerido";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "El email no es válido";
+    } else if (!/(@duoc\.cl|@profesor\.duoc\.cl|@gmail\.com)$/.test(formData.email)) {
+      newErrors.email = "Solo se permiten correos @duoc.cl, @profesor.duoc.cl y @gmail.com";
     }
 
     // validar contraseña
     if (!formData.password) {
       newErrors.password = "La contraseña es requerida";
-    } else if (formData.password.length < 4 || formData.password.length > 10) {
-      newErrors.password = "La contraseña debe tener entre 4 y 10 caracteres";
+    } else if (formData.password.length < 8 || formData.password.length > 100) {
+      newErrors.password = "La contraseña debe tener entre 8 y 100 caracteres";
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/.test(formData.password)) {
+      newErrors.password = "La contraseña debe contener al menos: 1 minúscula, 1 mayúscula y 1 número";
     }
 
     // validar confirmación de contraseña
@@ -257,21 +224,11 @@ const Register: React.FC = (): React.JSX.Element => {
       newErrors.confirmPassword = "Las contraseñas no coinciden";
     }
 
-    // validar fecha de nacimiento (mayor de edad)
+    // validar fecha de nacimiento
     if (!formData.fechaNacimiento) {
       newErrors.fechaNacimiento = "La fecha de nacimiento es requerida";
-    } else {
-      const today = new Date();
-      const birthDate = new Date(formData.fechaNacimiento);
-      const age = today.getFullYear() - birthDate.getFullYear();
-      if (age < 18) {
-        newErrors.fechaNacimiento = "Debes ser mayor de 18 años";
-      }
-    }
-
-    // validar teléfono (opcional pero con formato)
-    if (formData.telefono && !/^\+?[0-9\s-()]+$/.test(formData.telefono)) {
-      newErrors.telefono = "Formato de teléfono inválido";
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(formData.fechaNacimiento)) {
+      newErrors.fechaNacimiento = "La fecha debe tener formato YYYY-MM-DD";
     }
 
     // validar región y comuna
@@ -283,20 +240,11 @@ const Register: React.FC = (): React.JSX.Element => {
       newErrors.comuna = "Selecciona una comuna";
     }
 
-    // validar código de referido (opcional)
-    if (
-      formData.codigoReferido &&
-      !validateReferralCode(formData.codigoReferido)
-    ) {
-      newErrors.codigoReferido = "Código de referido no válido";
-    }
-
-    // validar avatar (opcional)
-    if (
-      formData.avatar &&
-      !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(formData.avatar)
-    ) {
-      newErrors.avatar = "URL de avatar no válida";
+    // validar dirección
+    if (!formData.direccion.trim()) {
+      newErrors.direccion = "La dirección es requerida";
+    } else if (formData.direccion.length > 300) {
+      newErrors.direccion = "La dirección no puede exceder 300 caracteres";
     }
 
     // validar términos y condiciones
@@ -318,92 +266,92 @@ const Register: React.FC = (): React.JSX.Element => {
       return;
     }
 
-    // Verificar si el email ya existe
-    if (emailExists(formData.email)) {
-      setErrors({
-        general: "Este email ya está registrado. Usa otro o inicia sesión.",
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      // simular delay de red
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Crear nuevo usuario
-      const userId = generateUserId();
-      const referredBy = formData.codigoReferido
-        ? validateReferralCode(formData.codigoReferido)
-        : null;
-
-      const newUser: User = {
-        id: userId,
-        nombre: formData.nombre.trim(),
-        apellidos: formData.apellidos.trim(),
-        email: formData.email.trim().toLowerCase(),
-        password: formData.password, // En producción esto debería estar hasheado
-        telefono: formData.telefono || undefined,
-        fechaNacimiento: formData.fechaNacimiento || undefined,
-        region: formData.region || undefined,
-        comuna: formData.comuna || undefined,
-        direccion: formData.direccion || undefined,
-        referralCode: generateReferralCode(formData.nombre),
-        points: 0,
-        redeemedCodes: [],
-        referredBy: referredBy || undefined,
-        role: "cliente",
-        avatar: formData.avatar || undefined,
-        duocMember: isDuocEmail(formData.email),
+      // Preparar datos para el backend
+      const registerData = {
+        runUsuario: formData.run.trim(),
+        nombreUsuario: formData.nombre.trim(),
+        apellidosUsuario: formData.apellidos.trim(),
+        correoUsuario: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        fechaNacimiento: formData.fechaNacimiento,
+        region: formData.region,
+        comuna: formData.comuna,
+        direccionUsuario: formData.direccion.trim(),
       };
 
-      // Guardar usuario
-      const users = readUsers();
-      users.push(newUser);
-      writeUsers(users);
+      // Llamar al backend para registrar
+      const response = await AuthService.registro(registerData);
 
-      // Crear sesión automáticamente
-      createUserSession(newUser);
+      if (response.data) {
+        const { accessToken, refreshToken, usuario } = response.data;
 
-      // si es correo Duoc, avisar al usuario del beneficio
-      if (newUser.duocMember) {
+        // Guardar token en localStorage (el interceptor de axios lo usará)
+        localStorage.setItem("auth_token", accessToken);
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+
+        // Crear sesión con datos del usuario del backend
+        const firstName = usuario.nombre.split(" ")[0];
+        const session: UserSession = {
+          displayName: firstName,
+          loginAt: Date.now(),
+          userId: usuario.id,
+          id: usuario.id,
+          role: usuario.tipoUsuario || "cliente",
+          duocMember: usuario.descuentoDuoc || isDuocEmail(usuario.correo),
+          email: usuario.correo,
+        };
+
+        // Guardar sesión usando la función centralizada
+        saveSession(session);
+
+        // si es correo Duoc, avisar al usuario del beneficio
+        if (session.duocMember) {
+          alert(
+            "¡Felicidades! Al registrarte con un correo @duoc.cl recibirás un 20% de descuento adicional en todos los productos. Se aplicará automáticamente en tu carrito y en el checkout."
+          );
+        }
+
+        // Mensaje de éxito
         alert(
-          "¡Felicidades! Al registrarte con un correo @duoc.cl recibirás un 20% de descuento adicional en todos los productos. Se aplicará automáticamente en tu carrito y en el checkout."
+          `¡Registro exitoso, ${firstName}! Bienvenido a Level-Up Gamer.`
         );
+
+        // Limpiar formulario
+        setFormData({
+          run: "",
+          nombre: "",
+          apellidos: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          telefono: "",
+          fechaNacimiento: "",
+          region: "",
+          comuna: "",
+          direccion: "",
+          codigoReferido: "",
+          avatar: "",
+          terminos: false,
+        });
+
+        // Redirigir al home
+        navigate("/");
+
+        // Forzar recarga para actualizar header
+        window.location.reload();
       }
-
-      // Mensaje de éxito
-      const firstName = formData.nombre.split(" ")[0];
-      alert(
-        `¡Registro exitoso, ${firstName}! Bienvenido a Level-Up Gamer. Tu código de referido es: ${newUser.referralCode}`
-      );
-
-      // Limpiar formulario
-      setFormData({
-        nombre: "",
-        apellidos: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        telefono: "",
-        fechaNacimiento: "",
-        region: "",
-        comuna: "",
-        direccion: "",
-        codigoReferido: "",
-        avatar: "",
-        terminos: false,
-      });
-
-      // Redirigir al home
-      navigate("/");
-
-      // Forzar recarga para actualizar header
-      window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al registrar usuario:", error);
-      setErrors({ general: "Error al crear la cuenta. Inténtalo de nuevo." });
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          error.message || 
+                          "Error al crear la cuenta. Inténtalo de nuevo.";
+      setErrors({ general: errorMessage });
     } finally {
       setIsLoading(false);
     }

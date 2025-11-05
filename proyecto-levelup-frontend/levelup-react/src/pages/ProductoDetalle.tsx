@@ -141,11 +141,11 @@ const ProductoDetalle: React.FC = () => {
           // Mapear a formato de Review
           const reviewsBackend: Review[] = reseniasBackend.map((r: any) => ({
             id: r.id?.toString() || "",
-            productoId: prod.id,
+            productoId: prod.id.toString(),
             usuarioNombre: r.usuarioNombre || "",
             rating: r.rating || 5,
             comentario: r.comentario || "",
-            fecha: r.fechaCreacion || new Date().toISOString()
+            fecha: r.fechaCreacion || r.fechaActualizacion || new Date().toISOString()
           }));
           
           // Convertir a ReviewType para el estado
@@ -306,8 +306,13 @@ const ProductoDetalle: React.FC = () => {
     try {
       // Crear reseña en el backend
       const idUsuario = Number(session.userId || session.id || 0);
+      if (!idUsuario || idUsuario === 0) {
+        setReviewMsg("Error: Usuario no autenticado. Debes iniciar sesión para agregar una reseña.");
+        setTimeout(() => setReviewMsg(""), 3000);
+        return;
+      }
+      
       const reseniaData = {
-        idProducto: Number(producto.id),
         idUsuario: idUsuario,
         usuarioNombre: session.displayName || session.email || "Usuario",
         rating: reviewRating,
@@ -327,11 +332,11 @@ const ProductoDetalle: React.FC = () => {
       // Mapear a formato de Review
       const nuevasReviews: Review[] = reseniasBackend.map((r: any) => ({
         id: r.id?.toString() || "",
-        productoId: producto.id,
+        productoId: producto.id.toString(),
         usuarioNombre: r.usuarioNombre || "",
         rating: r.rating || 5,
         comentario: r.comentario || "",
-        fecha: r.fechaCreacion || new Date().toISOString()
+        fecha: r.fechaCreacion || r.fechaActualizacion || new Date().toISOString()
       }));
 
       setReviews(nuevasReviews.map((r, idx) => ({
@@ -406,31 +411,55 @@ const ProductoDetalle: React.FC = () => {
       // Buscar el ID de la reseña en el producto
       const reviewId = producto.reviews?.find(
         (r) => r.fecha === new Date(reviewTimestamp).toISOString() || 
-               r.id === reviewTimestamp.toString()
+               r.id === reviewTimestamp.toString() ||
+               Number(r.id) === reviewTimestamp
       )?.id;
 
       if (reviewId) {
         // Eliminar del backend
-        await ReseniaService.eliminar(Number(reviewId));
+        try {
+          await ReseniaService.eliminar(Number(reviewId));
+          
+          // Recargar reseñas desde el backend después de eliminar
+          const response = await ReseniaService.getByProducto(Number(producto.id));
+          const reseniasBackend = response.data || [];
+          
+          const reviewsActualizadas: Review[] = reseniasBackend.map((r: any) => ({
+            id: r.id?.toString() || "",
+            productoId: producto.id.toString(),
+            usuarioNombre: r.usuarioNombre || "",
+            rating: r.rating || 5,
+            comentario: r.comentario || "",
+            fecha: r.fechaCreacion || r.fechaActualizacion || new Date().toISOString()
+          }));
+
+          setReviews(reviewsActualizadas.map((r) => ({
+            rating: r.rating,
+            text: r.comentario,
+            author: r.usuarioNombre,
+            title: "",
+            ts: new Date(r.fecha).getTime()
+          })));
+
+          setProducto((prevProducto) => {
+            if (!prevProducto) return null;
+            return {
+              ...prevProducto,
+              reviews: reviewsActualizadas,
+            };
+          });
+          
+          alert("Comentario eliminado correctamente.");
+        } catch (error: any) {
+          console.error("Error al eliminar reseña del backend:", error);
+          throw error; // Re-lanzar para que se maneje en el catch externo
+        }
+      } else {
+        // Si no se encuentra el ID, eliminar del estado local como fallback
+        const nuevasReviews = reviews.filter((r) => r.ts !== reviewTimestamp);
+        setReviews(nuevasReviews);
+        alert("Comentario eliminado correctamente.");
       }
-
-      // Actualizar el estado local
-      const nuevasReviews = reviews.filter((r) => r.ts !== reviewTimestamp);
-      setReviews(nuevasReviews);
-
-      // Actualizar el producto
-      setProducto((prevProducto) => {
-        if (!prevProducto) return null;
-        return {
-          ...prevProducto,
-          reviews: prevProducto.reviews?.filter(
-            (r) => r.id !== reviewId?.toString() && 
-                   r.fecha !== new Date(reviewTimestamp).toISOString()
-          ) || [],
-        };
-      });
-
-      alert("Comentario eliminado correctamente.");
     } catch (error: any) {
       console.error("Error al eliminar reseña:", error);
       alert("Error al eliminar el comentario. Intenta nuevamente.");

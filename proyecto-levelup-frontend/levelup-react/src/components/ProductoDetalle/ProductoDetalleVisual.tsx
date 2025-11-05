@@ -182,7 +182,10 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
                   const raw = img || (producto as any).imagenUrl || (producto as any).imagen || "";
                   let resolved: string | null = null;
                   if (raw && typeof raw === "string") {
-                    if (raw.startsWith("http")) {
+                    // Si es Base64 (data:image), usarlo directamente
+                    if (raw.startsWith("data:image")) {
+                      resolved = raw;
+                    } else if (raw.startsWith("http")) {
                       resolved = raw;
                     } else if (raw.startsWith("./")) {
                       resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");
@@ -219,7 +222,10 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
           const rawMain = mainImg || (producto as any).imagenUrl || (producto as any).imagen || "";
           let resolved: string | null = null;
           if (rawMain && typeof rawMain === "string") {
-            if (rawMain.startsWith("http")) {
+            // Si es Base64 (data:image), usarlo directamente
+            if (rawMain.startsWith("data:image")) {
+              resolved = rawMain;
+            } else if (rawMain.startsWith("http")) {
               resolved = rawMain;
             } else if (rawMain.startsWith("./")) {
               resolved = import.meta.env.BASE_URL + rawMain.replace(/^\.\//, "");

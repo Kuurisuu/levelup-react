@@ -69,7 +69,10 @@ export function mapProductoDTO(dto: any): Producto {
   const rawImg = dto.imagenUrl || dto.imagen || '';
   let imagenUrlResolved = '';
   if (rawImg) {
-    if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
+    // Si es Base64 (data:image), usarlo directamente
+    if (rawImg.startsWith('data:image')) {
+      imagenUrlResolved = rawImg;
+    } else if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
       // Ya es una URL completa
       imagenUrlResolved = rawImg;
     } else {
@@ -106,7 +109,20 @@ export function mapProductoDTO(dto: any): Producto {
     disponible: dto.disponible ?? dto.activo ?? true,
     destacado: Boolean(dto.destacado ?? false),
     stock: Number(dto.stock ?? 0),
-    imagenesUrls: Array.isArray(dto.imagenesUrls) ? dto.imagenesUrls : (dto.imagenes ? JSON.parse(dto.imagenes) : []),
+    imagenesUrls: (() => {
+      let urls: string[] = [];
+      if (Array.isArray(dto.imagenesUrls)) {
+        urls = dto.imagenesUrls;
+      } else if (dto.imagenes) {
+        try {
+          urls = JSON.parse(dto.imagenes);
+        } catch (e) {
+          urls = [];
+        }
+      }
+      // Las URLs ya están en Base64 o como rutas, no necesitan procesamiento adicional
+      return urls;
+    })(),
     fabricante: dto.fabricante,
     distribuidor: dto.distribuidor,
     descuento: typeof dto.enOferta === 'boolean' && dto.enOferta ? (dto.descuento ?? 10) : dto.descuento,

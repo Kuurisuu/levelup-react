@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import axiosConfig from "../config/axios";
 import "../styles/eventos.css";
 
 // configurar iconos de leaflet para react
@@ -23,6 +24,24 @@ type Evento = {
   fecha: string;
   puntos: number;
   position: { lat: number; lng: number };
+  ciudad?: string;
+  imagen?: string;
+};
+
+// Formatear fecha para mostrar
+const formatearFechaEvento = (fecha: string): string => {
+  try {
+    const date = new Date(fecha);
+    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const dia = date.getDate();
+    const mes = meses[date.getMonth()];
+    const año = date.getFullYear();
+    const horas = date.getHours().toString().padStart(2, "0");
+    const minutos = date.getMinutes().toString().padStart(2, "0");
+    return `${dia} ${mes} ${año} — ${horas}:${minutos}`;
+  } catch {
+    return fecha;
+  }
 };
 
 type User = {
@@ -37,84 +56,58 @@ type UserSession = {
 
 const Eventos = () => {
   // estado para los eventos y mapa
+  const [eventosLevelUp, setEventosLevelUp] = useState<Evento[]>([]);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<number | null>(
     null
   );
   const [puntosUsuario, setPuntosUsuario] = useState(0);
   const [codigoInput, setCodigoInput] = useState("");
   const [mensajeCodigo, setMensajeCodigo] = useState("");
+  const [loadingEventos, setLoadingEventos] = useState(true);
 
   // referencia para el mapa
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
 
-  // datos exactos del html original
-  const eventosLevelUp: Evento[] = [
-    {
-      id: 0,
-      nombre: "Santiago Gaming Fest",
-      direccion: "Av. Presidente Balmaceda 850, Santiago",
-      lugar: "Centro Cultural Estación Mapocho",
-      fecha: "12 Jul 2025 — 11:00",
-      puntos: 100,
-      position: { lat: -33.4346, lng: -70.6514 },
-    },
-    {
-      id: 1,
-      nombre: "Viña eSports Meetup",
-      direccion: "Quinta Vergara, Viña del Mar",
-      lugar: "Quinta Vergara",
-      fecha: "26 Jul 2025 — 16:00",
-      puntos: 80,
-      position: { lat: -33.0253, lng: -71.543 },
-    },
-    {
-      id: 2,
-      nombre: "Concepción Retro Game Day",
-      direccion: "Plaza de la Independencia, Concepción",
-      lugar: "Plaza de la Independencia",
-      fecha: "09 Ago 2025 — 12:00",
-      puntos: 70,
-      position: { lat: -36.8269, lng: -73.0498 },
-    },
-    {
-      id: 3,
-      nombre: "La Serena LAN Party",
-      direccion: "Mall Plaza La Serena, La Serena",
-      lugar: "Mall Plaza La Serena",
-      fecha: "23 Ago 2025 — 14:00",
-      puntos: 60,
-      position: { lat: -29.9045, lng: -71.2506 },
-    },
-    {
-      id: 4,
-      nombre: "Antofagasta Arena Gaming",
-      direccion: "Plaza Colón, Antofagasta",
-      lugar: "Plaza Colón",
-      fecha: "06 Sep 2025 — 15:00",
-      puntos: 80,
-      position: { lat: -23.6509, lng: -70.4005 },
-    },
-    {
-      id: 5,
-      nombre: "Temuco Indie Dev Showcase",
-      direccion: "Plaza Aníbal Pinto, Temuco",
-      lugar: "Plaza Aníbal Pinto",
-      fecha: "20 Sep 2025 — 10:00",
-      puntos: 60,
-      position: { lat: -38.7359, lng: -72.5904 },
-    },
-    {
-      id: 6,
-      nombre: "Puerto Montt Game Night",
-      direccion: "Arena Puerto Montt, Puerto Montt",
-      lugar: "Arena Puerto Montt",
-      fecha: "04 Oct 2025 — 18:00",
-      puntos: 90,
-      position: { lat: -41.4723, lng: -72.9369 },
-    },
-  ];
+  // Cargar eventos desde el backend
+  useEffect(() => {
+    const cargarEventos = async () => {
+      try {
+        setLoadingEventos(true);
+        const response = await axiosConfig.get<any[]>('/eventos');
+        
+        if (response.data && response.data.length > 0) {
+          const eventosMapeados: Evento[] = response.data.map((evento: any, index: number) => ({
+            id: evento.idEvento || evento.id || index,
+            nombre: evento.nombreEvento || evento.nombre || "",
+            direccion: evento.ubicacionEvento || evento.direccion || "",
+            lugar: evento.ubicacionEvento || evento.lugar || "",
+            fecha: formatearFechaEvento(evento.fechaInicio || evento.fecha || new Date().toISOString()),
+            puntos: evento.puntosLevelUp || evento.puntos || 0,
+            position: {
+              lat: evento.coordenadasLatitud || evento.lat || 0,
+              lng: evento.coordenadasLongitud || evento.lng || 0,
+            },
+            ciudad: evento.ciudad || "",
+            imagen: evento.imagen || "",
+          }));
+          setEventosLevelUp(eventosMapeados);
+        } else {
+          // Fallback estático si no hay datos
+          setEventosLevelUp([]);
+        }
+      } catch (error) {
+        console.error("Error al cargar eventos:", error);
+        // Fallback estático en caso de error
+        setEventosLevelUp([]);
+      } finally {
+        setLoadingEventos(false);
+      }
+    };
+
+    cargarEventos();
+  }, []);
 
   // punto de referencia para abrir popup al cargar
   const referenciaLevelUp = {
@@ -183,7 +176,7 @@ const Eventos = () => {
 
   // inicializar mapa leaflet
   const initLeaflet = () => {
-    if (mapInstanceRef.current || !mapRef.current) return;
+    if (mapInstanceRef.current || !mapRef.current || eventosLevelUp.length === 0) return;
 
     try {
       // crear mapa leaflet centrado en chile
@@ -202,33 +195,49 @@ const Eventos = () => {
 
       // dibujar marcadores para cada evento
       eventosLevelUp.forEach((evento, index) => {
-        const marker = L.marker([
-          evento.position.lat,
-          evento.position.lng,
-        ]).addTo(map);
+        if (evento.position.lat && evento.position.lng) {
+          const marker = L.marker([
+            evento.position.lat,
+            evento.position.lng,
+          ]).addTo(map);
 
-        marker.on("click", () => {
-          abrirInfoLeaflet(index, marker);
-          resaltarItemLista(index);
-        });
+          marker.on("click", () => {
+            abrirInfoLeaflet(index, marker);
+            resaltarItemLista(index);
+          });
 
-        markersRef.current.push(marker);
+          markersRef.current.push(marker);
+        }
       });
 
-      // marcador de referencia
-      const ref = L.marker([
-        referenciaLevelUp.position.lat,
-        referenciaLevelUp.position.lng,
-      ]).addTo(map);
-      ref.bindPopup(referenciaLevelUp.popupHtml).openPopup();
-      map.setView(
-        [referenciaLevelUp.position.lat, referenciaLevelUp.position.lng],
-        15
-      );
+      // Si hay eventos, centrar en el primero
+      if (eventosLevelUp.length > 0 && eventosLevelUp[0].position.lat && eventosLevelUp[0].position.lng) {
+        map.setView(
+          [eventosLevelUp[0].position.lat, eventosLevelUp[0].position.lng],
+          12
+        );
+      }
     } catch (error) {
       console.error("error inicializando mapa:", error);
     }
   };
+
+  // Reinicializar mapa cuando cambien los eventos
+  useEffect(() => {
+    if (!loadingEventos && eventosLevelUp.length > 0) {
+      // Limpiar mapa anterior si existe
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+        markersRef.current = [];
+      }
+      
+      // Inicializar nuevo mapa
+      setTimeout(() => {
+        initLeaflet();
+      }, 100);
+    }
+  }, [loadingEventos, eventosLevelUp]);
 
   // abrir popup en leaflet
   const abrirInfoLeaflet = (index: number, marker: L.Marker) => {
@@ -337,9 +346,6 @@ const Eventos = () => {
   // inicializar cuando se monta el componente
   useEffect(() => {
     refreshPuntos();
-    setTimeout(() => {
-      initLeaflet();
-    }, 100);
   }, []);
 
   return (
@@ -361,24 +367,33 @@ const Eventos = () => {
           >
             <h2 style={{ marginBottom: "0.6rem" }}>Próximos eventos</h2>
             {/* la lista se construye tambien en html para accesibilidad */}
-            {eventosLevelUp.map((evento, index) => (
-              <div
-                key={evento.id}
-                className={`evento-item ${
-                  eventoSeleccionado === index ? "active" : ""
-                }`}
-                data-index={index}
-                onClick={() => handleEventoClick(index)}
-              >
-                <span className="evento-titulo">{evento.nombre}</span>
-                <span className="evento-detalle">{evento.lugar}</span>
-                <span className="evento-detalle">{evento.direccion}</span>
-                <span className="evento-detalle">Fecha: {evento.fecha}</span>
-                <span className="evento-puntos">
-                  Gana {evento.puntos} puntos LevelUp
-                </span>
-              </div>
-            ))}
+            {loadingEventos ? (
+              <div>Cargando eventos...</div>
+            ) : eventosLevelUp.length === 0 ? (
+              <div>No hay eventos disponibles</div>
+            ) : (
+              eventosLevelUp.map((evento, index) => (
+                <div
+                  key={evento.id}
+                  className={`evento-item ${
+                    eventoSeleccionado === index ? "active" : ""
+                  }`}
+                  data-index={index}
+                  onClick={() => handleEventoClick(index)}
+                >
+                  <span className="evento-titulo">{evento.nombre}</span>
+                  <span className="evento-detalle">{evento.lugar}</span>
+                  <span className="evento-detalle">{evento.direccion}</span>
+                  {evento.ciudad && (
+                    <span className="evento-detalle">Ciudad: {evento.ciudad}</span>
+                  )}
+                  <span className="evento-detalle">Fecha: {evento.fecha}</span>
+                  <span className="evento-puntos">
+                    Gana {evento.puntos} puntos LevelUp
+                  </span>
+                </div>
+              ))
+            )}
           </aside>
 
           <div className="eventos-col-derecha">

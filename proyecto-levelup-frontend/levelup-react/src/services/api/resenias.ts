@@ -4,9 +4,9 @@ import { Resenia } from '../../types/api';
 export const ReseniaService = {
   getByProducto: (productoId: number) => 
     axiosConfig.get<Resenia[]>(`/resenias/producto/${productoId}`),
-  crear: (productoId: number, resenia: Omit<Resenia, 'id'>) =>
+  crear: (productoId: number, resenia: Omit<Resenia, 'id' | 'idProducto' | 'fechaCreacion' | 'fechaActualizacion' | 'activo'>) =>
     axiosConfig.post<Resenia>(`/resenias/producto/${productoId}`, resenia),
-  actualizar: (id: number, resenia: Partial<Resenia>) =>
+  actualizar: (id: number, resenia: Partial<Omit<Resenia, 'id' | 'idProducto' | 'idUsuario' | 'fechaCreacion'>>) =>
     axiosConfig.put<Resenia>(`/resenias/${id}`, resenia),
   eliminar: (id: number) => axiosConfig.delete(`/resenias/${id}`)
 };

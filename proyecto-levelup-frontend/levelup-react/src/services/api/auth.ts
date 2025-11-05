@@ -1,10 +1,22 @@
 import axiosConfig from '../../config/axios';
-import { TokenInfo, Usuario } from '../../types/api';
+import { TokenInfo } from '../../types/api';
+
+export interface RegisterRequest {
+  runUsuario: string;
+  nombreUsuario: string;
+  apellidosUsuario: string;
+  correoUsuario: string;
+  password: string;
+  fechaNacimiento?: string;
+  region: string;
+  comuna: string;
+  direccionUsuario: string;
+}
 
 export const AuthService = {
   login: (email: string, password: string) => 
     axiosConfig.post<TokenInfo>('/auth/login', { email, password }),
-  registro: (usuario: Omit<Usuario, 'id'>) => 
+  registro: (usuario: RegisterRequest) => 
     axiosConfig.post<TokenInfo>('/auth/registro', usuario),
   refreshToken: () => axiosConfig.post<TokenInfo>('/auth/refresh'),
   logout: () => axiosConfig.post('/auth/logout'),

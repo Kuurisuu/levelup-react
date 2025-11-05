@@ -102,7 +102,10 @@ export default function ProductoCard({
             const raw = (producto as any).imagenUrl || (producto as any).imagen || "";
             let resolved: string | null = null;
             if (raw && typeof raw === "string") {
-              if (raw.startsWith("http")) {
+              // Si es Base64 (data:image), usarlo directamente
+              if (raw.startsWith("data:image")) {
+                resolved = raw;
+              } else if (raw.startsWith("http")) {
                 resolved = raw;
               } else if (raw.startsWith("./")) {
                 resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");

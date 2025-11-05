@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axiosConfig from "../config/axios";
 
 interface UserSession {
   id: string;
@@ -16,6 +17,48 @@ interface User {
   name?: string;
   displayName?: string;
   role?: string;
+}
+
+// Componente para logo dinámico
+function LogoDinamico(): React.JSX.Element {
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const cargarLogo = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosConfig.get<{ url: string; alt: string }>('/productos/logo');
+        if (response.data && response.data.url) {
+          setLogoUrl(response.data.url);
+        } else {
+          // Fallback estático
+          const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
+          setLogoUrl(base.replace(/\/$/, "") + "/logo.png");
+        }
+      } catch (error) {
+        console.error("Error al cargar logo:", error);
+        // Fallback estático en caso de error
+        const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
+        setLogoUrl(base.replace(/\/$/, "") + "/logo.png");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarLogo();
+  }, []);
+
+  if (loading) {
+    return <div style={{ width: "120px", height: "40px", backgroundColor: "#f0f0f0" }}></div>;
+  }
+
+  // Si es Base64 (data:image), usar directamente; si no, usar URL normal
+  const imagenUrl = logoUrl && logoUrl.startsWith("data:image") 
+    ? logoUrl 
+    : logoUrl || "";
+
+  return imagenUrl ? <img src={imagenUrl} alt="Logo Level Up" /> : null;
 }
 
 export default function Header(): React.JSX.Element {
@@ -322,12 +365,7 @@ export default function Header(): React.JSX.Element {
               <i className="bi bi-list"></i>
             </button>
             <Link to="/" className="logo">
-              {(() => {
-                const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
-                const logoPath = "logo.png";
-                const resolved = base.replace(/\/$/, "") + "/" + logoPath;
-                return resolved && <img src={resolved} alt="Logo Level Up" />;
-              })()}
+              <LogoDinamico />
             </Link>
           </div>
           <div className="menu-celular">

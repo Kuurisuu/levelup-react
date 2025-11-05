@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import { isDuocEmail } from "../utils/orden.helper";
+import { AuthService } from "../services/api/auth";
+import { saveSession } from "../logic/auth";
 
 interface FormData {
   emailOrName: string;
@@ -15,21 +17,14 @@ interface Errors {
   general?: string;
 }
 
-interface User {
-  id: string;
-  nombre: string;
-  apellidos?: string;
-  email: string;
-  password: string;
-  referralCode?: string;
-}
-
 interface UserSession {
   displayName: string;
   loginAt: number;
-  userId: string;
+  userId: number;
+  id: number;
   role?: string;
   duocMember?: boolean;
+  email?: string;
 }
 
 const Login: React.FC = (): React.JSX.Element => {
@@ -49,39 +44,6 @@ const Login: React.FC = (): React.JSX.Element => {
 
   // estado para loading del formulario
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // Funciones auxiliares para manejo de usuarios
-  const readUsers = (): User[] => {
-    try {
-      return JSON.parse(localStorage.getItem("lvup_users") || "[]");
-    } catch {
-      return [];
-    }
-  };
-
-  const findUser = (emailOrName: string, password: string): User | null => {
-    const users = readUsers();
-    return (
-      users.find(
-        (user) =>
-          (user.email === emailOrName || user.nombre === emailOrName) &&
-          user.password === password
-      ) || null
-    );
-  };
-
-  const saveUserSession = (user: User): void => {
-    // Extraer solo el primer nombre
-    const firstName = user.nombre.split(" ")[0];
-    const session: UserSession = {
-      displayName: firstName,
-      loginAt: Date.now(),
-      userId: user.id,
-      role: "cliente", // Por defecto cliente, podría extenderse para roles admin/vendedor
-      duocMember: isDuocEmail(user.email),
-    };
-    localStorage.setItem("lvup_user_session", JSON.stringify(session));
-  };
 
   // manejar cambios en los inputs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -105,13 +67,13 @@ const Login: React.FC = (): React.JSX.Element => {
     const newErrors: Errors = {};
 
     if (!formData.emailOrName.trim()) {
-      newErrors.emailOrName = "El nombre o email es requerido";
+      newErrors.emailOrName = "El email es requerido";
+    } else if (!/\S+@\S+\.\S+/.test(formData.emailOrName)) {
+      newErrors.emailOrName = "El email no es válido";
     }
 
     if (!formData.password.trim()) {
       newErrors.password = "La contraseña es requerida";
-    } else if (formData.password.length < 4 || formData.password.length > 10) {
-      newErrors.password = "La contraseña debe tener entre 4 y 10 caracteres";
     }
 
     setErrors(newErrors);
@@ -131,19 +93,39 @@ const Login: React.FC = (): React.JSX.Element => {
     setIsLoading(true);
 
     try {
-      // simular delay de red
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // Llamar al backend para autenticar
+      const response = await AuthService.login(
+        formData.emailOrName.trim(),
+        formData.password
+      );
 
-      // Buscar usuario en localStorage
-      const user = findUser(formData.emailOrName.trim(), formData.password);
+      if (response.data) {
+        const { accessToken, refreshToken, usuario } = response.data;
 
-      if (user) {
-        // Usuario encontrado - guardar sesión
-        saveUserSession(user);
+        // Guardar token en localStorage (el interceptor de axios lo usará)
+        localStorage.setItem("auth_token", accessToken);
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+
+        // Crear sesión con datos del usuario del backend
+        const firstName = usuario.nombre.split(" ")[0];
+        const session: UserSession = {
+          displayName: firstName,
+          loginAt: Date.now(),
+          userId: usuario.id,
+          id: usuario.id,
+          role: usuario.tipoUsuario || "cliente",
+          duocMember: usuario.descuentoDuoc || isDuocEmail(usuario.correo),
+          email: usuario.correo,
+        };
+
+        // Guardar sesión usando la función centralizada
+        saveSession(session);
 
         // Mensaje de éxito
         alert(
-          `¡Bienvenido, ${user.nombre.split(" ")[0]}! Inicio de sesión exitoso.`
+          `¡Bienvenido, ${firstName}! Inicio de sesión exitoso.`
         );
 
         // Limpiar formulario
@@ -157,16 +139,13 @@ const Login: React.FC = (): React.JSX.Element => {
 
         // Forzar recarga para actualizar header
         window.location.reload();
-      } else {
-        // Usuario no encontrado o contraseña incorrecta
-        setErrors({
-          general:
-            "Email/Usuario o contraseña incorrectos. Verifica tus credenciales.",
-        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
-      setErrors({ general: "Error al iniciar sesión. Inténtalo de nuevo." });
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Error al iniciar sesión. Verifica tus credenciales.";
+      setErrors({ general: errorMessage });
     } finally {
       setIsLoading(false);
     }

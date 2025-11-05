@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axiosConfig from "../config/axios";
 import "../styles/blog.css";
 
 type BlogPost = {
@@ -14,95 +15,97 @@ type BlogPost = {
   slug: string;
 };
 
+// Mapear categorías del backend a categorías del frontend
+const mapearCategoria = (categoriaBackend: string): string => {
+  const mapa: { [key: string]: string } = {
+    "NOTICIAS": "Noticias",
+    "INDUSTRIA": "Industria",
+    "TECNOLOGIA": "Tecnología",
+    "COMUNIDAD": "Comunidad",
+    "GUIAS": "Guías",
+    "ESPORTS": "eSports",
+    "LANZAMIENTOS": "Lanzamientos",
+    "REVIEWS": "Reviews",
+    "HARDWARE": "Hardware",
+    "SOFTWARE": "Software",
+    "STREAMING": "Streaming",
+    "RETRO": "Retro",
+  };
+  return mapa[categoriaBackend] || categoriaBackend;
+};
+
+// Formatear fecha
+const formatearFecha = (fecha: string): string => {
+  try {
+    const date = new Date(fecha);
+    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const dia = date.getDate();
+    const mes = meses[date.getMonth()];
+    const año = date.getFullYear();
+    return `${dia} ${mes} ${año}`;
+  } catch {
+    return fecha;
+  }
+};
+
+// Generar slug desde título
+const generarSlug = (titulo: string): string => {
+  return titulo
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+};
+
 const Blog = () => {
   // Blogs
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [blogsLoading, setBlogsLoading] = useState(true);
 
-  // datos de blogs estaticos
-  const blogsData = [
-    {
-      id: 1,
-      titulo: "Los juegos más esperados del resto del 2025",
-      descripcion:
-        "Descubre los títulos que marcarán el final de año en el mundo gaming. Desde secuelas épicas hasta nuevas IPs revolucionarias.",
-      categoria: "Noticias",
-      fecha: "15 Sep 2025",
-      autor: "Level-Up Team",
-      imagen: "/img/eventos/Los juegos más esperados del resto del 2025.jpg",
-      tiempoLectura: "5 min",
-      slug: "juegos-mas-esperados-2025",
-    },
-    {
-      id: 2,
-      titulo: "El crecimiento del gaming en Chile",
-      descripcion:
-        "Análisis completo sobre cómo ha evolucionado la industria gaming en nuestro país y las oportunidades que se avecinan.",
-      categoria: "Industria",
-      fecha: "12 Sep 2025",
-      autor: "Alex Ampuero",
-      imagen: "/img/eventos/Elcrecimiento.jpg",
-      tiempoLectura: "8 min",
-      slug: "crecimiento-gaming-chile",
-    },
-    {
-      id: 3,
-      titulo: "Realidad Virtual: El futuro del entretenimiento",
-      descripcion:
-        "Exploramos las últimas tecnologías VR y cómo están revolucionando la forma en que experimentamos los videojuegos.",
-      categoria: "Tecnología",
-      fecha: "10 Sep 2025",
-      autor: "Christian Mesa",
-      imagen: "/img/eventos/Realidadv.jfif",
-      tiempoLectura: "6 min",
-      slug: "realidad-virtual-futuro",
-    },
-    {
-      id: 4,
-      titulo: "Gaming Movement: Comunidades que transforman",
-      descripcion:
-        "Cómo las comunidades gaming están creando espacios inclusivos y fomentando el crecimiento del ecosistema de videojuegos.",
-      categoria: "Comunidad",
-      fecha: "08 Sep 2025",
-      autor: "Level-Up Team",
-      imagen: "/img/eventos/Gamingmov.jfif",
-      tiempoLectura: "7 min",
-      slug: "gaming-movement-comunidades",
-    },
-    {
-      id: 5,
-      titulo: "Guía completa para streamers principiantes",
-      descripcion:
-        "Todo lo que necesitas saber para comenzar tu carrera como streamer: equipamiento, plataformas, consejos y más.",
-      categoria: "Guías",
-      fecha: "05 Sep 2025",
-      autor: "Ariel Molina",
-      imagen: "/img/eventos/maxresdefault.jpg",
-      tiempoLectura: "10 min",
-      slug: "guia-streamers-principiantes",
-    },
-    {
-      id: 6,
-      titulo: "eSports en Chile: Presente y futuro",
-      descripcion:
-        "Un recorrido por el estado actual de los deportes electrónicos en Chile y las proyecciones para los próximos años.",
-      categoria: "eSports",
-      fecha: "02 Sep 2025",
-      autor: "Level-Up Team",
-      imagen: "/img/eventos/hq720.jpg",
-      tiempoLectura: "9 min",
-      slug: "esports-chile-presente-futuro",
-    },
-  ];
-
-  // cargar blogs al montar componente
+  // Cargar blogs desde el backend
   useEffect(() => {
-    setBlogsLoading(true);
-    // simular carga de datos
-    setTimeout(() => {
-      setBlogs(blogsData);
-      setBlogsLoading(false);
-    }, 1000);
+    const cargarBlogs = async () => {
+      try {
+        setBlogsLoading(true);
+        const response = await axiosConfig.get<any[]>('/contenido/articulos/publicados');
+        
+        if (response.data && response.data.length > 0) {
+          const blogsMapeados: BlogPost[] = response.data.map((articulo: any) => {
+            const imagenArticulo = articulo.imagenArticulo || articulo.imagen || "";
+            // Verificar si la imagen es Base64
+            const imagenFinal = imagenArticulo && imagenArticulo.startsWith("data:image")
+              ? imagenArticulo
+              : imagenArticulo;
+            
+            return {
+              id: articulo.idArticulo || articulo.id || 0,
+              titulo: articulo.tituloArticulo || articulo.titulo || "",
+              descripcion: articulo.resumenArticulo || articulo.descripcion || "",
+              categoria: mapearCategoria(articulo.categoriaArticulo || articulo.categoria || "NOTICIAS"),
+              fecha: formatearFecha(articulo.fechaPublicacion || articulo.fecha || new Date().toISOString()),
+              autor: articulo.autorArticulo || articulo.autor || "Level-Up Team",
+              imagen: imagenFinal,
+              tiempoLectura: articulo.tiempoLectura ? `${articulo.tiempoLectura} min` : "5 min",
+              slug: generarSlug(articulo.tituloArticulo || articulo.titulo || ""),
+            };
+          });
+          console.log("Blogs cargados:", blogsMapeados.length, "con imágenes:", blogsMapeados.filter(b => b.imagen && b.imagen.startsWith("data:image")).length);
+          setBlogs(blogsMapeados);
+        } else {
+          // Fallback estático si no hay datos
+          setBlogs([]);
+        }
+      } catch (error) {
+        console.error("Error al cargar blogs:", error);
+        // En caso de error, mantener array vacío o mostrar mensaje
+        setBlogs([]);
+      } finally {
+        setBlogsLoading(false);
+      }
+    };
+
+    cargarBlogs();
   }, []);
 
   // obtener color de categoria
@@ -152,21 +155,29 @@ const Blog = () => {
                         </div>
                       </div>
                     ))
-                  : blogs.map((blog) => (
-                      <article key={blog.id} className="tarjeta-blog">
-                        <div className="imagen-blog">
-                          <img src={blog.imagen} alt={blog.titulo} />
-                          <span
-                            className="categoria-blog"
-                            style={{
-                              backgroundColor: getCategoriaColor(
-                                blog.categoria
-                              ),
-                            }}
-                          >
-                            {blog.categoria}
-                          </span>
-                        </div>
+                  : blogs.map((blog) => {
+                      // Si es Base64 (data:image), usar directamente; si no, usar URL normal
+                      const imagenUrl = blog.imagen && blog.imagen.startsWith("data:image")
+                        ? blog.imagen
+                        : blog.imagen || "";
+                      
+                      return (
+                        <article key={blog.id} className="tarjeta-blog">
+                          <div className="imagen-blog">
+                            {imagenUrl && (
+                              <img src={imagenUrl} alt={blog.titulo} />
+                            )}
+                            <span
+                              className="categoria-blog"
+                              style={{
+                                backgroundColor: getCategoriaColor(
+                                  blog.categoria
+                                ),
+                              }}
+                            >
+                              {blog.categoria}
+                            </span>
+                          </div>
                         <div className="contenido-blog">
                           <div className="meta-blog">
                             <span>
@@ -193,7 +204,8 @@ const Blog = () => {
                           </Link>
                         </div>
                       </article>
-                    ))}
+                      );
+                    })}
               </div>
             </div>
           </div>
