@@ -191,15 +191,17 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
                       resolved = raw;
                     } 
                     // Si es ruta local, construir URL completa (fallback para compatibilidad)
-                    else {
-                      const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
+                  else {
+                      const base =
+                        ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
+                        "";
                       if (raw.startsWith("./")) {
                         resolved = import.meta.env.BASE_URL + raw.replace(/^\.\//, "");
                       } else if (raw.startsWith("/img") || raw.startsWith("img")) {
-                        const clean = raw.replace(/^\./, "");
-                        resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
+                        const clean = raw.replace(/^\./, "").replace(/^\/+/, "").replace(/^img\//, "");
+                        resolved = base ? `${base}/${clean}` : `/img/${clean}`;
                       } else {
-                        resolved = base.replace(/\/$/, "") + "/" + raw;
+                        resolved = base ? `${base}/${raw}` : `/${raw.replace(/^\/+/, '')}`;
                       }
                     }
                   }
@@ -244,14 +246,17 @@ const ProductoDetalleVisual: React.FC<ProductoDetalleVisualProps> = ({
             } 
             // Si es ruta local, construir URL completa (fallback para compatibilidad)
             else {
-              const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/img";
+              const base =
+                ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
+                "";
               if (rawMain.startsWith("./")) {
                 resolved = import.meta.env.BASE_URL + rawMain.replace(/^\.\//, "");
               } else if (rawMain.startsWith("/img") || rawMain.startsWith("img")) {
-              const clean = rawMain.replace(/^\./, "");
-              resolved = base.replace(/\/$/, "") + (clean.startsWith("/") ? "" : "/") + clean.replace(/^\//, "");
-            } else {
-              resolved = base.replace(/\/$/, "") + "/" + rawMain;
+                const clean = rawMain.replace(/^\./, "").replace(/^\/+/, "").replace(/^img\//, "");
+                resolved = base ? `${base}/${clean}` : `/img/${clean}`;
+              } else {
+                resolved = base ? `${base}/${rawMain}` : `/${rawMain.replace(/^\/+/, '')}`;
+              }
             }
           }
           return (

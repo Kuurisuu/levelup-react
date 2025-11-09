@@ -66,7 +66,9 @@ function mapCategoria(input?: string): Categoria {
 export function mapProductoDTO(dto: any): Producto {
   // Priorizar imagenUrl del backend (URL completa de S3 construida)
   // Si no existe, usar imagenS3Key (referencia S3) o imagen (compatibilidad Base64)
-  const baseImg = (import.meta as any).env?.VITE_IMAGE_BASE_URL || 'http://localhost:8003/api/v1/img';
+  const baseImg =
+    ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, '') ||
+    '';
   
   // Priorizar imagenUrl (URL completa de S3 desde el backend)
   const rawImg = dto.imagenUrl || dto.imagenS3Key || dto.imagen || '';
@@ -88,7 +90,7 @@ export function mapProductoDTO(dto: any): Producto {
       // Si ya empieza con img/, quitarlo para evitar duplicación (el baseImg ya incluye /img)
       clean = clean.replace(/^img\//, '');
       // Construir URL completa: baseImg + / + ruta limpia
-      imagenUrlResolved = baseImg.replace(/\/$/, '') + '/' + clean;
+      imagenUrlResolved = baseImg ? `${baseImg}/${clean}` : `/img/${clean}`;
     }
   }
   
@@ -142,7 +144,7 @@ export function mapProductoDTO(dto: any): Producto {
             }
             // Construir URL desde la key
             const clean = key.replace(/^\./, '').replace(/^\/+/, '').replace(/^img\//, '');
-            return baseImg.replace(/\/$/, '') + '/' + clean;
+            return baseImg ? `${baseImg}/${clean}` : `/img/${clean}`;
           });
         } catch (e) {
           urls = [];

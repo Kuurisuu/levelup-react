@@ -23,10 +23,12 @@ export default function Carrusel(): React.JSX.Element {
           setImagenes(response.data);
         } else {
           // Fallback estático si no hay datos
-          const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
+          const base =
+            ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
+            "";
           const resolveImg = (path: string) => {
-            const clean = path.replace(/^\/img\//, "").replace(/^img\//, "");
-            return base.replace(/\/$/, "") + "/" + clean;
+            const clean = path.replace(/^\/+/, "").replace(/^img\//, "");
+            return base ? `${base}/${clean}` : `/img/${clean}`;
           };
           setImagenes([
             {
@@ -52,10 +54,12 @@ export default function Carrusel(): React.JSX.Element {
       } catch (error) {
         console.error("Error al cargar carrusel:", error);
         // Fallback estático en caso de error
-        const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
+        const base =
+          ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
+          "";
         const resolveImg = (path: string) => {
-          const clean = path.replace(/^\/img\//, "").replace(/^img\//, "");
-          return base.replace(/\/$/, "") + "/" + clean;
+          const clean = path.replace(/^\/+/, "").replace(/^img\//, "");
+          return base ? `${base}/${clean}` : `/img/${clean}`;
         };
         setImagenes([
           {

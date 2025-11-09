@@ -3,27 +3,41 @@ import { SecurityHeaders } from '../types/api';
 import { healthMonitor } from './serviceHealth';
 import { ServiceRegistry } from '../services/ServiceRegistry';
 
+const env = import.meta.env;
+
+const normalize = (value?: string): string =>
+  value && value.trim().length > 0
+    ? value.trim().replace(/\/+$/, '')
+    : '';
+
+const buildUrl = (base: string, suffix: string): string =>
+  base ? `${base}${suffix.startsWith('/') ? suffix : `/${suffix}`}` : '';
+
+const GATEWAY = normalize(env.VITE_GATEWAY_URL) || normalize(env.VITE_API_URL);
+
 const MICROSERVICE_URLS = {
-  auth: 'http://localhost:8001/api/v1',
-  productos: 'http://localhost:8003/api/v1',
-  carrito: 'http://localhost:8008/api/v1',
-  pedidos: 'http://localhost:8085/api/v1',
-  pagos: 'http://localhost:8011/api/v1',
-  eventos: 'http://localhost:8092',
-  contenido: 'http://localhost:8093',
-  resenia: 'http://localhost:8010/api/v1',
-  promociones: 'http://localhost:8091/api/v1',
-  referidos: 'http://localhost:8005/api/v1',
-  gateway: 'http://localhost:8094/api/v1',
-  imageBaseUrl: 'http://localhost:8003/api/v1/img',
+  gateway: GATEWAY,
+  auth: normalize(env.VITE_AUTH_URL) || buildUrl(GATEWAY, '/auth'),
+  productos: normalize(env.VITE_PRODUCTOS_URL) || buildUrl(GATEWAY, '/productos'),
+  carrito: normalize(env.VITE_CARRITO_URL) || buildUrl(GATEWAY, '/carrito'),
+  pedidos: normalize(env.VITE_PEDIDOS_URL) || buildUrl(GATEWAY, '/pedidos'),
+  pagos: normalize(env.VITE_PAGOS_URL) || buildUrl(GATEWAY, '/pagos'),
+  eventos: normalize(env.VITE_EVENTOS_URL) || buildUrl(GATEWAY, '/eventos'),
+  contenido: normalize(env.VITE_CONTENIDO_URL) || buildUrl(GATEWAY, '/contenido'),
+  resenia: normalize(env.VITE_RESENIA_URL) || buildUrl(GATEWAY, '/resenias'),
+  promociones: normalize(env.VITE_PROMOCIONES_URL) || buildUrl(GATEWAY, '/promociones'),
+  referidos: normalize(env.VITE_REFERIDOS_URL) || buildUrl(GATEWAY, '/referidos'),
+  imageBaseUrl:
+    normalize(env.VITE_IMAGE_BASE_URL) ||
+    buildUrl(normalize(env.VITE_PRODUCTOS_URL) || buildUrl(GATEWAY, '/productos'), '/img'),
 };
 
 // Bypass de health por defecto si no está configurado
-const BYPASS_HEALTH = (import.meta as any).env?.VITE_BYPASS_HEALTH !== 'false';
+const BYPASS_HEALTH = (env as any)?.VITE_BYPASS_HEALTH !== 'false';
 
 // Configuración base de axios
 const axiosConfig = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || MICROSERVICE_URLS.productos,
+  baseURL: MICROSERVICE_URLS.gateway || MICROSERVICE_URLS.productos,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'

@@ -29,7 +29,16 @@ export class ServiceRegistry {
     }
 
     static getFallbackService(service: string): string {
-        const gateway = (import.meta as any).env?.VITE_GATEWAY_URL || 'http://localhost:8080/api/v1';
-        return gateway;
+        const gateway =
+            ((import.meta as any).env?.VITE_GATEWAY_URL as string | undefined)?.trim();
+        if (gateway && gateway.length > 0) {
+            return gateway.replace(/\/+$/, '');
+        }
+        const fallback =
+            ((import.meta as any).env?.VITE_API_URL as string | undefined)?.trim();
+        if (fallback && fallback.length > 0) {
+            return fallback.replace(/\/+$/, '');
+        }
+        return window.location.origin;
     }
 }

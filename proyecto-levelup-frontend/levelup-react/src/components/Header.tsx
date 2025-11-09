@@ -33,14 +33,18 @@ function LogoDinamico(): React.JSX.Element {
           setLogoUrl(response.data.url);
         } else {
           // Fallback estático
-          const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
-          setLogoUrl(base.replace(/\/$/, "") + "/logo.png");
+          const base =
+            ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
+            "";
+          setLogoUrl(base ? `${base}/logo.png` : "/img/logo.png");
         }
       } catch (error) {
         console.error("Error al cargar logo:", error);
         // Fallback estático en caso de error
-        const base = (import.meta as any).env?.VITE_IMAGE_BASE_URL || "http://localhost:8003/api/v1/img";
-        setLogoUrl(base.replace(/\/$/, "") + "/logo.png");
+        const base =
+          ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
+            "";
+        setLogoUrl(base ? `${base}/logo.png` : "/img/logo.png");
       } finally {
         setLoading(false);
       }
