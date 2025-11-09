@@ -68,8 +68,7 @@ export function mapProductoDTO(dto: any): Producto {
   // Si no existe, usar imagenS3Key (referencia S3) o imagen (compatibilidad Base64)
   const baseImg =
     ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, '') ||
-    '';
-  
+  '';
   // Priorizar imagenUrl (URL completa de S3 desde el backend)
   const rawImg = dto.imagenUrl || dto.imagenS3Key || dto.imagen || '';
   let imagenUrlResolved = '';
