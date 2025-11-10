@@ -49,9 +49,14 @@ const axiosConfig = axios.create({
 
 // Interceptor para enrutar a diferentes microservicios
 axiosConfig.interceptors.request.use(async config => {
-  const url = config.url || '';
-  const pathParts = url.split('/').filter(p => p);
-  const service = pathParts[0] || 'productos';
+  const originalUrl = config.url || '';
+  const queryIndex = originalUrl.indexOf('?');
+  const pathPart = queryIndex >= 0 ? originalUrl.slice(0, queryIndex) : originalUrl;
+  const queryPart = queryIndex >= 0 ? originalUrl.slice(queryIndex) : '';
+
+  const segments = pathPart.replace(/^\/+/, '').split('/').filter(Boolean);
+  const service = segments[0] || 'productos';
+  const remainingSegments = segments.slice(1);
   
   // Mapeo de servicios
   const serviceMap: { [key: string]: string } = {
@@ -70,6 +75,20 @@ axiosConfig.interceptors.request.use(async config => {
   };
   
   const targetUrl = serviceMap[service] || MICROSERVICE_URLS.productos;
+  let cleanedPath = remainingSegments.length > 0 ? `/${remainingSegments.join('/')}` : '/';
+  if (!cleanedPath.startsWith('/')) {
+    cleanedPath = `/${cleanedPath}`;
+  }
+  let finalUrl = cleanedPath;
+  if (cleanedPath === '/') {
+    finalUrl = queryPart ? queryPart : '';
+  } else if (queryPart) {
+    finalUrl += queryPart;
+  }
+  if (finalUrl === '//') {
+    finalUrl = '/';
+  }
+  config.url = finalUrl;
   
   // Bypass health por defecto en desarrollo a menos que se fuerce false
   if (BYPASS_HEALTH) {

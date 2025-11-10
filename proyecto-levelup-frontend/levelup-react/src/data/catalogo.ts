@@ -304,8 +304,35 @@ export const obtenerCategorias = async (): Promise<Categoria[]> => {
 };
 
 export const obtenerImagenesCarrusel = async (): Promise<ImagenCarrusel[]> => {
-  const response = await axiosConfig.get<ImagenCarrusel[]>('/productos/carrusel');
-  return response.data;
+  const base =
+    ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, '') || '';
+  const resolveImg = (path: string) => {
+    const clean = path.replace(/^\/+/, '').replace(/^img\//, '');
+    return base ? `${base}/${clean}` : `/img/${clean}`;
+  };
+  return [
+    {
+      id: 1,
+      imagenUrl: resolveImg('/img/carrusel.png'),
+      titulo: '!Bienvenido a Level-Up Gamer!',
+      descripcion: 'La tienda gamer lider en todo Chile',
+      enlace: '/',
+    },
+    {
+      id: 2,
+      imagenUrl: resolveImg('/img/play5white.png'),
+      titulo: 'Explora nuestros productos gamer de alta calidad',
+      descripcion: 'Una gama completa de productos para potenciar tu experiencia',
+      enlace: '/producto',
+    },
+    {
+      id: 3,
+      imagenUrl: resolveImg('/img/monitorasus.png'),
+      titulo: 'Noticias y guias del mundo gamer',
+      descripcion: 'Mantente al dia con nuestro gaming hub',
+      enlace: '/gaming-hub',
+    },
+  ];
 };
 
 // Backwards-compatible static exports expected by legacy components
