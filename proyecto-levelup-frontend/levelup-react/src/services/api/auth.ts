@@ -14,9 +14,12 @@ export interface RegisterRequest {
 }
 
 export const AuthService = {
-  login: (email: string, password: string) => 
-    axiosConfig.post<TokenInfo>('/auth/login', { email, password }),
-  registro: (usuario: RegisterRequest) => 
+  login: (correoUsuario: string, password: string) =>
+    axiosConfig.post<TokenInfo>("/auth/login", {
+      correoUsuario,
+      password,
+    }),
+  registro: (usuario: RegisterRequest) =>
     axiosConfig.post<TokenInfo>('/auth/registro', usuario),
   refreshToken: () => axiosConfig.post<TokenInfo>('/auth/refresh'),
   logout: () => axiosConfig.post('/auth/logout'),
