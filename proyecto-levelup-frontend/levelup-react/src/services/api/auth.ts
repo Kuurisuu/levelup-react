@@ -11,6 +11,9 @@ export interface RegisterRequest {
   region: string;
   comuna: string;
   direccionUsuario: string;
+  telefono?: string;
+  codigoReferido?: string;
+  aceptaMarketing?: boolean;
 }
 
 export const AuthService = {
@@ -20,7 +23,7 @@ export const AuthService = {
       password,
     }),
   registro: (usuario: RegisterRequest) =>
-    axiosConfig.post<TokenInfo>('/auth/registro', usuario),
+    axiosConfig.post<TokenInfo>('/auth/register', usuario),
   refreshToken: () => axiosConfig.post<TokenInfo>('/auth/refresh'),
   logout: () => axiosConfig.post('/auth/logout'),
   verificarEmail: (token: string) => 

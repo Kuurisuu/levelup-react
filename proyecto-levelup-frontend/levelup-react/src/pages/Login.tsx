@@ -66,10 +66,15 @@ const Login: React.FC = (): React.JSX.Element => {
   const validateForm = (): boolean => {
     const newErrors: Errors = {};
 
-    if (!formData.emailOrName.trim()) {
-      newErrors.emailOrName = "El email es requerido";
-    } else if (!/\S+@\S+\.\S+/.test(formData.emailOrName)) {
-      newErrors.emailOrName = "El email no es válido";
+    const identifier = formData.emailOrName.trim();
+    if (!identifier) {
+      newErrors.emailOrName = "Ingresa tu correo o nombre";
+    } else if (identifier.includes("@")) {
+      if (!/\S+@\S+\.\S+/.test(identifier)) {
+        newErrors.emailOrName = "El correo no es válido";
+      }
+    } else if (identifier.length < 2) {
+      newErrors.emailOrName = "El nombre debe tener al menos 2 caracteres";
     }
 
     if (!formData.password.trim()) {
@@ -90,12 +95,14 @@ const Login: React.FC = (): React.JSX.Element => {
       return;
     }
 
+    const identifier = formData.emailOrName.trim();
+
     setIsLoading(true);
 
     try {
       // Llamar al backend para autenticar
       const response = await AuthService.login(
-        formData.emailOrName.trim(),
+        identifier,
         formData.password
       );
 
@@ -181,7 +188,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 type="text"
                 id="emailOrName"
                 name="emailOrName"
-                placeholder="Nombre o Correo Electrónico"
+              placeholder="Nombre o Correo Electrónico"
                 value={formData.emailOrName}
                 onChange={handleInputChange}
                 className={errors.emailOrName ? "error" : ""}

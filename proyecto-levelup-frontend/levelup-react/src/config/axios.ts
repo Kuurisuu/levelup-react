@@ -19,6 +19,7 @@ const MICROSERVICE_URLS = {
   gateway: GATEWAY,
   auth: normalize(env.VITE_AUTH_URL) || buildUrl(GATEWAY, '/auth'),
   productos: normalize(env.VITE_PRODUCTOS_URL) || buildUrl(GATEWAY, '/productos'),
+  usuarios: normalize((env as any).VITE_USUARIOS_URL) || buildUrl(GATEWAY, '/usuarios'),
   carrito: normalize(env.VITE_CARRITO_URL) || buildUrl(GATEWAY, '/carrito'),
   pedidos: normalize(env.VITE_PEDIDOS_URL) || buildUrl(GATEWAY, '/pedidos'),
   pagos: normalize(env.VITE_PAGOS_URL) || buildUrl(GATEWAY, '/pagos'),
@@ -62,6 +63,7 @@ axiosConfig.interceptors.request.use(async config => {
   const serviceMap: { [key: string]: string } = {
     'auth': MICROSERVICE_URLS.auth,
     'productos': MICROSERVICE_URLS.productos,
+    'usuarios': MICROSERVICE_URLS.usuarios,
     'carrito': MICROSERVICE_URLS.carrito,
     'pedidos': MICROSERVICE_URLS.pedidos,
     'pagos': MICROSERVICE_URLS.pagos,

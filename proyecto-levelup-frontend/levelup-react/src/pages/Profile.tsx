@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/profile.css";
 import { REGIONES } from "../utils/regiones";
+import { UsuarioService } from "../services/api/usuario";
 import AvatarSection from "../components/Profile/AvatarSection";
 import PersonalInfoForm from "../components/Profile/PersonalInfoForm";
 import PointsSection from "../components/Profile/PointsSection";
@@ -221,23 +222,87 @@ const Profile = () => {
 
   // Cargar datos del usuario al montar componente
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("lvup_user_session");
-      const usersRaw = localStorage.getItem("lvup_users");
-      const users = usersRaw ? JSON.parse(usersRaw) : [];
+    const loadProfile = async () => {
+      setIsLoading(true);
+      const rawSession = localStorage.getItem("lvup_user_session");
+      if (!rawSession) {
+        setIsLoading(false);
+        return;
+      }
 
-      if (raw) {
-        const session = JSON.parse(raw);
-        // Intentar encontrar el usuario en lvup_users por userId
+      let session: any = null;
+      try {
+        session = JSON.parse(rawSession);
+      } catch {
+        session = null;
+      }
+
+      let data: UserData | null = null;
+      let userIdentifier: string | null = session?.userId ?? null;
+
+      try {
+        const response = await UsuarioService.getPerfil();
+        const perfil = response.data;
+        let fechaNac = "";
+        if (perfil.fechaNacimiento) {
+          const rawFecha = perfil.fechaNacimiento as string;
+          fechaNac = rawFecha.length >= 10 ? rawFecha.substring(0, 10) : rawFecha;
+        }
+
+        data = {
+          nombre: perfil.nombre || perfil.nombreCompleto || "",
+          apellidos: perfil.apellido || "",
+          email: perfil.correo || "",
+          telefono: perfil.telefono || "",
+          fechaNacimiento: fechaNac,
+          region: perfil.region || "",
+          comuna: perfil.comuna || "",
+          direccion: perfil.direccion || "",
+          avatar: perfil.avatarUrl || null,
+          referralCode: perfil.codigoReferido || "",
+          points: typeof perfil.puntosLevelUp === "number" ? perfil.puntosLevelUp : 0,
+        };
+
+        if (perfil.idUsuario) {
+          userIdentifier = perfil.idUsuario.toString();
+        }
+
+        // Persistir datos completos en localStorage para reutilizarlos
+        const usersRaw = localStorage.getItem("lvup_users");
+        const users = usersRaw ? JSON.parse(usersRaw) : [];
+        const payload = {
+          id: perfil.idUsuario,
+          nombre: data.nombre,
+          apellidos: data.apellidos,
+          email: data.email,
+          telefono: data.telefono,
+          fechaNacimiento: data.fechaNacimiento,
+          region: data.region,
+          comuna: data.comuna,
+          direccion: data.direccion,
+          avatar: data.avatar,
+          referralCode: data.referralCode,
+          points: data.points,
+        };
+
+        const idx = users.findIndex(
+          (u: any) => (u.id || u.idUsuario) === perfil.idUsuario
+        );
+        if (idx >= 0) {
+          users[idx] = { ...users[idx], ...payload };
+        } else {
+          users.push(payload);
+        }
+        localStorage.setItem("lvup_users", JSON.stringify(users));
+      } catch (apiError) {
+        console.error("No se pudo cargar el perfil desde la API:", apiError);
+        // Fallback a información persistida en localStorage
+        const usersRaw = localStorage.getItem("lvup_users");
+        const users = usersRaw ? JSON.parse(usersRaw) : [];
         const found =
-          users.find((u: any) => u.id === session.userId) || session;
+          users.find((u: any) => u.id === session?.userId) || session || {};
 
-        // Setear userId para badge/copy
-        setUserId(found.id || session.userId || null);
-
-        // Construir objeto de datos del usuario
-
-        const data: UserData = {
+        data = {
           nombre: found.nombre || found.displayName || "",
           apellidos: found.apellidos || found.apellido || "",
           email: found.email || "",
@@ -256,15 +321,17 @@ const Profile = () => {
               ? found.points
               : (session && (session.points as number)) || 0,
         };
-
-        setUserData(data);
-        originalRef.current = data;
+      } finally {
+        if (data) {
+          setUserData(data);
+          originalRef.current = data;
+        }
+        setUserId(userIdentifier ? userIdentifier.toString() : null);
+        setIsLoading(false);
       }
-    } catch (err) {
-      // Ignorar
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    loadProfile();
   }, []);
 
   const handleCopyId = async () => {

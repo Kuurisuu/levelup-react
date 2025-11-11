@@ -179,10 +179,10 @@ const Register: React.FC = (): React.JSX.Element => {
     const newErrors: RegisterErrors = {};
 
     // validar RUN
-    if (!formData.run.trim()) {
-      newErrors.run = "El RUN es requerido";
-    } else if (!/^[0-9]{7,8}[0-9Kk]$/.test(formData.run.trim())) {
-      newErrors.run = "El RUN debe tener formato válido (ej: 12345678-9)";
+    if (formData.run.trim()) {
+      if (!/^[0-9]{7,8}[0-9Kk]$/.test(formData.run.trim())) {
+        newErrors.run = "El RUN debe tener formato válido (ej: 123456789)";
+      }
     }
 
     // validar nombre
@@ -211,8 +211,8 @@ const Register: React.FC = (): React.JSX.Element => {
     // validar contraseña
     if (!formData.password) {
       newErrors.password = "La contraseña es requerida";
-    } else if (formData.password.length < 8 || formData.password.length > 100) {
-      newErrors.password = "La contraseña debe tener entre 8 y 100 caracteres";
+    } else if (formData.password.length < 4 || formData.password.length > 10) {
+      newErrors.password = "La contraseña debe tener entre 4 y 10 caracteres";
     } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/.test(formData.password)) {
       newErrors.password = "La contraseña debe contener al menos: 1 minúscula, 1 mayúscula y 1 número";
     }
@@ -280,6 +280,9 @@ const Register: React.FC = (): React.JSX.Element => {
         region: formData.region,
         comuna: formData.comuna,
         direccionUsuario: formData.direccion.trim(),
+        telefono: formData.telefono.trim() || undefined,
+        codigoReferido: formData.codigoReferido.trim() || undefined,
+        aceptaMarketing: false,
       };
 
       // Llamar al backend para registrar
