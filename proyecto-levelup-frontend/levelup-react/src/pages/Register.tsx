@@ -270,8 +270,9 @@ const Register: React.FC = (): React.JSX.Element => {
 
     try {
       // Preparar datos para el backend
+      const runLimpio = formData.run.trim();
       const registerData = {
-        runUsuario: formData.run.trim(),
+        runUsuario: runLimpio !== "" ? runLimpio : undefined,
         nombreUsuario: formData.nombre.trim(),
         apellidosUsuario: formData.apellidos.trim(),
         correoUsuario: formData.email.trim().toLowerCase(),
