@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/register.css";
 import { isDuocEmail } from "../utils/orden.helper";
 import { AuthService } from "../services/api/auth";
+import { UsuarioService } from "../services/api/usuario";
 import { saveSession } from "../logic/auth";
 
 interface RegisterFormData {
@@ -67,11 +68,18 @@ interface User {
 interface UserSession {
   displayName: string;
   loginAt: number;
-  userId: number;
-  id: number;
+  userId: string;
+  id: string;
   role?: string;
   duocMember?: boolean;
   email?: string;
+  apellidos?: string;
+  region?: string;
+  comuna?: string;
+  direccion?: string;
+  telefono?: string;
+  fechaNacimiento?: string;
+  codigoReferido?: string;
 }
 
 const Register: React.FC = (): React.JSX.Element => {
@@ -298,20 +306,79 @@ const Register: React.FC = (): React.JSX.Element => {
           localStorage.setItem("refresh_token", refreshToken);
         }
 
-        // Crear sesión con datos del usuario del backend
-        const firstName = usuario.nombre.split(" ")[0];
+        // Intentar obtener el perfil completo inmediatamente después del registro/autologin
+        let perfilCompleto: any = null;
+        try {
+          const perfilResponse = await UsuarioService.getPerfil();
+          perfilCompleto = perfilResponse.data;
+        } catch (perfilError) {
+          console.warn("No se pudo recuperar el perfil completo tras el registro", perfilError);
+        }
+
+        const idFinal = perfilCompleto?.id ?? perfilCompleto?.idUsuario ?? usuario.id;
+        const correoFinal = (perfilCompleto?.correo ?? perfilCompleto?.correoUsuario ?? usuario.correo)?.toLowerCase();
+        const nombreFinal = perfilCompleto?.nombre ?? perfilCompleto?.nombreUsuario ?? usuario.nombre;
+        const apellidosFinal = perfilCompleto?.apellidos ?? perfilCompleto?.apellidosUsuario ?? usuario.apellidos ?? "";
+        const regionFinal = perfilCompleto?.region ?? usuario.region ?? registerData.region;
+        const comunaFinal = perfilCompleto?.comuna ?? usuario.comuna ?? registerData.comuna;
+        const direccionFinal = perfilCompleto?.direccion ?? perfilCompleto?.direccionUsuario ?? registerData.direccionUsuario ?? "";
+        const telefonoFinal = perfilCompleto?.telefono ?? registerData.telefono ?? "";
+        const descuentoDuoc = perfilCompleto?.descuentoDuoc ?? usuario.descuentoDuoc ?? isDuocEmail(correoFinal || "");
+        const firstName = (nombreFinal || "").split(" ")[0] || nombreFinal || usuario.nombre;
+
+        // Crear sesión unificada
         const session: UserSession = {
           displayName: firstName,
           loginAt: Date.now(),
-          userId: usuario.id,
-          id: usuario.id,
-          role: usuario.tipoUsuario || "cliente",
-          duocMember: usuario.descuentoDuoc || isDuocEmail(usuario.correo),
-          email: usuario.correo,
+          userId: String(idFinal),
+          id: String(idFinal),
+          role: perfilCompleto?.tipoUsuario ?? usuario.tipoUsuario ?? "cliente",
+          duocMember: descuentoDuoc,
+          email: correoFinal,
+          apellidos: apellidosFinal,
+          region: regionFinal,
+          comuna: comunaFinal,
+          direccion: direccionFinal,
+          telefono: telefonoFinal,
+          fechaNacimiento: perfilCompleto?.fechaNacimiento ?? registerData.fechaNacimiento ?? "",
+          codigoReferido: perfilCompleto?.codigoReferido ?? "",
         };
 
         // Guardar sesión usando la función centralizada
         saveSession(session);
+
+        // Sincronizar estructura legacy lvup_users para módulos antiguos (checkout, etc.)
+        try {
+          const usersKey = "lvup_users";
+          const usersRaw = localStorage.getItem(usersKey);
+          const users = usersRaw ? JSON.parse(usersRaw) : [];
+
+          const nuevoRegistro = {
+            id: String(session.id),
+            nombre: nombreFinal || firstName,
+            apellidos: apellidosFinal,
+            email: correoFinal,
+            telefono: telefonoFinal,
+            direccion: direccionFinal,
+            region: regionFinal,
+            comuna: comunaFinal,
+            password: registerData.password,
+            fechaNacimiento: perfilCompleto?.fechaNacimiento ?? registerData.fechaNacimiento ?? "",
+            genero: perfilCompleto?.genero ?? "",
+            referralCode: perfilCompleto?.codigoReferido ?? "",
+          };
+
+          const existingIndex = users.findIndex((u: any) => String(u.id) === nuevoRegistro.id);
+          if (existingIndex >= 0) {
+            users[existingIndex] = { ...users[existingIndex], ...nuevoRegistro };
+          } else {
+            users.push(nuevoRegistro);
+          }
+
+          localStorage.setItem(usersKey, JSON.stringify(users));
+        } catch (syncError) {
+          console.warn("No se pudo sincronizar lvup_users después del registro", syncError);
+        }
 
         // si es correo Duoc, avisar al usuario del beneficio
         if (session.duocMember) {
@@ -343,11 +410,8 @@ const Register: React.FC = (): React.JSX.Element => {
           terminos: false,
         });
 
-        // Redirigir al home
+        // Redirigir al home sin recargar toda la SPA
         navigate("/");
-
-        // Forzar recarga para actualizar header
-        window.location.reload();
       }
     } catch (error: any) {
       console.error("Error al registrar usuario:", error);

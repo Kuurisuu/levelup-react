@@ -22,28 +22,33 @@ export default function ProductoCard({
 
   // Calcular rating usando la nueva función
   const estadisticasRating = obtenerEstadisticasRating(producto);
-  const rating = Math.max(0, Math.min(5, estadisticasRating.promedio)); //lo que hace es que el rating sea entre 0 y 5
-  const usuariosUnicos = estadisticasRating.usuariosUnicos; //setea el numero de usuarios unicos
+  const rating = Math.max(0, Math.min(5, estadisticasRating.promedio));
+  const usuariosUnicos = estadisticasRating.usuariosUnicos;
 
   const stars = Array.from({ length: 5 }, (_, i) => (
     <i key={i} className={`bi ${i < rating ? "bi-star-fill" : "bi-star"}`} />
   ));
 
-  // calcular precio con descuentos (incluyendo beneficio Duoc)
-  const existingPercent = (() => {
-    if (typeof (producto as any).descuento === "number")
-      return (producto as any).descuento as number;
+  const precioBase = Math.max(0, Math.round(Number(producto.precio ?? 0)));
+  const descuentoBackend = (() => {
+    if (producto.descuento != null) {
+      return Number(producto.descuento);
+    }
     if (
-      producto.precioConDescuento &&
-      producto.precioConDescuento < producto.precio
+      producto.precioConDescuento != null &&
+      precioBase > 0 &&
+      Number(producto.precioConDescuento) < precioBase
     ) {
-      return Math.round(
-        ((producto.precio - producto.precioConDescuento!) / producto.precio) *
-          100
-      );
+      const diff = precioBase - Number(producto.precioConDescuento);
+      return (diff / precioBase) * 100;
     }
     return 0;
   })();
+
+  let precioCalculado = producto.precioConDescuento ??
+    (descuentoBackend > 0
+      ? precioBase * (1 - descuentoBackend / 100)
+      : precioBase);
 
   // detectar si el usuario es de Duoc
   let duocMember = false;
@@ -57,15 +62,17 @@ export default function ProductoCard({
     duocMember = false;
   }
 
-  // sumar los descuentos
-  const combinedPercent = existingPercent + (duocMember ? 20 : 0);
-  const precioAntes = producto.precio;
-  const precioAhora =
-    combinedPercent > 0
-      ? Math.round(precioAntes * (1 - combinedPercent / 100))
-      : precioAntes;
-  const tieneDescuento = combinedPercent > 0;
-  const porcentajeDescuento = combinedPercent;
+  if (duocMember && precioBase > 0) {
+    const extra = precioCalculado * 0.20;
+    precioCalculado = precioCalculado - extra;
+  }
+
+  const precioAhora = Math.max(0, Math.round(precioCalculado));
+  const precioAntes = precioBase;
+  const tieneDescuento = precioAhora < precioAntes;
+  const porcentajeDescuentoFinal = tieneDescuento && precioAntes > 0
+    ? Math.max(0, Math.round(((precioAntes - precioAhora) / precioAntes) * 10000) / 100)
+    : 0;
 
   return (
     <div
@@ -81,7 +88,7 @@ export default function ProductoCard({
         <div className="producto-imagen-container">
           {tieneDescuento && (
             <div className="producto-descuento-badge">
-              {porcentajeDescuento}% OFF
+              {porcentajeDescuentoFinal}% OFF
             </div>
           )}
 
@@ -95,10 +102,14 @@ export default function ProductoCard({
           </div>
 
           {/* Código del producto en la esquina inferior izquierda */}
-          <div className="producto-codigo-badge">{producto.id}</div>
+          {(producto.codigo || (producto as any).codigoProducto) && (
+            <div className="producto-codigo-badge">
+              {producto.codigo}
+            </div>
+          )}
 
           {(() => {
-            const raw = (producto as any).imagenUrl || (producto as any).imagen || "";
+            const raw = producto.imagenUrl || "";
             let resolved: string | null = null;
             
             if (raw && typeof raw === "string") {
@@ -151,8 +162,13 @@ export default function ProductoCard({
 
             {/* Categoría (se muestra debajo del título) */}
             <p className="producto-categoria">
-              {categoria.nombre}{" "}
-              {subcategoria ? `• ${subcategoria.nombre}` : ""}
+              {categoria?.nombre || producto.categoriaNombre || "Consola"}
+              {subcategoria?.nombre || producto.subcategoriaNombre ? (
+                <>
+                  {" • "}
+                  {subcategoria?.nombre || producto.subcategoriaNombre}
+                </>
+              ) : null}
             </p>
 
             {/* Descripción con scroll */}

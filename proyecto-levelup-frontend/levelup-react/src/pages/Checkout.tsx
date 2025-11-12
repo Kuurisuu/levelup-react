@@ -8,6 +8,7 @@ import CompraExitosa from "../components/Checkout/CompraExitosa";
 import CompraFallida from "../components/Checkout/CompraFallida";
 import { getCarrito, vaciarCarrito } from "../logic/carrito";
 import { ProductoEnCarrito } from "../logic/storage";
+import { UsuarioService } from "../services/api/usuario";
 import {
   DatosEnvio,
   OrdenCompra,
@@ -30,6 +31,7 @@ import {
   obtenerDatosTarjeta,
   limpiarDatosCheckout,
 } from "../utils/checkout.helper";
+import { saveSession } from "../logic/auth";
 
 // ESTE CHECKOUT ES PARA LA PASARELA DE PAGO Y EL RESUMEN DE LA COMPRA
 
@@ -37,21 +39,30 @@ import {
 interface User {
   id: string;
   nombre: string;
-  apellido: string;
+  apellidos?: string;
+  apellido?: string;
   email: string;
-  telefono: string;
-  direccion: string;
-  region: string;
-  comuna: string;
-  password: string;
-  fechaNacimiento: string;
-  genero: string;
-  referralCode: string;
+  telefono?: string;
+  direccion?: string;
+  region?: string;
+  comuna?: string;
+  password?: string;
+  fechaNacimiento?: string;
+  genero?: string;
+  referralCode?: string;
 }
 
-interface UserSession {
-  userId: string;
-  loginTime: number; //servira para validar si el usuario esta logueado
+interface StoredSession {
+  userId?: string | number;
+  id?: string | number;
+  displayName?: string;
+  apellidos?: string;
+  email?: string;
+  region?: string;
+  comuna?: string;
+  telefono?: string;
+  direccion?: string;
+  duocMember?: boolean;
 }
 
 //definimos el tipo de dato que puede ser el paso del checkout para lograr un mejor control de los pasos
@@ -78,11 +89,13 @@ const Checkout: React.FC = (): React.JSX.Element => {
 
   // Cargar datos iniciales es decir cuando se carga la pagina
   useEffect(() => {
-    //useEffect es un hook que se ejecuta cuando el componente se monta
-    cargarDatosIniciales();
-  }, []); // [] es el array de dependencias y se ejecuta cuando el componente se monta osea a palabras simples si no hay dependencias se ejecuta solo una vez
+    const init = async () => {
+      await cargarDatosIniciales();
+    };
+    void init();
+  }, []);
 
-  function cargarDatosIniciales(): void {
+  async function cargarDatosIniciales(): Promise<void> {
     // Cargar productos del carrito
     const productosCarrito = getCarrito();
     if (productosCarrito.length === 0) {
@@ -93,7 +106,19 @@ const Checkout: React.FC = (): React.JSX.Element => {
     setProductos(productosCarrito);
 
     // Cargar usuario logueado si existe
-    const usuario = getCurrentUser();
+    let session = obtenerSesionLocal();
+
+    if (!session) {
+      session = await reconstruirSesionDesdeBackend();
+    }
+
+    if (!session) {
+      alert("Debes iniciar sesión para proceder con la compra");
+      navigate("/login");
+      return;
+    }
+
+    const usuario = await obtenerUsuarioDesdeSesion(session);
     setUsuarioLogueado(usuario);
 
     // Verificar si el usuario está logueado
@@ -128,16 +153,192 @@ const Checkout: React.FC = (): React.JSX.Element => {
     }); // Debug
   }
 
-  // funcion para obtener el usuario logueado
-  function getCurrentUser(): User | null {
+  function obtenerSesionLocal(): StoredSession | null {
     try {
       const session = localStorage.getItem("lvup_user_session");
       if (!session) return null;
+      return JSON.parse(session) as StoredSession;
+    } catch (error) {
+      console.warn("No se pudo leer lvup_user_session", error);
+      return null;
+    }
+  }
 
-      const sessionData: UserSession = JSON.parse(session);
-      const users = JSON.parse(localStorage.getItem("lvup_users") || "[]");
-      return users.find((u: User) => u.id === sessionData.userId) || null;
-    } catch {
+  async function obtenerUsuarioDesdeSesion(session: StoredSession): Promise<User | null> {
+    const possibleId = session.userId ?? session.id;
+    const userId = possibleId != null ? String(possibleId) : "";
+
+    if (!userId) {
+      return null;
+    }
+
+    // Revisar cache legacy
+    try {
+      const usersRaw = localStorage.getItem("lvup_users");
+      if (usersRaw) {
+        const users = JSON.parse(usersRaw) as User[];
+        const storedUser = users.find((u) => String(u.id) === userId);
+        if (storedUser) {
+          return storedUser;
+        }
+      }
+    } catch (error) {
+      console.warn("No se pudo parsear lvup_users", error);
+    }
+
+    // Intentar obtener perfil desde API
+    try {
+      const perfilResponse = await UsuarioService.getPerfil();
+      const perfil = perfilResponse.data;
+      if (perfil) {
+        const usuario: User = {
+          id: perfil.id ? String(perfil.id) : userId,
+          nombre: perfil.nombre ?? session.displayName ?? "Usuario",
+          apellidos: perfil.apellidos ?? session.apellidos ?? "",
+          apellido: perfil.apellidos ?? session.apellidos ?? "",
+          email: perfil.correo ?? session.email ?? "",
+          telefono: perfil.telefono ?? session.telefono ?? "",
+          direccion: perfil.direccion ?? session.direccion ?? "",
+          region: perfil.region ?? session.region ?? "",
+          comuna: perfil.comuna ?? session.comuna ?? "",
+          fechaNacimiento: perfil.fechaNacimiento ?? "",
+          referralCode: perfil.codigoReferido ?? "",
+        };
+        try {
+          const usersRaw = localStorage.getItem("lvup_users");
+          const users = usersRaw ? JSON.parse(usersRaw) : [];
+          const existingIndex = users.findIndex((u: any) => String(u.id) === usuario.id);
+          if (existingIndex >= 0) {
+            users[existingIndex] = { ...users[existingIndex], ...usuario };
+          } else {
+            users.push(usuario);
+          }
+          localStorage.setItem("lvup_users", JSON.stringify(users));
+        } catch (cacheError) {
+          console.warn("No se pudo actualizar lvup_users", cacheError);
+        }
+        return usuario;
+      }
+    } catch (error) {
+      console.warn("No se pudo obtener el perfil desde la API", error);
+    }
+
+    // Fallback con la información disponible en sesión
+    const usuarioFallback: User = {
+      id: userId,
+      nombre: session.displayName ?? "Usuario",
+      apellidos: session.apellidos ?? "",
+      apellido: session.apellidos ?? "",
+      email: session.email ?? "",
+      telefono: session.telefono ?? "",
+      direccion: session.direccion ?? "",
+      region: session.region ?? "",
+      comuna: session.comuna ?? "",
+    };
+    // Guardar fallback para próximas consultas
+    try {
+      const usersRaw = localStorage.getItem("lvup_users");
+      const users = usersRaw ? JSON.parse(usersRaw) : [];
+      const existingIndex = users.findIndex((u: any) => String(u.id) === usuarioFallback.id);
+      if (existingIndex >= 0) {
+        users[existingIndex] = { ...users[existingIndex], ...usuarioFallback };
+      } else {
+        users.push(usuarioFallback);
+      }
+      localStorage.setItem("lvup_users", JSON.stringify(users));
+    } catch (cacheError) {
+      console.warn("No se pudo persistir el fallback de usuario", cacheError);
+    }
+
+    return usuarioFallback;
+  }
+
+  async function reconstruirSesionDesdeBackend(): Promise<StoredSession | null> {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const perfilResponse = await UsuarioService.getPerfil();
+      const perfil = perfilResponse.data;
+      if (!perfil) {
+        return null;
+      }
+
+      const id = perfil.id ?? perfil.idUsuario;
+      if (!id) {
+        return null;
+      }
+
+      const displayName =
+        (perfil.nombre ?? perfil.nombreUsuario ?? "Usuario")
+          .toString()
+          .split(" ")[0] || "Usuario";
+
+      const session: StoredSession = {
+        userId: String(id),
+        id: String(id),
+        displayName,
+        apellidos: perfil.apellidos ?? perfil.apellidosUsuario ?? "",
+        email: perfil.correo ?? perfil.correoUsuario ?? "",
+        region: perfil.region ?? "",
+        comuna: perfil.comuna ?? "",
+        telefono: perfil.telefono ?? "",
+        direccion: perfil.direccion ?? perfil.direccionUsuario ?? "",
+        duocMember: isDuocEmail(perfil.correo ?? perfil.correoUsuario ?? ""),
+      };
+
+      // Guardar sesión centralizada para mantener consistencia con el resto de la app
+      saveSession({
+        displayName: displayName,
+        loginAt: Date.now(),
+        userId: session.userId,
+        id: session.id,
+        role: perfil.tipoUsuario ?? "cliente",
+        duocMember: Boolean(session.duocMember),
+        email: session.email,
+        apellidos: session.apellidos,
+        region: session.region,
+        comuna: session.comuna,
+        telefono: session.telefono,
+        direccion: session.direccion,
+        fechaNacimiento: perfil.fechaNacimiento ?? "",
+        codigoReferido: perfil.codigoReferido ?? "",
+      });
+
+      // Sincronizar usuarios legacy
+      try {
+        const usersRaw = localStorage.getItem("lvup_users");
+        const users = usersRaw ? JSON.parse(usersRaw) : [];
+        const record = {
+          id: session.id,
+          nombre: perfil.nombre ?? displayName,
+          apellidos: session.apellidos ?? "",
+          email: session.email ?? "",
+          telefono: session.telefono ?? "",
+          direccion: session.direccion ?? "",
+          region: session.region ?? "",
+          comuna: session.comuna ?? "",
+          password: "",
+          fechaNacimiento: perfil.fechaNacimiento ?? "",
+          genero: perfil.genero ?? "",
+          referralCode: perfil.codigoReferido ?? "",
+        };
+        const existingIndex = users.findIndex((u: any) => String(u.id) === record.id);
+        if (existingIndex >= 0) {
+          users[existingIndex] = { ...users[existingIndex], ...record };
+        } else {
+          users.push(record);
+        }
+        localStorage.setItem("lvup_users", JSON.stringify(users));
+      } catch (cacheError) {
+        console.warn("No se pudo sincronizar lvup_users desde el backend", cacheError);
+      }
+
+      return session;
+    } catch (error) {
+      console.warn("No se pudo reconstruir la sesión desde el backend", error);
       return null;
     }
   }

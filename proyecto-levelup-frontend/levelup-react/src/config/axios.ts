@@ -118,6 +118,20 @@ axiosConfig.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
+    // Agregar identificador de usuario (X-User-Id) para endpoints que lo requieren
+    try {
+      const rawSession = localStorage.getItem('lvup_user_session');
+      if (rawSession) {
+        const session = JSON.parse(rawSession);
+        const userId = session?.userId ?? session?.id;
+        if (userId) {
+          (config.headers as any)['X-User-Id'] = String(userId);
+        }
+      }
+    } catch (err) {
+      console.warn('No se pudo leer lvup_user_session para X-User-Id', err);
+    }
+    
     // Add referral code if available
     const referralCode = localStorage.getItem('referral_code');
     if (referralCode) {
@@ -172,6 +186,12 @@ axiosConfig.interceptors.response.use(
     }
 
     if (error.response.status === 401) {
+      try {
+        const attemptedUrl = `${error.config?.baseURL ?? ''}${error.config?.url ?? ''}`;
+        console.warn('[Axios] 401 no autorizado en:', attemptedUrl);
+      } catch (logErr) {
+        console.warn('[Axios] 401 no autorizado (sin URL)', logErr);
+      }
       localStorage.removeItem('auth_token');
       window.location.href = '/login';
     }

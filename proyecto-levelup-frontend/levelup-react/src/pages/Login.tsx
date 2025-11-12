@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import { isDuocEmail } from "../utils/orden.helper";
 import { AuthService } from "../services/api/auth";
+import { UsuarioService } from "../services/api/usuario";
 import { saveSession } from "../logic/auth";
 
 interface FormData {
@@ -20,11 +21,16 @@ interface Errors {
 interface UserSession {
   displayName: string;
   loginAt: number;
-  userId: number;
-  id: number;
+  userId: string;
+  id: string;
   role?: string;
   duocMember?: boolean;
   email?: string;
+  apellidos?: string;
+  region?: string;
+  comuna?: string;
+  telefono?: string;
+  direccion?: string;
 }
 
 const Login: React.FC = (): React.JSX.Element => {
@@ -109,10 +115,19 @@ const Login: React.FC = (): React.JSX.Element => {
       if (response.data) {
         const { accessToken, refreshToken, usuario } = response.data;
 
-        // Guardar token en localStorage (el interceptor de axios lo usará)
+        // Guardar token en localStorage para que las siguientes peticiones usen el JWT
         localStorage.setItem("auth_token", accessToken);
         if (refreshToken) {
           localStorage.setItem("refresh_token", refreshToken);
+        }
+
+        // Intentar obtener el perfil completo del usuario (requiere token previamente almacenado)
+        let perfilCompleto: any = null;
+        try {
+          const perfilResponse = await UsuarioService.getPerfil();
+          perfilCompleto = perfilResponse.data;
+        } catch (perfilError) {
+          console.warn("No se pudo obtener el perfil completo del usuario", perfilError);
         }
 
         // Crear sesión con datos del usuario del backend
@@ -120,15 +135,53 @@ const Login: React.FC = (): React.JSX.Element => {
         const session: UserSession = {
           displayName: firstName,
           loginAt: Date.now(),
-          userId: usuario.id,
-          id: usuario.id,
+          userId: String(usuario.id),
+          id: String(usuario.id),
           role: usuario.tipoUsuario || "cliente",
           duocMember: usuario.descuentoDuoc || isDuocEmail(usuario.correo),
           email: usuario.correo,
+          apellidos: usuario.apellidos || "",
+          region: perfilCompleto?.region ?? usuario.region ?? "",
+          comuna: perfilCompleto?.comuna ?? usuario.comuna ?? "",
+          telefono: perfilCompleto?.telefono ?? "",
+          direccion: perfilCompleto?.direccion ?? "",
         };
 
         // Guardar sesión usando la función centralizada
         saveSession(session);
+
+        // Sincronizar estructura legacy de usuarios en localStorage para componentes antiguos (ej. checkout)
+        try {
+          const usersKey = "lvup_users";
+          const usersRaw = localStorage.getItem(usersKey);
+          const users = usersRaw ? JSON.parse(usersRaw) : [];
+
+          const userRecord = {
+            id: session.id,
+            nombre: usuario.nombre || session.displayName,
+            apellidos: usuario.apellidos || "",
+            email: usuario.correo,
+            telefono: perfilCompleto?.telefono ?? "",
+            direccion: perfilCompleto?.direccion ?? "",
+            region: perfilCompleto?.region ?? usuario.region ?? "",
+            comuna: perfilCompleto?.comuna ?? usuario.comuna ?? "",
+            password: "",
+            fechaNacimiento: perfilCompleto?.fechaNacimiento ?? "",
+            genero: perfilCompleto?.genero ?? "",
+            referralCode: perfilCompleto?.codigoReferido ?? "",
+          };
+
+          const existingIndex = users.findIndex((u: any) => String(u.id) === userRecord.id);
+          if (existingIndex >= 0) {
+            users[existingIndex] = { ...users[existingIndex], ...userRecord };
+          } else {
+            users.push(userRecord);
+          }
+
+          localStorage.setItem(usersKey, JSON.stringify(users));
+        } catch (syncError) {
+          console.warn("No se pudo sincronizar lvup_users", syncError);
+        }
 
         // Mensaje de éxito
         alert(
@@ -143,9 +196,6 @@ const Login: React.FC = (): React.JSX.Element => {
 
         // Redirigir al home
         navigate("/");
-
-        // Forzar recarga para actualizar header
-        window.location.reload();
       }
     } catch (error: any) {
       console.error("Error al iniciar sesión:", error);

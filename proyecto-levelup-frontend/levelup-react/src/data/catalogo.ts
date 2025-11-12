@@ -51,6 +51,10 @@ export interface Producto {
   precioConDescuento?: number;
   ratingPromedio: number;
   codigo?: string;
+  categoriaId?: string;
+  categoriaNombre?: string;
+  subcategoriaId?: string;
+  subcategoriaNombre?: string;
 }
 
 // Mapeo desde DTO del backend al tipo local Producto
@@ -93,17 +97,26 @@ export function mapProductoDTO(dto: any): Producto {
     }
   }
   
-  // Mapear categoría desde categoriaId
-  const categoriaId = dto.categoriaId || dto.categoria?.id || dto.categoria || '';
-  
+  const categoriaIdRaw = dto.categoriaId ?? dto.categoria?.id ?? dto.categoria ?? '';
+  const categoriaId = String(categoriaIdRaw || '').trim();
+  const categoriaBase = mapCategoria(categoriaId);
+  const categoriaNombre = dto.categoriaNombre ?? dto.categoria?.nombre ?? categoriaBase.nombre;
+  const categoria: Categoria = {
+    id: categoriaId || categoriaBase.id,
+    nombre: categoriaNombre,
+  };
+
   // Mapear subcategoría - puede venir como objeto o como ID
-  const subcategoriaId = dto.subcategoriaId || dto.subcategoria?.id || '';
-  const subcategoriaNombre = dto.subcategoria?.nombre || '';
-  const subcategoria = subcategoriaId ? {
-    id: subcategoriaId,
-    nombre: subcategoriaNombre,
-    categoria: mapCategoria(categoriaId)
-  } : undefined;
+  const subcategoriaIdRaw = dto.subcategoriaId ?? dto.subcategoria?.id ?? '';
+  const subcategoriaId = String(subcategoriaIdRaw || '').trim();
+  const subcategoriaNombre = dto.subcategoriaNombre ?? dto.subcategoria?.nombre ?? '';
+  const subcategoria = subcategoriaId
+    ? {
+        id: subcategoriaId,
+        nombre: subcategoriaNombre,
+        categoria,
+      }
+    : undefined;
   
   return {
     id: String(dto.id ?? dto.idProducto ?? ''),
@@ -111,8 +124,8 @@ export function mapProductoDTO(dto: any): Producto {
     descripcion: dto.descripcion ?? dto.descripcionProducto ?? '',
     precio: Number(dto.precio ?? dto.precioProducto ?? 0),
     imagenUrl: imagenUrlResolved,
-    categoria: mapCategoria(categoriaId),
-    subcategoria: subcategoria,
+    categoria,
+    subcategoria,
     rating: Number(dto.rating ?? dto.ratingPromedio ?? 0),
     disponible: dto.disponible ?? dto.activo ?? true,
     destacado: Boolean(dto.destacado ?? false),
@@ -168,6 +181,11 @@ export function mapProductoDTO(dto: any): Producto {
     productosRelacionados: [],
     precioConDescuento: dto.precioOferta ?? dto.precioConDescuento ?? undefined,
     ratingPromedio: Number(dto.ratingPromedio ?? dto.rating ?? 0),
+    codigo: dto.codigo ?? dto.codigoProducto ?? dto.codigo_producto ?? undefined,
+    categoriaId,
+    categoriaNombre,
+    subcategoriaId,
+    subcategoriaNombre,
   };
 }
 
