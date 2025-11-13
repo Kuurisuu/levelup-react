@@ -4,6 +4,7 @@ import { healthMonitor } from './serviceHealth';
 import { ServiceRegistry } from '../services/ServiceRegistry';
 
 const env = import.meta.env;
+const DEFAULT_GATEWAY = 'http://localhost:8094';
 
 const normalize = (value?: string): string =>
   value && value.trim().length > 0
@@ -13,7 +14,10 @@ const normalize = (value?: string): string =>
 const buildUrl = (base: string, suffix: string): string =>
   base ? `${base}${suffix.startsWith('/') ? suffix : `/${suffix}`}` : '';
 
-const GATEWAY = normalize(env.VITE_GATEWAY_URL) || normalize(env.VITE_API_URL);
+const GATEWAY =
+  normalize(env.VITE_GATEWAY_URL) ||
+  normalize(env.VITE_API_URL) ||
+  normalize(DEFAULT_GATEWAY);
 
 const MICROSERVICE_URLS = {
   gateway: GATEWAY,
@@ -38,7 +42,10 @@ const BYPASS_HEALTH = (env as any)?.VITE_BYPASS_HEALTH !== 'false';
 
 // Configuración base de axios
 const axiosConfig = axios.create({
-  baseURL: MICROSERVICE_URLS.gateway || MICROSERVICE_URLS.productos,
+  baseURL:
+    MICROSERVICE_URLS.gateway ||
+    MICROSERVICE_URLS.productos ||
+    normalize(DEFAULT_GATEWAY),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'

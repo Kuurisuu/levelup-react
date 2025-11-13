@@ -1,12 +1,39 @@
-# React + Vite
+# LevelUp Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto consume los microservicios del ecosistema LevelUp a través del API Gateway.  
+La aplicación está pensada para ejecutarse contra el stack Docker (`http://localhost:8094`) y poder
+moverse a un despliegue en la nube cambiando un único archivo.
 
-Currently, two official plugins are available:
+## Configuración de entornos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Todas las rutas de microservicios se resuelven dinámicamente desde `VITE_GATEWAY_URL`.  
+Para apuntar a Docker local o a producción solo debes modificar **un archivo**:
 
-## Expanding the ESLint configuration
+- `.env` (para desarrollo) o
+- `docker.env` (cuando se usa `docker compose` con la app)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Contenido esperado:
+
+```
+VITE_GATEWAY_URL=http://localhost:8094
+VITE_IMAGE_BASE_URL=https://levelup-gamer-products.s3.us-east-1.amazonaws.com/img
+VITE_API_KEY=levelup-2024-secret-api-key-change-in-production
+VITE_BYPASS_HEALTH=true
+```
+
+En producción basta con actualizar `VITE_GATEWAY_URL` al dominio/IP público del Gateway
+(por ejemplo `https://api.levelup.duoc.cl`). El resto de microservicios se derivan automáticamente.
+
+> Nota: si necesitas sobreescribir un microservicio puntual puedes definir
+> `VITE_<SERVICIO>_URL` y el interceptor de Axios usará ese valor en lugar de la URL base.
+
+## Scripts frecuentes
+
+- `npm install`
+- `npm run dev`
+- `npm run build`
+
+## Testing
+
+Se recomienda ejecutar las suites de unit testing y e2e antes de cada despliegue (`npm run test`).  
+Asegúrate de que el backend expone correctamente los endpoints `health` para evitar reintentos innecesarios.
