@@ -321,6 +321,8 @@ export const obtenerCategorias = async (): Promise<Categoria[]> => {
 };
 
 export const obtenerImagenesCarrusel = async (): Promise<ImagenCarrusel[]> => {
+  // Esta función está deprecada - usar el componente Carrusel.tsx que llama al endpoint del backend
+  // Mantenida solo para compatibilidad con código legacy
   const base =
     ((import.meta as any).env?.VITE_IMAGE_BASE_URL as string | undefined)?.replace(/\/$/, '') || '';
   const resolveImg = (path: string) => {
@@ -330,21 +332,21 @@ export const obtenerImagenesCarrusel = async (): Promise<ImagenCarrusel[]> => {
   return [
     {
       id: 1,
-      imagenUrl: resolveImg('/img/carrusel.png'),
+      imagenUrl: resolveImg('/img/carruselproductos.png'),
       titulo: '!Bienvenido a Level-Up Gamer!',
       descripcion: 'La tienda gamer lider en todo Chile',
       enlace: '/',
     },
     {
       id: 2,
-      imagenUrl: resolveImg('/img/play5white.png'),
+      imagenUrl: resolveImg('/img/carruselnoticias.png'),
       titulo: 'Explora nuestros productos gamer de alta calidad',
       descripcion: 'Una gama completa de productos para potenciar tu experiencia',
       enlace: '/producto',
     },
     {
       id: 3,
-      imagenUrl: resolveImg('/img/monitorasus.png'),
+      imagenUrl: resolveImg('/img/carrusel.png'),
       titulo: 'Noticias y guias del mundo gamer',
       descripcion: 'Mantente al dia con nuestro gaming hub',
       enlace: '/gaming-hub',
