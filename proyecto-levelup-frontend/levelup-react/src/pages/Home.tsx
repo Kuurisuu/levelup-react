@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Carrusel from "../components/Carrusel";
 import ProductoCard from "../components/ProductoCard";
 import { Producto, obtenerProductos } from "../data/catalogo";
@@ -9,7 +9,22 @@ export default function Home(): React.JSX.Element {
   const [pageHome, setPageHome] = useState<number>(1);
   const [catalog, setCatalog] = useState<Producto[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [accessDeniedMessage, setAccessDeniedMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Verificar mensaje de acceso denegado desde location state
+  useEffect(() => {
+    const state = location.state as { message?: string } | null;
+    if (state?.message) {
+      setAccessDeniedMessage(state.message);
+      // Limpiar el mensaje después de 5 segundos
+      const timer = setTimeout(() => {
+        setAccessDeniedMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   // cargar catalogo desde API con fallback a persisted/local
   useEffect(() => {
@@ -53,6 +68,23 @@ export default function Home(): React.JSX.Element {
 
   return (
     <section className="main-home">
+      {/* Mensaje de acceso denegado */}
+      {accessDeniedMessage && (
+        <div
+          style={{
+            backgroundColor: "#f8d7da",
+            color: "#721c24",
+            padding: "1rem",
+            margin: "1rem auto",
+            maxWidth: "800px",
+            borderRadius: "4px",
+            border: "1px solid #f5c6cb",
+            textAlign: "center",
+          }}
+        >
+          <strong>Acceso Denegado:</strong> {accessDeniedMessage}
+        </div>
+      )}
       {/* Carrusel */}
       <Carrusel />
 
