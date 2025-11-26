@@ -16,6 +16,7 @@ import { ReseniaService } from "../services/api/resenias";
 import { calcularRatingPromedio } from "../utils/ratingUtils"; // nuevo import
 
 type ReviewType = {
+  id?: number | string; // ID del backend para poder eliminar
   rating: number;
   text: string;
   author: string;
@@ -147,17 +148,18 @@ const ProductoDetalle: React.FC = () => {
             comentario: r.comentario || "",
             fecha: r.fechaCreacion || r.fechaActualizacion || new Date().toISOString()
           }));
-          
-          // Convertir a ReviewType para el estado
-          const reviewsType = reviewsBackend.map((r) => ({
-            rating: r.rating,
-            text: r.comentario,
-            author: r.usuarioNombre,
+
+          // Mapear a ReviewType incluyendo el ID del backend
+          const reviewsBackendMapped: ReviewType[] = reseniasBackend.map((r: any) => ({
+            id: r.id, // Guardar el ID del backend para poder eliminar
+            rating: r.rating || 5,
+            text: r.comentario || "",
+            author: r.usuarioNombre || "",
             title: "",
-            ts: new Date(r.fecha).getTime()
+            ts: new Date(r.fechaCreacion || r.fechaActualizacion || new Date()).getTime()
           }));
           
-          setReviews(reviewsType);
+          setReviews(reviewsBackendMapped);
           
           // También actualizar el producto con las reseñas
           if (prod) {
@@ -312,21 +314,53 @@ const ProductoDetalle: React.FC = () => {
         return;
       }
       
+      // Validar y limpiar el ID del producto
+      let productoId: number;
+      if (typeof producto.id === 'string') {
+        // Si es string, extraer solo la parte numérica (por si viene "3:1" o similar)
+        const numericPart = producto.id.split(':')[0].split('/')[0];
+        productoId = Number(numericPart);
+      } else {
+        productoId = Number(producto.id);
+      }
+      
+      if (isNaN(productoId) || productoId <= 0) {
+        setReviewMsg("Error: ID de producto inválido.");
+        setTimeout(() => setReviewMsg(""), 3000);
+        return;
+      }
+      
+      // Validar rating
+      const rating = Number(reviewRating);
+      if (isNaN(rating) || rating < 1 || rating > 5) {
+        setReviewMsg("Error: Rating inválido. Debe ser entre 1 y 5.");
+        setTimeout(() => setReviewMsg(""), 3000);
+        return;
+      }
+      
+      // Validar comentario
+      const comentarioLimpio = reviewText.trim();
+      if (!comentarioLimpio || comentarioLimpio.length === 0) {
+        setReviewMsg("Escribe una reseña.");
+        return;
+      }
+      
       const reseniaData = {
         idUsuario: idUsuario,
-        usuarioNombre: session.displayName || session.email || "Usuario",
-        rating: reviewRating,
-        comentario: reviewText
+        usuarioNombre: (session.displayName || session.email || "Usuario").trim(),
+        rating: rating, // Asegurar que sea Integer
+        comentario: comentarioLimpio
       };
 
-      await ReseniaService.crear(Number(producto.id), reseniaData);
+      console.log("Enviando reseña:", { productoId, reseniaData });
+      await ReseniaService.crear(productoId, reseniaData);
       
       setReviewText("");
       setReviewMsg("Reseña enviada.");
       setTimeout(() => setReviewMsg(""), 1500);
 
       // Recargar reseñas desde el backend
-      const response = await ReseniaService.getByProducto(Number(producto.id));
+      const response = await ReseniaService.getByProducto(productoId);
       const reseniasBackend = response.data || [];
       
       // Mapear a formato de Review
@@ -339,12 +373,14 @@ const ProductoDetalle: React.FC = () => {
         fecha: r.fechaCreacion || r.fechaActualizacion || new Date().toISOString()
       }));
 
-      setReviews(nuevasReviews.map((r, idx) => ({
-        rating: r.rating,
-        text: r.comentario,
-        author: r.usuarioNombre,
+      // Mapear a ReviewType incluyendo el ID del backend
+      setReviews(reseniasBackend.map((r: any) => ({
+        id: r.id, // Guardar el ID del backend para poder eliminar
+        rating: r.rating || 5,
+        text: r.comentario || "",
+        author: r.usuarioNombre || "",
         title: "",
-        ts: new Date(r.fecha).getTime()
+        ts: new Date(r.fechaCreacion || r.fechaActualizacion || new Date()).getTime()
       })));
 
       // Actualizar el producto con las nuevas reseñas
@@ -357,28 +393,35 @@ const ProductoDetalle: React.FC = () => {
       });
     } catch (error: any) {
       console.error("Error al guardar reseña:", error);
-      setReviewMsg("Error al enviar la reseña. Intenta nuevamente.");
-      setTimeout(() => setReviewMsg(""), 3000);
       
-      // Fallback a localStorage si falla el backend
-      const list = readReviews(producto.id);
-      list.push({
-        rating: reviewRating,
-        text: reviewText,
-        author: session.displayName || "Usuario",
-        title: "",
-        ts: Date.now(),
-      });
-      writeReviews(producto.id, list);
-      const nuevasReviews = readReviews(producto.id);
-      setReviews(nuevasReviews);
+      // Mostrar mensaje de error más específico
+      let errorMessage = "Error al enviar la reseña. Intenta nuevamente.";
+      if (error.response?.status === 400) {
+        const errorData = error.response?.data;
+        if (errorData?.errors) {
+          // Errores de validación del backend
+          const errorList = Object.values(errorData.errors).join(", ");
+          errorMessage = `Error de validación: ${errorList}`;
+        } else if (errorData?.error) {
+          errorMessage = errorData.error;
+        } else {
+          errorMessage = "Error: Datos inválidos. Verifica que todos los campos estén correctos.";
+        }
+      } else if (error.response?.status === 401 || error.response?.status === 403) {
+        errorMessage = "Error: No tienes permisos para crear reseñas. Inicia sesión nuevamente.";
+      }
+      
+      setReviewMsg(errorMessage);
+      setTimeout(() => setReviewMsg(""), 5000);
+      
+      // NO hacer fallback a localStorage si falla el backend
+      // Esto causaba que las reseñas aparecieran localmente pero no en el backend
     }
   }
 
   // Función para eliminar comentario
   async function handleDeleteReview(reviewTimestamp: number) {
-    //el tiempo q se creo la reseña
-    const session = getUserSession(); //obtener la session del usuario para verificar si es el creador de la reseña
+    const session = getUserSession();
     if (!session) {
       alert("Debes iniciar sesión para eliminar comentarios.");
       return;
@@ -408,12 +451,8 @@ const ProductoDetalle: React.FC = () => {
         return;
       }
 
-      // Buscar el ID de la reseña en el producto
-      const reviewId = producto.reviews?.find(
-        (r) => r.fecha === new Date(reviewTimestamp).toISOString() || 
-               r.id === reviewTimestamp.toString() ||
-               Number(r.id) === reviewTimestamp
-      )?.id;
+      // Usar el ID del backend si está disponible
+      const reviewId = reviewToDelete.id;
 
       if (reviewId) {
         // Eliminar del backend
@@ -424,6 +463,7 @@ const ProductoDetalle: React.FC = () => {
           const response = await ReseniaService.getByProducto(Number(producto.id));
           const reseniasBackend = response.data || [];
           
+          // Mapear a formato de Review
           const reviewsActualizadas: Review[] = reseniasBackend.map((r: any) => ({
             id: r.id?.toString() || "",
             productoId: producto.id.toString(),
@@ -433,14 +473,17 @@ const ProductoDetalle: React.FC = () => {
             fecha: r.fechaCreacion || r.fechaActualizacion || new Date().toISOString()
           }));
 
-          setReviews(reviewsActualizadas.map((r) => ({
-            rating: r.rating,
-            text: r.comentario,
-            author: r.usuarioNombre,
+          // Mapear a ReviewType incluyendo el ID del backend
+          setReviews(reseniasBackend.map((r: any) => ({
+            id: r.id, // Guardar el ID del backend
+            rating: r.rating || 5,
+            text: r.comentario || "",
+            author: r.usuarioNombre || "",
             title: "",
-            ts: new Date(r.fecha).getTime()
+            ts: new Date(r.fechaCreacion || r.fechaActualizacion || new Date()).getTime()
           })));
 
+          // Actualizar el producto con las nuevas reseñas
           setProducto((prevProducto) => {
             if (!prevProducto) return null;
             return {
@@ -449,41 +492,22 @@ const ProductoDetalle: React.FC = () => {
             };
           });
           
-          alert("Comentario eliminado correctamente.");
+          console.log("Comentario eliminado correctamente del backend");
         } catch (error: any) {
           console.error("Error al eliminar reseña del backend:", error);
-          throw error; // Re-lanzar para que se maneje en el catch externo
+          alert("Error al eliminar el comentario del servidor. Intenta nuevamente.");
+          throw error;
         }
       } else {
-        // Si no se encuentra el ID, eliminar del estado local como fallback
+        // Si no hay ID del backend, solo eliminar del estado local (fallback)
+        console.warn("No se encontró ID del backend para la reseña, eliminando solo del estado local");
         const nuevasReviews = reviews.filter((r) => r.ts !== reviewTimestamp);
         setReviews(nuevasReviews);
-        alert("Comentario eliminado correctamente.");
+        alert("Comentario eliminado localmente (no estaba en el servidor).");
       }
     } catch (error: any) {
       console.error("Error al eliminar reseña:", error);
-      alert("Error al eliminar el comentario. Intenta nuevamente.");
-      
-      // Fallback a localStorage
-      const list = readReviews(producto.id);
-      const reviewIndex = list.findIndex((review) => review.ts === reviewTimestamp);
-      if (reviewIndex !== -1) {
-        const review = list[reviewIndex];
-        if (
-          review.author !== session.displayName &&
-          review.author !== session.email
-        ) {
-          alert("Solo puedes eliminar tus propios comentarios.");
-          return;
-        }
-        if (!confirm("¿Estás seguro de que quieres eliminar este comentario?")) {
-          return;
-        }
-        list.splice(reviewIndex, 1);
-        writeReviews(producto.id, list);
-        const nuevasReviews = readReviews(producto.id);
-        setReviews(nuevasReviews);
-      }
+      // No mostrar alerta aquí porque ya se mostró arriba si fue error del backend
     }
   }
 

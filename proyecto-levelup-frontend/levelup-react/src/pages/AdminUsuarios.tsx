@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   AdminSidebar,
   AdminTable as AdminTableComp,
@@ -6,6 +6,7 @@ import {
 } from "../components/Admin";
 import { InputField } from "../components/common";
 import useLocalStorage from "../hooks/useLocalStorage";
+import { UsuarioService } from "../services/api/usuario";
 import "../styles/admin.css";
 
 interface User {
@@ -42,8 +43,43 @@ const AdminUsuarios: React.FC = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [editing, setEditing] = useState<Partial<User> | null>(null);
+  const [editing, setEditing] = useState<Partial<User> & { avatarFile?: File | null } | null>(null);
   const [selected, setSelected] = useState<User | null>(null);
+  
+  // Cargar usuarios desde API
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const response = await UsuarioService.obtenerUsuarios();
+        if (response.data && response.data.content && Array.isArray(response.data.content)) {
+          const usuariosApi = response.data.content.map((u: any) => ({
+            id: String(u.idUsuario || u.id),
+            nombre: u.nombre || "",
+            apellidos: u.apellido || "",
+            email: u.correo || "",
+            password: "", // No se envía de vuelta
+            telefono: u.telefono || "",
+            direccion: u.direccion || "",
+            role: u.tipoUsuario || "CLIENTE",
+            avatar: u.avatarUrl || u.avatar || "",
+            fechaNacimiento: u.fechaNacimiento || "",
+            region: u.region || "",
+            comuna: u.comuna || "",
+            referralCode: u.codigoReferido || "",
+            points: u.puntosLevelUp || 0,
+            referredBy: u.referidoPor || "",
+          }));
+          if (usuariosApi.length > 0) {
+            setUsers(usuariosApi);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Error al cargar usuarios desde API:", e);
+      }
+    };
+    void loadUsers();
+  }, [setUsers]);
 
   const openAdd = () => {
     setEditing({});
@@ -58,6 +94,7 @@ const AdminUsuarios: React.FC = () => {
       setEditing((prev) => ({
         ...(prev || {}),
         avatar: String(reader.result || ""),
+        avatarFile: file, // Guardar el archivo también
       }));
     };
     reader.readAsDataURL(file);
@@ -239,35 +276,73 @@ const AdminUsuarios: React.FC = () => {
     const id = editing.id || generateUserId();
     const referralCode = editing.referralCode || generateReferralCode(nombre);
 
-    const newUser: User = {
-      id,
+    // Preparar datos para el backend
+    const usuarioData = {
       nombre,
-      apellidos,
-      email,
+      apellido: apellidos,
+      correo: email,
       password,
       telefono: editing.telefono || undefined,
       direccion: editing.direccion || undefined,
-      role: editing.role || undefined,
-      avatar: editing.avatar || undefined,
-      fechaNacimiento,
+      fechaNacimiento: fechaNacimiento,
       region: editing.region || undefined,
       comuna: editing.comuna || undefined,
-      referralCode,
-      points: editing.points || 0,
-      redeemedCodes: editing.redeemedCodes || [],
-      referredBy: editing.referredBy || undefined,
+      tipoUsuario: editing.role || "CLIENTE",
+      aceptaTerminos: true,
+      aceptaMarketing: false,
     };
 
-    setUsers((prev) => {
-      const exists = prev.find((u) => u.id === id);
-      if (exists) {
-        return prev.map((u) => (u.id === id ? { ...u, ...newUser } : u));
+    try {
+      let savedUser: any;
+      if (editing.id) {
+        // Actualizar usuario existente
+        savedUser = await UsuarioService.actualizarUsuario(
+          Number(editing.id),
+          usuarioData,
+          editing.avatarFile || null
+        );
+      } else {
+        // Crear nuevo usuario
+        savedUser = await UsuarioService.crearUsuario(
+          usuarioData,
+          editing.avatarFile || null
+        );
       }
-      return [newUser, ...prev];
-    });
 
-    setModalOpen(false);
-    setEditing(null);
+      // Mapear respuesta del backend al formato del frontend
+      const mappedUser: User = {
+        id: String(savedUser.data.idUsuario || savedUser.data.id || id),
+        nombre: savedUser.data.nombre || nombre,
+        apellidos: savedUser.data.apellido || apellidos,
+        email: savedUser.data.correo || email,
+        password: "", // No se envía de vuelta
+        telefono: savedUser.data.telefono || editing.telefono || undefined,
+        direccion: savedUser.data.direccion || editing.direccion || undefined,
+        role: savedUser.data.tipoUsuario || editing.role || undefined,
+        avatar: savedUser.data.avatarUrl || savedUser.data.avatar || editing.avatar || undefined,
+        fechaNacimiento: savedUser.data.fechaNacimiento || fechaNacimiento,
+        region: savedUser.data.region || editing.region || undefined,
+        comuna: savedUser.data.comuna || editing.comuna || undefined,
+        referralCode: savedUser.data.codigoReferido || referralCode,
+        points: savedUser.data.puntosLevelUp || editing.points || 0,
+        referredBy: savedUser.data.referidoPor || editing.referredBy || undefined,
+      };
+
+      setUsers((prev) => {
+        const exists = prev.find((u) => u.id === mappedUser.id);
+        if (exists) {
+          return prev.map((u) => (u.id === mappedUser.id ? mappedUser : u));
+        }
+        return [mappedUser, ...prev];
+      });
+
+      setModalOpen(false);
+      setEditing(null);
+    } catch (error: any) {
+      console.error("Error al guardar usuario:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al guardar usuario";
+      alert(errorMessage);
+    }
   };
 
   const handleEdit = (u: User) => {
@@ -282,11 +357,18 @@ const AdminUsuarios: React.FC = () => {
     setSelected(u);
     setConfirmOpen(true);
   };
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!selected) return;
-    setUsers((prev) => prev.filter((u) => u.id !== selected.id));
-    setConfirmOpen(false);
-    setSelected(null);
+    try {
+      await UsuarioService.eliminarUsuario(Number(selected.id));
+      setUsers((prev) => prev.filter((u) => u.id !== selected.id));
+      setConfirmOpen(false);
+      setSelected(null);
+    } catch (error: any) {
+      console.error("Error al eliminar usuario:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al eliminar usuario";
+      alert(errorMessage);
+    }
   };
 
   const columns = [

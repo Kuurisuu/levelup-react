@@ -293,17 +293,53 @@ function toBackendPayload(p: Partial<Producto>) {
     disponible: p.disponible,
     destacado: p.destacado,
     descuento: p.descuento,
-    categoria: p.categoria ? p.categoria.id : undefined,
-    // subcategoria opcional
+    categoriaId: p.categoria ? p.categoria.id : (p as any).categoriaId,
+    subcategoriaId: p.subcategoria ? p.subcategoria.id : (p as any).subcategoriaId,
   } as any;
 }
 
-export const crearProductoApi = async (p: Partial<Producto>): Promise<Producto> => {
+export const crearProductoApi = async (p: Partial<Producto>, imagenFile?: File | null): Promise<Producto> => {
+  // Si hay una imagen, enviar como FormData
+  if (imagenFile) {
+    const formData = new FormData();
+    formData.append('imagen', imagenFile);
+    
+    // Agregar los datos del producto como JSON string
+    const productoData = toBackendPayload(p);
+    formData.append('producto', new Blob([JSON.stringify(productoData)], { type: 'application/json' }));
+    
+    const response = await axiosConfig.post('/productos', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return mapProductoDTO(response.data);
+  }
+  
+  // Si no hay imagen, enviar como JSON normal
   const response = await axiosConfig.post('/productos', toBackendPayload(p));
   return mapProductoDTO(response.data);
 };
 
-export const actualizarProductoApi = async (id: string, p: Partial<Producto>): Promise<Producto> => {
+export const actualizarProductoApi = async (id: string, p: Partial<Producto>, imagenFile?: File | null): Promise<Producto> => {
+  // Si hay una imagen, enviar como FormData
+  if (imagenFile) {
+    const formData = new FormData();
+    formData.append('imagen', imagenFile);
+    
+    // Agregar los datos del producto como JSON string
+    const productoData = toBackendPayload(p);
+    formData.append('producto', new Blob([JSON.stringify(productoData)], { type: 'application/json' }));
+    
+    const response = await axiosConfig.put(`/productos/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return mapProductoDTO(response.data);
+  }
+  
+  // Si no hay imagen, enviar como JSON normal
   const response = await axiosConfig.put(`/productos/${id}`, toBackendPayload(p));
   return mapProductoDTO(response.data);
 };

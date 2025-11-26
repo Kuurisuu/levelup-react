@@ -235,9 +235,9 @@ const AdminProductos: React.FC = () => {
     try {
       let saved: Producto;
       if (editing.id) {
-        saved = await actualizarProductoApi(String(editing.id), newProd);
+        saved = await actualizarProductoApi(String(editing.id), newProd, editing.imagenFile || null);
       } else {
-        saved = await crearProductoApi(newProd);
+        saved = await crearProductoApi(newProd, editing.imagenFile || null);
       }
       setProducts((prev) => {
         const exists = prev.find((p) => p.id === saved.id);
