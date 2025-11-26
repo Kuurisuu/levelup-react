@@ -317,6 +317,8 @@ const AdminProductos: React.FC = () => {
               }))
             }
             required
+            min="0"
+            max="10000000"
           />
           <InputField
             label="Stock"
@@ -333,6 +335,8 @@ const AdminProductos: React.FC = () => {
                 stock: (e.target as HTMLInputElement).value,
               }))
             }
+            min="0"
+            max="10000"
           />
           <InputField
             label="Fabricante"
@@ -418,6 +422,8 @@ const AdminProductos: React.FC = () => {
             label="Descuento (%)"
             name="descuento"
             type="number"
+            min="0"
+            max="100"
             value={editing?.descuento ?? ""}
             onChange={(e) =>
               setEditing((prev) => ({

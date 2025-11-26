@@ -16,6 +16,7 @@ export default function ProductoCard({
   onClick,
 }: ProductoCardProps): React.JSX.Element {
   const [agotado] = useState(!producto.disponible);
+  const [mostrarAgregado, setMostrarAgregado] = useState(false);
 
   const categoria = producto.categoria;
   const subcategoria = producto.subcategoria;
@@ -220,10 +221,12 @@ export default function ProductoCard({
               onClick={(e) => {
                 e.stopPropagation();
                 agregarAlCarrito({ ...producto });
+                setMostrarAgregado(true);
+                setTimeout(() => setMostrarAgregado(false), 2000);
               }}
             >
               <i className="bi bi-cart-plus"></i>
-              {producto.disponible ? "AGREGAR" : "Agotado"}
+              {mostrarAgregado ? "AGREGADO" : producto.disponible ? "AGREGAR" : "Agotado"}
             </button>
           </div>
         </div>

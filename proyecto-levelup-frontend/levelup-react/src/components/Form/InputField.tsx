@@ -16,6 +16,8 @@ interface InputFieldProps {
   ) => void;
   as?: "input" | "textarea" | "select";
   options?: { value: string; label: string }[];
+  min?: number | string;
+  max?: number | string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -29,6 +31,8 @@ const InputField: React.FC<InputFieldProps> = ({
   onChange,
   as = "input",
   options = [],
+  min,
+  max,
 }) => {
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,6 +151,8 @@ const InputField: React.FC<InputFieldProps> = ({
           onChange={handleChange}
           onBlur={handleBlur}
           className={className}
+          min={min}
+          max={max}
         />
       )}
 

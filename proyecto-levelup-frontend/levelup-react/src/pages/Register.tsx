@@ -614,16 +614,21 @@ const Register: React.FC = (): React.JSX.Element => {
               )}
             </div>
 
-            {/* campo de entrada para la direccion (opcional) */}
+            {/* campo de entrada para la direccion */}
             <div className="form-group">
               <input
                 type="text"
                 id="direccion"
                 name="direccion"
-                placeholder="Dirección (opcional)"
+                placeholder="Dirección *"
                 value={formData.direccion}
                 onChange={handleInputChange}
+                onPaste={handlePaste}
+                className={errors.direccion ? "error" : ""}
               />
+              {errors.direccion && (
+                <div className="error-message">{errors.direccion}</div>
+              )}
             </div>
 
             {/* campo de entrada para el código de referido (opcional) */}

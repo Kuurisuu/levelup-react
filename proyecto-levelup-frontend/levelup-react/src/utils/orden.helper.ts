@@ -174,9 +174,9 @@ export async function procesarPago(orden: OrdenCompra): Promise<{
   } catch (error: any) {
     console.error('Error al procesar pago:', error);
     
-    // Fallback: simular procesamiento local
+    // Fallback: simular procesamiento local (90% éxito, 10% fallo)
     await new Promise(resolve => setTimeout(resolve, 2000));
-    const exito = Math.random() > 0.1;
+    const exito = Math.random() < 0.9;
     
     if (exito) {
       return {

@@ -40,14 +40,30 @@ const CheckoutPago: React.FC<CheckoutPagoProps> = ({ //props para el componente 
     }) || "$0"; //si no hay total se retorna $0
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Solo permitir números en el campo de número de tarjeta
+    if (e.currentTarget.name === "numero") {
+      const char = String.fromCharCode(e.which || e.keyCode);
+      if (!/[0-9]/.test(char) && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+      }
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => { //funcion para manejar el cambio de input
     const { name, value } = e.target; //name y value para el input
     let processedValue = value;
 
-    // Formatear número de tarjeta (agregar espacios cada 4 dígitos)
+    // Formatear número de tarjeta (solo números, agregar espacios cada 4 dígitos)
     if (name === "numero") {
-      processedValue = value.replace(/\s/g, "").replace(/(.{4})/g, "$1 ").trim();
-      if (processedValue.length > 19) processedValue = processedValue.slice(0, 19);
+      // Solo permitir números (eliminar cualquier carácter que no sea dígito)
+      processedValue = value.replace(/\D/g, "");
+      // Formatear con espacios cada 4 dígitos
+      processedValue = processedValue.replace(/(.{4})/g, "$1 ").trim();
+      // Limitar a 16 dígitos (19 caracteres con espacios)
+      if (processedValue.replace(/\s/g, "").length > 16) {
+        processedValue = processedValue.replace(/\s/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+      }
     }
     
     // Formatear fecha de vencimiento (MM/YY)
@@ -122,9 +138,21 @@ const CheckoutPago: React.FC<CheckoutPagoProps> = ({ //props para el componente 
             name="numero"
             value={formData.numero}
             onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            onPaste={(e) => {
+              e.preventDefault();
+              const pastedText = e.clipboardData.getData('text');
+              const onlyNumbers = pastedText.replace(/\D/g, '');
+              if (onlyNumbers) {
+                const formatted = onlyNumbers.slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+                setFormData(prev => ({ ...prev, numero: formatted }));
+              }
+            }}
             placeholder="1234 5678 9012 3456"
             className={errores.numero ? "error" : ""}
             maxLength={19}
+            inputMode="numeric"
+            pattern="[0-9\s]*"
           />
           {errores.numero && <span className="error-message">{errores.numero}</span>}
         </div>

@@ -64,6 +64,15 @@ const CompraFallida: React.FC<CompraFallidaProps> = ({
             <p>• Si el problema continúa, contáctanos</p>
           </div>
         </div>
+
+        <div className="error-section">
+          <h3>Información de Contacto</h3>
+          <div className="contacto-info">
+            <p><strong>Email:</strong> soporte@levelup.cl</p>
+            <p><strong>Teléfono:</strong> +56 9 1234 5678</p>
+            <p><strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00</p>
+          </div>
+        </div>
       </div>
 
       <div className="fallida-actions">
@@ -95,17 +104,6 @@ const CompraFallida: React.FC<CompraFallidaProps> = ({
         </button>
       </div>
 
-      <div className="fallida-info">
-        <div className="info-adicional">
-          <h4>Información de Contacto</h4>
-          <p>Si necesitas ayuda inmediata, puedes contactarnos:</p>
-          <div className="contacto-info">
-            <p><strong>Email:</strong> soporte@levelup.cl</p>
-            <p><strong>Teléfono:</strong> +56 9 1234 5678</p>
-            <p><strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

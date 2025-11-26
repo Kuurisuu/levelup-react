@@ -438,6 +438,7 @@ export default function Filtros({
                 value={filtros.precioMin}
                 onChange={actualizar}
                 min="0"
+                max="10000000"
               />
             </div>
             <div>
@@ -448,6 +449,7 @@ export default function Filtros({
                 value={filtros.precioMax}
                 onChange={actualizar}
                 min="0"
+                max="10000000"
               />
             </div>
           </div>

@@ -10,7 +10,7 @@ export default function Footer(): React.JSX.Element {
         <div className="footer-col">
           <p className="texto-footer">&copy; 2025 A.C.A Company</p>
           <p className="texto-footer">Level Up — Gamer</p>
-          <div className="footer-social">
+          <div className="footer-social" style={{ gap: '1rem', display: 'flex' }}>
             <a
               href="https://www.instagram.com/level_up_gamer__/"
               aria-label="Instagram"
