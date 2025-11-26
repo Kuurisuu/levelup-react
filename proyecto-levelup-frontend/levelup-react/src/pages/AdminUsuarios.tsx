@@ -193,7 +193,7 @@ const AdminUsuarios: React.FC = () => {
     return namepart + rand;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editing) return;
 
     const email = String(editing.email || "").trim();
