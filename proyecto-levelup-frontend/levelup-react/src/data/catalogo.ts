@@ -199,9 +199,9 @@ export const guardarProductosEnCache = (productos: Producto[]): void => {
   try {
     localStorage.setItem(PRODUCTOS_STORAGE_KEY, JSON.stringify(productos));
     localStorage.setItem(PRODUCTOS_CACHE_TIMESTAMP_KEY, Date.now().toString());
-    console.log('✅ Productos guardados en localStorage:', productos.length);
+    console.log('Productos guardados en localStorage:', productos.length);
   } catch (error) {
-    console.error('❌ Error al guardar productos en localStorage:', error);
+    console.error('Error al guardar productos en localStorage:', error);
   }
 };
 
@@ -217,17 +217,17 @@ export const cargarProductosDesdeCache = (): Producto[] | null => {
     
     const cacheAge = Date.now() - parseInt(timestamp, 10);
     if (cacheAge > CACHE_DURATION_MS) {
-      console.log('⚠️ Cache expirado, se recargará desde el backend');
+      console.log('Cache expirado, se recargará desde el backend');
       localStorage.removeItem(PRODUCTOS_STORAGE_KEY);
       localStorage.removeItem(PRODUCTOS_CACHE_TIMESTAMP_KEY);
       return null;
     }
     
     const productos = JSON.parse(cached) as Producto[];
-    console.log('✅ Productos cargados desde localStorage:', productos.length);
+    console.log('Productos cargados desde localStorage:', productos.length);
     return productos;
   } catch (error) {
-    console.error('❌ Error al cargar productos desde localStorage:', error);
+    console.error('Error al cargar productos desde localStorage:', error);
     return null;
   }
 };
@@ -241,7 +241,7 @@ export const obtenerProductos = async (): Promise<Producto[]> => {
   }
   
   // Si no hay cache válido, cargar desde el backend
-  console.log('📡 Cargando productos desde el backend...');
+  console.log('Cargando productos desde el backend...');
   const response = await axiosConfig.get('/productos');
   const list = Array.isArray(response.data) ? response.data : [];
   const productos = list.map(mapProductoDTO);
@@ -254,7 +254,7 @@ export const obtenerProductos = async (): Promise<Producto[]> => {
 
 // Forzar recarga desde el backend (ignorando cache)
 export const recargarProductosDesdeBackend = async (): Promise<Producto[]> => {
-  console.log('🔄 Forzando recarga de productos desde el backend...');
+  console.log('Forzando recarga de productos desde el backend...');
   const response = await axiosConfig.get('/productos');
   const list = Array.isArray(response.data) ? response.data : [];
   const productos = list.map(mapProductoDTO);

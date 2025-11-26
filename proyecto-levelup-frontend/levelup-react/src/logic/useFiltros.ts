@@ -172,16 +172,16 @@ export function useFiltros(): UseFiltrosReturn {
         const cached = cargarProductosDesdeCache();
         if (cached && cached.length > 0) {
           setTodosLosProductos(cached);
-          console.log('✅ Productos cargados desde localStorage:', cached.length);
+          console.log('Productos cargados desde localStorage:', cached.length);
         } else {
           // Cargar desde backend si no hay cache
-          console.log('📡 Cargando productos desde el backend...');
+          console.log('Cargando productos desde el backend...');
           const productos = await obtenerProductos();
           setTodosLosProductos(productos);
-          console.log('✅ Productos cargados desde backend:', productos.length);
+          console.log('Productos cargados desde backend:', productos.length);
         }
       } catch (error) {
-        console.error("❌ Error al cargar productos:", error);
+        console.error("Error al cargar productos:", error);
         setTodosLosProductos([]);
       } finally {
         setCargando(false);
@@ -205,8 +205,8 @@ export function useFiltros(): UseFiltrosReturn {
       return;
     }
 
-    console.log('🔍 Aplicando filtros localmente a', todosLosProductos.length, 'productos');
-    console.log('🔍 Filtros activos:', {
+    console.log('Aplicando filtros localmente a', todosLosProductos.length, 'productos');
+    console.log('Filtros activos:', {
       categoria: filtros.categoria,
       subcategorias: filtros.subcategorias,
       texto: filtros.texto,
@@ -227,12 +227,12 @@ export function useFiltros(): UseFiltrosReturn {
         subcategoriaNombre: p.subcategoria?.nombre,
         tieneSubcategoria: !!p.subcategoria
       }));
-      console.log('🔍 Ejemplo de productos (primeros 3):', ejemplo);
+      console.log('Ejemplo de productos (primeros 3):', ejemplo);
       
       // Si hay filtros de subcategoría, mostrar más detalles
       if (filtros.subcategorias && filtros.subcategorias.length > 0) {
-        console.log('🔍 Filtrando por subcategorías:', filtros.subcategorias);
-        console.log('🔍 Productos con subcategorías definidas:', 
+        console.log('Filtrando por subcategorías:', filtros.subcategorias);
+        console.log('Productos con subcategorías definidas:', 
           todosLosProductos.filter(p => p.subcategoria?.id).length, 
           'de', todosLosProductos.length);
       }
@@ -282,7 +282,7 @@ export function useFiltros(): UseFiltrosReturn {
             
             if (productoCatId === catCodigo) {
               matchSubcat = true;
-              console.log(`✅ Producto ${producto.nombre} INCLUIDO por ALL-${cat} (categoria: ${productoCatId})`);
+              console.log(`Producto ${producto.nombre} INCLUIDO por ALL-${cat} (categoria: ${productoCatId})`);
               break;
             }
           } else {
@@ -371,7 +371,7 @@ export function useFiltros(): UseFiltrosReturn {
     const fin = inicio + tamanoPagina;
     const productosPaginados = filtrados.slice(inicio, fin);
 
-    console.log('✅ Filtrado local completado:', {
+    console.log('Filtrado local completado:', {
       totalProductos: todosLosProductos.length,
       productosFiltrados: totalElementosFiltrados,
       productosEnPagina: productosPaginados.length,

@@ -223,7 +223,7 @@ const Login: React.FC = (): React.JSX.Element => {
           <div className="login-header">
             <img
               className="login-logo"
-              src="/img/otros/logo.png"
+              src="https://levelup-gamer-products.s3.us-east-1.amazonaws.com/logo.png"
               alt="Logo Level Up"
             />
             <h1 className="company-name">Level Up</h1>

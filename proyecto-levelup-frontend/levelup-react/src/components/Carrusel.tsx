@@ -19,7 +19,7 @@ export default function Carrusel(): React.JSX.Element {
     const cargarCarrusel = async () => {
       try {
         setLoading(true);
-        console.log("🔄 Carrusel - Iniciando carga desde backend...");
+        console.log("Carrusel - Iniciando carga desde backend...");
         
         const response = await axiosConfig.get("/productos/carrusel", {
           headers: {
@@ -28,11 +28,11 @@ export default function Carrusel(): React.JSX.Element {
           timeout: 15000, // Aumentar timeout a 15 segundos
         });
         
-        console.log("✅ Carrusel - Respuesta recibida:", response);
-        console.log("📦 Carrusel - Datos:", response.data);
+        console.log("Carrusel - Respuesta recibida:", response);
+        console.log("Carrusel - Datos:", response.data);
         
         if (response.data && Array.isArray(response.data)) {
-          console.log("🖼️ Carrusel - Procesando", response.data.length, "imágenes");
+          console.log("Carrusel - Procesando", response.data.length, "imágenes");
           
           const imagenesMapeadas = response.data.map((item: any, index: number) => {
             const imagen = {
@@ -43,7 +43,7 @@ export default function Carrusel(): React.JSX.Element {
               descripcion: item.descripcion || "",
             };
             
-            console.log(`🖼️ Carrusel - Imagen ${imagen.id} (índice ${index}):`, {
+            console.log(`Carrusel - Imagen ${imagen.id} (índice ${index}):`, {
               url: imagen.url,
               nombre: imagen.nombre,
               urlIncorrecta: imagen.url.includes("play5white") || imagen.url.includes("monitorasus")
@@ -51,35 +51,35 @@ export default function Carrusel(): React.JSX.Element {
             
             // Validar y corregir URLs incorrectas
             if (imagen.url.includes("play5white.png")) {
-              console.warn("⚠️ Carrusel - URL incorrecta detectada (play5white), corrigiendo...");
+              console.warn("Carrusel - URL incorrecta detectada (play5white), corrigiendo...");
               imagen.url = "https://levelup-gamer-products.s3.us-east-1.amazonaws.com/img/carruselnoticias.png";
             } else if (imagen.url.includes("monitorasus.png")) {
-              console.warn("⚠️ Carrusel - URL incorrecta detectada (monitorasus), corrigiendo...");
+              console.warn("Carrusel - URL incorrecta detectada (monitorasus), corrigiendo...");
               imagen.url = "https://levelup-gamer-products.s3.us-east-1.amazonaws.com/img/carrusel.png";
             } else if (imagen.url.includes("carrusel.png") && index === 0) {
-              console.warn("⚠️ Carrusel - URL incorrecta en posición 0 (carrusel.png), corrigiendo...");
+              console.warn("Carrusel - URL incorrecta en posición 0 (carrusel.png), corrigiendo...");
               imagen.url = "https://levelup-gamer-products.s3.us-east-1.amazonaws.com/img/carruselproductos.png";
             }
             
             return imagen;
           });
           
-          console.log("✅ Carrusel - Imágenes mapeadas finales:", imagenesMapeadas);
+          console.log("Carrusel - Imágenes mapeadas finales:", imagenesMapeadas);
           setImagenes(imagenesMapeadas);
         } else {
-          console.warn("⚠️ Carrusel - Respuesta no es un array:", response.data);
+          console.warn("Carrusel - Respuesta no es un array:", response.data);
           throw new Error("Respuesta inválida del backend");
         }
       } catch (error: any) {
-        console.error("❌ Error al cargar carrusel:", error);
-        console.error("❌ Detalles del error:", {
+        console.error("Error al cargar carrusel:", error);
+        console.error("Detalles del error:", {
           message: error.message,
           response: error.response?.data,
           status: error.response?.status,
         });
         
         // Fallback a imágenes por defecto si falla la carga
-        console.log("🔄 Carrusel - Usando imágenes de fallback");
+        console.log("Carrusel - Usando imágenes de fallback");
         setImagenes([
           {
             id: "1",

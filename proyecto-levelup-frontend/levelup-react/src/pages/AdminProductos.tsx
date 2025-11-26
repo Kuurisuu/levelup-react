@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AdminSidebar,
   AdminTable as AdminTableComp,
@@ -381,7 +381,7 @@ const AdminProductos: React.FC = () => {
               (editing?.subcategoria && editing.subcategoria.id) ||
               ""
             }
-            options={subcategorias
+            options={subs
               .filter((s) => s.categoria.id === (editing?.categoriaId || editing?.categoria?.id))
               .map((s) => ({ value: s.id, label: s.nombre }))}
             onChange={(e) =>

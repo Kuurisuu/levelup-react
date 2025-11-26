@@ -188,24 +188,24 @@ export function determinarSiguientePaso(): 'formulario' | 'resumen' | 'pago' | '
   
   // Si ha comprado antes y tiene datos completos, ir a checkout rápido
   if (haComprado && tieneEnvio && tieneTarjeta) {
-    console.log('✅ Usuario experimentado con datos completos, ir a checkout rápido'); // Debug
+    console.log('Usuario experimentado con datos completos, ir a checkout rápido'); // Debug
     return 'rapido';
   }
   
   // Si no hay datos de envío, empezar desde el formulario
   if (!tieneEnvio) {
-    console.log('❌ No hay datos de envío completos, ir a formulario'); // Debug
+    console.log('No hay datos de envío completos, ir a formulario'); // Debug
     return 'formulario';
   }
   
   // Si hay datos de envío pero no de tarjeta, ir al resumen
   if (!tieneTarjeta) {
-    console.log('⚠️ Hay datos de envío pero no de tarjeta, ir a resumen'); // Debug
+    console.log('Hay datos de envío pero no de tarjeta, ir a resumen'); // Debug
     return 'resumen';
   }
   
   // Si hay ambos datos, ir directamente al pago
-  console.log('✅ Hay datos de envío y tarjeta, ir a pago'); // Debug
+  console.log('Hay datos de envío y tarjeta, ir a pago'); // Debug
   return 'pago';
 }
 
