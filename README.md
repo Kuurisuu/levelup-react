@@ -17,7 +17,7 @@ Aplicación web frontend para la tienda online Level-Up Gamer, especializada en 
 - **Vitest** - Testing
 - **React Testing Library** - Testing de componentes
 
-## 📦 Instalación
+## Instalación
 
 ### Requisitos Previos
 
