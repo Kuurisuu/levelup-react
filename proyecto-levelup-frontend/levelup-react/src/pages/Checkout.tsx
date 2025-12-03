@@ -388,8 +388,15 @@ const Checkout: React.FC = (): React.JSX.Element => {
     const nuevaOrden = crearOrdenCompra(datosEnvio, productos, aplicaDescuento);
     setOrden(nuevaOrden);
     
+    // Guardar orden en backend y obtener código real del pedido
+    let codigoPedido = nuevaOrden.codigo;
     try {
-      await guardarOrden(nuevaOrden);
+      const codigoBackend = await guardarOrden(nuevaOrden);
+      if (codigoBackend) {
+        codigoPedido = codigoBackend;
+        nuevaOrden.codigo = codigoBackend;
+        setOrden(nuevaOrden);
+      }
     } catch (error) {
       console.error("Error al guardar orden:", error);
     }
@@ -400,18 +407,24 @@ const Checkout: React.FC = (): React.JSX.Element => {
         // cuando se llama a la funcion procesarPago se ejecuta el then y se pasa el resultado a la funcion
         if (resultado.exito) {
           // si el resultado es true se actualiza el estado de la orden a completada
-          await actualizarEstadoOrden(nuevaOrden.codigo, "completada");
+          if (codigoPedido) {
+            await actualizarEstadoOrden(codigoPedido, "completada");
+          }
           setStep("exitoso");
           vaciarCarrito();
         } else {
-          await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+          if (codigoPedido) {
+            await actualizarEstadoOrden(codigoPedido, "fallida");
+          }
           setError(resultado.error || "Error desconocido");
           setStep("fallido");
         }
       })
       .catch(async (error) => {
         console.error("Error al procesar pago:", error);
-        await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+        if (codigoPedido) {
+          await actualizarEstadoOrden(codigoPedido, "fallida");
+        }
         setError("Error al procesar el pago");
         setStep("fallido");
       });
@@ -459,8 +472,15 @@ const Checkout: React.FC = (): React.JSX.Element => {
     const nuevaOrden = crearOrdenCompra(datosEnvio, productos, aplicaDescuento);
     setOrden(nuevaOrden);
     
+    // Guardar orden en backend y obtener código real del pedido
+    let codigoPedido = nuevaOrden.codigo;
     try {
-      await guardarOrden(nuevaOrden);
+      const codigoBackend = await guardarOrden(nuevaOrden);
+      if (codigoBackend) {
+        codigoPedido = codigoBackend;
+        nuevaOrden.codigo = codigoBackend;
+        setOrden(nuevaOrden);
+      }
     } catch (error) {
       console.error("Error al guardar orden:", error);
     }
@@ -469,19 +489,25 @@ const Checkout: React.FC = (): React.JSX.Element => {
     procesarPago(nuevaOrden)
       .then(async (resultado) => {
         if (resultado.exito) {
-          await actualizarEstadoOrden(nuevaOrden.codigo, "completada");
+          if (codigoPedido) {
+            await actualizarEstadoOrden(codigoPedido, "completada");
+          }
           setStep("exitoso");
           vaciarCarrito();
           limpiarDatosCheckout(); // Limpiar datos guardados después de compra exitosa
         } else {
-          await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+          if (codigoPedido) {
+            await actualizarEstadoOrden(codigoPedido, "fallida");
+          }
           setError(resultado.error || "Error desconocido");
           setStep("fallido");
         }
       })
       .catch(async (error) => {
         console.error("Error al procesar pago:", error);
-        await actualizarEstadoOrden(nuevaOrden.codigo, "fallida");
+        if (codigoPedido) {
+          await actualizarEstadoOrden(codigoPedido, "fallida");
+        }
         setError("Error al procesar el pago");
         setStep("fallido");
       });

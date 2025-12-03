@@ -150,11 +150,12 @@ export async function procesarPago(orden: OrdenCompra): Promise<{
     const idUsuario = session.userId || session.id || 0;
     
     // Crear pago en el backend
+    // El backend acepta: TARJETA_CREDITO, TARJETA_DEBITO, TRANSFERENCIA, PAYPAL, WEBPAY
     const pagoData = {
       idPedido: 0, // Se actualizará si se creó el pedido antes
       idUsuario: Number(idUsuario) || 0,
       montoPago: orden.total,
-      metodoPago: 'TARJETA',
+      metodoPago: 'TARJETA_CREDITO', // Cambiado de 'TARJETA' a 'TARJETA_CREDITO' para compatibilidad con backend
       monedaPago: 'CLP'
     };
     
@@ -193,9 +194,9 @@ export async function procesarPago(orden: OrdenCompra): Promise<{
 }
 
 /**
- * Guarda la orden en el backend
+ * Guarda la orden en el backend y retorna el código del pedido creado
  */
-export async function guardarOrden(orden: OrdenCompra): Promise<void> {
+export async function guardarOrden(orden: OrdenCompra): Promise<string | null> {
   try {
     // Obtener idUsuario del localStorage
     const session = JSON.parse(localStorage.getItem('lvup_user_session') || '{}');
@@ -229,6 +230,12 @@ export async function guardarOrden(orden: OrdenCompra): Promise<void> {
     
     const response = await PedidoService.crearPedido(pedidoDTO);
     
+    // Actualizar el código de la orden con el código del pedido creado en el backend
+    if (response.data && response.data.codigo) {
+      orden.codigo = response.data.codigo;
+      console.log('Pedido creado en backend con código:', response.data.codigo);
+    }
+    
     // También guardar en localStorage como fallback
     try {
       const ordenes = obtenerOrdenes();
@@ -237,6 +244,8 @@ export async function guardarOrden(orden: OrdenCompra): Promise<void> {
     } catch (e) {
       // Silenciar errores de localStorage
     }
+    
+    return response.data?.codigo || orden.codigo || null;
   } catch (error) {
     console.error('Error al guardar la orden:', error);
     // Fallback a localStorage si falla el backend
@@ -247,6 +256,8 @@ export async function guardarOrden(orden: OrdenCompra): Promise<void> {
     } catch (e) {
       console.error('Error al guardar en localStorage:', e);
     }
+    // Retornar el código local si el backend falla
+    return orden.codigo || null;
   }
 }
 
